@@ -3,131 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In - Globeii</title>
+  <title>Globeii</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-
   <style>
     body, html {
       height: 100%;
-      background-color: #f8f9fa;
       margin: 0;
     }
-    /* Logo header */
-    .site-header {
-      background-color: #f8f9fa;
-      padding: 10px 0;
-      text-align: center;
-    }
-    .site-header img {
-      max-height: 60px;
-    }
-    /* Signin container */
-    .signin-container {
+    .main-content {
+      min-height: calc(100vh - 100px); /* Header + Footer spacing */
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      align-items: flex-start; /* moves form closer to top */
-      padding-top: 20px;
-      min-height: calc(100vh - 100px); /* space for header + footer */
-    }
-    .signin-form {
-      background-color: #ffffff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    .form-control {
-      margin-bottom: 15px;
-    }
-    #errorMsg {
-      color: red;
-      margin-bottom: 15px;
+      align-items: center;
       text-align: center;
+    }
+    .main-content .btn {
+      width: 200px;
+      margin-bottom: 15px;
     }
     footer {
       background-color: #f8f9fa;
       padding: 15px 0;
-      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header / Logo -->
-  <header class="site-header">
-    <img src="https://dummyimage.com/150x60/cccccc/000000.png&text=Globeii" alt="Globeii Logo">
-  </header>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">Globeii</a>
+      <div class="d-flex ms-auto">
+        <a href="login.html" class="btn btn-outline-primary">Sign In</a>
+      </div>
+    </div>
+  </nav>
 
-  <!-- Sign In Form -->
-  <div class="signin-container">
-    <form class="signin-form" id="signinForm">
-      <h2 class="text-center mb-4">Sign In</h2>
-      <div id="errorMsg"></div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Password" required>
-      </div>
-      <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary">Sign In</button>
-      </div>
-      <div class="text-center">
-        <small>Don't have an account? <a href="create-account.html">Create one</a></small>
-      </div>
-    </form>
+  <!-- Main Body -->
+  <div class="main-content container">
+    <button class="btn btn-primary">Create an account</button>
+    <button class="btn btn-secondary">Manage account</button>
   </div>
 
   <!-- Footer -->
-  <footer>
-    <small>© 2026 Globeii. <a href="#">Privacy</a> | <a href="#">Terms</a></small>
+  <footer class="text-center">
+    <div class="container">
+      <small>© 2026 Globeii. <a href="#">Privacy</a> | <a href="#">Terms</a></small>
+    </div>
   </footer>
-
-  <script>
-    // Initialize Supabase
-    const SUPABASE_URL = 'https://dixdxmiwrnwlolqfgbfd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpeGR4bWl3cm53bG9scWZnYmZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDQyNzQsImV4cCI6MjA4MjYyMDI3NH0.r6FfX9-eKU_bh75-lZCe6iENCaQPU0hC7BoA1KmfUbM';
-
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Get form & error message
-    const form = document.getElementById('signinForm');
-    const errorMsg = document.getElementById('errorMsg');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault(); // ✅ prevent page reload
-      errorMsg.textContent = ''; // clear previous errors
-
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-        if (error) {
-          errorMsg.textContent = error.message; // show error
-        } else if (data?.user) {
-          // Successful login
-          window.location.href = 'dashboard.html';
-        } else {
-          // fallback error
-          errorMsg.textContent = 'Login failed. Please try again.';
-        }
-      } catch (err) {
-        errorMsg.textContent = 'Unexpected error. Try again.';
-        console.error(err);
-      }
-    });
-  </script>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

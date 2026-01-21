@@ -64,7 +64,7 @@
 
   <!-- Sign In Form -->
   <div class="signin-container">
-    <form class="signin-form">
+    <form class="signin-form" id="signinForm">
       <h2 class="text-center mb-4">Sign In</h2>
       <div id="errorMsg"></div>
       <div class="mb-3">
@@ -92,30 +92,39 @@
   <script>
     // Initialize Supabase
     const SUPABASE_URL = 'https://dixdxmiwrnwlolqfgbfd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpeGR4bWl3cm53bG9scWZnYmZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDQyNzQsImV4cCI6MjA4MjYyMDI3NH0.r6FfX9-eKU_bh75-lZCe6iENCaQPU0hC7BoA1KmfUbM'; // replace with your anon key
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpeGR4bWl3cm53bG9scWZnYmZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDQyNzQsImV4cCI6MjA4MjYyMDI3NH0.r6FfX9-eKU_bh75-lZCe6iENCaQPU0hC7BoA1KmfUbM';
+
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Form submission
-    const form = document.querySelector('.signin-form');
+    // Get form & error message
+    const form = document.getElementById('signinForm');
     const errorMsg = document.getElementById('errorMsg');
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+      e.preventDefault(); // ✅ prevent page reload
       errorMsg.textContent = ''; // clear previous errors
 
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
 
-      if (error) {
-        errorMsg.textContent = error.message; // show error
-      } else {
-        // Successful login, redirect to dashboard or main page
-        window.location.href = 'dashboard.html';
+        if (error) {
+          errorMsg.textContent = error.message; // show error
+        } else if (data?.user) {
+          // Successful login
+          window.location.href = 'dashboard.html';
+        } else {
+          // fallback error
+          errorMsg.textContent = 'Login failed. Please try again.';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Unexpected error. Try again.';
+        console.error(err);
       }
     });
   </script>

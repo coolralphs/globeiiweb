@@ -51,16 +51,8 @@
   <!-- Header logic -->
   <script src="header.js"></script>
 
-  <!-- Load header partial -->
-  <script>
-    async function loadHeaderPartial() {
-      const res = await fetch('header.html');
-      document.getElementById('header-placeholder').innerHTML = await res.text();
-      await loadHeader();
-    }
-
-    loadHeaderPartial();
-  </script>
+  <!-- Load layout partial -->
+  <script src="layout.js"></script>
 
   <!-- Home page logic -->
   <script>

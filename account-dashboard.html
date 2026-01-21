@@ -26,21 +26,32 @@
     <!-- Profile Group -->
     <div class="dashboard-group">
       <h4>Profile</h4>
-      <div class="mb-3">
-        <label for="firstNameInput" class="form-label">First Name</label>
-        <input type="text" id="firstNameInput" class="form-control" placeholder="First Name" readonly>
-      </div>
-      <div class="mb-3">
-        <label for="lastNameInput" class="form-label">Last Name</label>
-        <input type="text" id="lastNameInput" class="form-control" placeholder="Last Name" readonly>
-      </div>
-      <div class="mb-3">
-        <label for="emailInput" class="form-label">Email</label>
-        <input type="email" id="emailInput" class="form-control" placeholder="Email" readonly>
-      </div>
-      <div>
+
+      <!-- View Mode -->
+      <div id="profileView">
+        <p><strong>First Name:</strong> <span id="firstNameText"></span></p>
+        <p><strong>Last Name:</strong> <span id="lastNameText"></span></p>
+        <p><strong>Email:</strong> <span id="emailText"></span></p>
         <button class="btn btn-primary btn-sm" id="editProfileBtn">Edit Profile</button>
         <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change Password</button>
+      </div>
+
+      <!-- Edit Mode (hidden by default) -->
+      <div id="profileEdit" style="display:none;">
+        <div class="mb-3">
+          <label for="firstNameInput" class="form-label">First Name</label>
+          <input type="text" id="firstNameInput" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="lastNameInput" class="form-label">Last Name</label>
+          <input type="text" id="lastNameInput" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="emailInput" class="form-label">Email</label>
+          <input type="email" id="emailInput" class="form-control">
+        </div>
+        <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
+        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
       </div>
     </div>
 
@@ -73,13 +84,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label for="newPasswordInput" class="form-label">New Password</label>
-            <input type="password" id="newPasswordInput" class="form-control" placeholder="Enter new password">
-          </div>
-          <div class="mb-3">
-            <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
-            <input type="password" id="confirmPasswordInput" class="form-control" placeholder="Confirm new password">
+          <label for="passwordInput" class="form-label">New Password</label>
+          <div class="input-group mb-3">
+            <input type="password" id="passwordInput" class="form-control" placeholder="Enter new password">
+            <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">Show</button>
           </div>
         </div>
         <div class="modal-footer">
@@ -116,67 +124,92 @@
         .eq('id', user.id)
         .single();
 
+      // --- Profile Elements ---
       const firstNameInput = document.getElementById('firstNameInput');
       const lastNameInput = document.getElementById('lastNameInput');
       const emailInput = document.getElementById('emailInput');
+
+      const firstNameText = document.getElementById('firstNameText');
+      const lastNameText = document.getElementById('lastNameText');
+      const emailText = document.getElementById('emailText');
+
+      firstNameText.textContent = profile?.first_name || '';
+      lastNameText.textContent = profile?.last_name || '';
+      emailText.textContent = user.email;
 
       firstNameInput.value = profile?.first_name || '';
       lastNameInput.value = profile?.last_name || '';
       emailInput.value = user.email;
 
-      let editing = false;
-      const editBtn = document.getElementById('editProfileBtn');
+      const profileView = document.getElementById('profileView');
+      const profileEdit = document.getElementById('profileEdit');
 
-      editBtn.onclick = () => {
-        editing = !editing;
-        firstNameInput.readOnly = !editing;
-        lastNameInput.readOnly = !editing;
-        emailInput.readOnly = !editing;
-        editBtn.textContent = editing ? 'Save Changes' : 'Edit Profile';
-
-        if (!editing) saveProfile(); // save when toggling off
+      document.getElementById('editProfileBtn').onclick = () => {
+        profileView.style.display = 'none';
+        profileEdit.style.display = 'block';
       };
 
-      async function saveProfile() {
-        // Update app_users table
+      document.getElementById('cancelEditBtn').onclick = () => {
+        profileEdit.style.display = 'none';
+        profileView.style.display = 'block';
+      };
+
+      document.getElementById('saveProfileBtn').onclick = async () => {
+        const firstName = firstNameInput.value;
+        const lastName = lastNameInput.value;
+        const email = emailInput.value;
+
+        // Update app_users
         await supabaseClient.from('app_users')
-          .update({
-            first_name: firstNameInput.value,
-            last_name: lastNameInput.value
-          })
+          .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
 
-        // Update email in auth
-        if (emailInput.value !== user.email) {
-          const { error: emailError } = await supabaseClient.auth.updateUser({
-            email: emailInput.value
-          });
-          if (emailError) return alert('Email update failed: ' + emailError.message);
+        // Update email in auth if changed
+        if (email !== user.email) {
+          const { error } = await supabaseClient.auth.updateUser({ email });
+          if (error) return alert('Email update failed: ' + error.message);
         }
 
-        alert('Profile updated successfully!');
-      }
+        firstNameText.textContent = firstName;
+        lastNameText.textContent = lastName;
+        emailText.textContent = email;
 
-      // Change password
-      document.getElementById('changePasswordBtn').onclick = () => {
+        profileEdit.style.display = 'none';
+        profileView.style.display = 'block';
+        alert('Profile updated successfully!');
+      };
+
+      // --- Password Modal ---
+      const passwordInput = document.getElementById('passwordInput');
+      const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+      const changePasswordBtn = document.getElementById('changePasswordBtn');
+      const savePasswordBtn = document.getElementById('savePasswordBtn');
+
+      changePasswordBtn.onclick = () => {
         const passwordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
         passwordModal.show();
       };
 
-      document.getElementById('savePasswordBtn').onclick = async () => {
-        const newPassword = document.getElementById('newPasswordInput').value;
-        const confirmPassword = document.getElementById('confirmPasswordInput').value;
+      togglePasswordBtn.onclick = () => {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          togglePasswordBtn.textContent = 'Hide';
+        } else {
+          passwordInput.type = 'password';
+          togglePasswordBtn.textContent = 'Show';
+        }
+      };
 
-        if (!newPassword || !confirmPassword) return alert('Please fill in both fields.');
-        if (newPassword !== confirmPassword) return alert('Passwords do not match.');
+      savePasswordBtn.onclick = async () => {
+        const newPassword = passwordInput.value;
+        if (!newPassword) return alert('Please enter a password.');
 
         const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
         if (error) {
           alert('Password update failed: ' + error.message);
         } else {
           alert('Password updated successfully!');
-          document.getElementById('newPasswordInput').value = '';
-          document.getElementById('confirmPasswordInput').value = '';
+          passwordInput.value = '';
           const modalInstance = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
           modalInstance.hide();
         }

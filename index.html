@@ -23,12 +23,13 @@
     }
     .site-header img { max-height: 60px; }
 
-    /* Hero section without image */
+    /* Hero section for logged-out users */
     .hero {
       width: 100%;
       padding: 80px 20px 40px 20px;
       background-color: #e9ecef;
       text-align: center;
+      display: none; /* hidden by default, show only if logged out */
     }
     .hero h1 {
       font-size: 2.5rem;
@@ -77,8 +78,8 @@
     <div id="topButtons" class="d-flex gap-2 align-items-center"></div>
   </header>
 
-  <!-- Hero section -->
-  <div class="hero">
+  <!-- Hero section (shown only if not logged in) -->
+  <div class="hero" id="heroSection">
     <h1>Explore Your Next Adventure</h1>
     <p>Ready to start traveling? Enter your email to start planning!</p>
     <div class="input-group">
@@ -105,12 +106,17 @@
       const welcomeText = document.getElementById('welcomeText');
       const topButtons = document.getElementById('topButtons');
       const actionButtons = document.getElementById('actionButtons');
+      const heroSection = document.getElementById('heroSection');
 
       welcomeText.textContent = '';
       topButtons.innerHTML = '';
       actionButtons.innerHTML = '';
+      heroSection.style.display = 'none'; // hide by default
 
       if (user) {
+        // Logged in → hide hero section
+        heroSection.style.display = 'none';
+
         // Fetch first name and avatar from app_users
         const { data: profile } = await supabaseClient
           .from('app_users')
@@ -179,22 +185,24 @@
         actionButtons.appendChild(viewItinerariesBtn);
 
       } else {
-        // Logged out → show Sign In at top
+        // Logged out → show hero section and Sign In button
+        heroSection.style.display = 'block';
+
         const signInBtn = document.createElement('a');
         signInBtn.href = 'login.html';
         signInBtn.className = 'btn btn-primary';
         signInBtn.textContent = 'Sign In';
 
         topButtons.appendChild(signInBtn);
-      }
 
-      // Hero "Get Started" button click
-      document.getElementById('getStartedBtn').addEventListener('click', () => {
-        const email = document.getElementById('heroEmail').value;
-        if (!email) return alert('Please enter your email');
-        // Redirect to signup page with prefilled email
-        window.location.href = `create-account.html?email=${encodeURIComponent(email)}`;
-      });
+        // Hero "Get Started" button click
+        document.getElementById('getStartedBtn').addEventListener('click', () => {
+          const email = document.getElementById('heroEmail').value;
+          if (!email) return alert('Please enter your email');
+          // Redirect to signup page with prefilled email
+          window.location.href = `create-account.html?email=${encodeURIComponent(email)}`;
+        });
+      }
     }
 
     loadHomePage();

@@ -10,9 +10,10 @@
     body, html {
       height: 100%;
       margin: 0;
+      background-color: #f8f9fa;
     }
     .main-content {
-      min-height: calc(100vh - 100px); /* Header + Footer spacing */
+      min-height: calc(100vh - 100px); /* header + footer spacing */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -43,8 +44,8 @@
 
   <!-- Main Body -->
   <div class="main-content container">
-    <button class="btn btn-primary">Create an account</button>
-    <button class="btn btn-secondary">Manage account</button>
+    <a href="create-account.html" class="btn btn-primary">Create an account</a>
+    <a href="login.html?redirectTo=account.html" class="btn btn-secondary">Manage account</a>
   </div>
 
   <!-- Footer -->

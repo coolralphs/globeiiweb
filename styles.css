@@ -80,6 +80,24 @@ html, body {
   gap: 20px;
 }
 
+.main-content {
+      min-height: calc(100vh - 140px); /* header + footer spacing */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .btn-group-horizontal {
+      display: flex;
+      gap: 15px; /* space between buttons */
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
 /* Footer */
 footer {
   padding: 15px 0;

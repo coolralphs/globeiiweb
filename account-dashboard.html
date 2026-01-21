@@ -157,33 +157,38 @@
       };
 
       document.getElementById('saveProfileBtn').onclick = async () => {
-        // Trim values
         let firstName = firstNameInput.value.trim();
         let lastName = lastNameInput.value.trim();
         let email = emailInput.value.trim();
-
+      
         // Simple email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           return alert('Please enter a valid email address.');
         }
-
+      
         // Update app_users table
-        await supabaseClient.from('app_users')
+        const { error: profileError } = await supabaseClient.from('app_users')
           .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
-
+      
+        if (profileError) return alert('Profile update failed: ' + profileError.message);
+      
         // Update auth email if changed
         if (email !== user.email) {
-          const { error } = await supabaseClient.auth.updateUser({ email });
-          if (error) return alert('Email update failed: ' + error.message);
+          const { error: emailError, data: updatedUser } = await supabaseClient.auth.updateUser({ email });
+          if (emailError) {
+            return alert('Email update failed: ' + emailError.message);
+          }
+          // Update the local user object so future checks are correct
+          user.email = updatedUser.email;
         }
-
+      
         // Update view mode
         firstNameText.textContent = firstName;
         lastNameText.textContent = lastName;
-        emailText.textContent = email;
-
+        emailText.textContent = user.email; // always reflect auth value
+      
         profileEdit.style.display = 'none';
         profileView.style.display = 'block';
         alert('Profile updated successfully!');

@@ -73,8 +73,14 @@
         if (error) {
           errorMsg.textContent = error.message;
         } else if (data?.user) {
-          // ✅ Successful login → redirect to index.html
-          window.location.href = 'index.html';
+          // ✅ Successful login
+
+        // 1️⃣ Read redirect URL from query parameter
+        const params = new URLSearchParams(window.location.search);
+        const redirectTo = params.get('redirectTo') || 'dashboard.html'; // default if not provided
+
+        // 2️⃣ Redirect user
+        window.location.href = redirectTo;
         } else {
           errorMsg.textContent = 'Login failed. Please try again.';
         }

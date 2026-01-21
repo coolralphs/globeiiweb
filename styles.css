@@ -80,22 +80,28 @@ html, body {
   gap: 20px;
 }
 
-.main-content {
-      min-height: calc(100vh - 140px); /* header + footer spacing */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      gap: 20px;
+/* account-dashboard.html */
+.dashboard-container {
+      min-height: calc(100vh - 140px); /* header + footer */
+      padding: 30px 15px;
     }
-
-    .btn-group-horizontal {
-      display: flex;
-      gap: 15px; /* space between buttons */
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 15px;
+    .dashboard-heading {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .dashboard-group {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .dashboard-group h4 {
+      margin-bottom: 15px;
+    }
+    .dashboard-group .btn {
+      margin-right: 10px;
+      margin-top: 5px;
     }
 
 /* Footer */

@@ -38,21 +38,20 @@
 
       <!-- Edit Mode (hidden by default) -->
       <div id="profileEdit" style="display:none;">
-        <div class="mb-3">
-          <label for="firstNameInput" class="form-label">First Name</label>
-          <input type="text" id="firstNameInput" class="form-control">
-        </div>
-        <div class="mb-3">
-          <label for="lastNameInput" class="form-label">Last Name</label>
-          <input type="text" id="lastNameInput" class="form-control">
-        </div>
-        <div class="mb-3">
-          <label for="emailInput" class="form-label">Email</label>
-          <input type="email" id="emailInput" class="form-control">
-        </div>
-        <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
-        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
+      <div class="mb-3">
+        <label for="firstNameInput" class="form-label fw-bold">First Name</label>
+        <input type="text" id="firstNameInput" class="form-control">
       </div>
+      <div class="mb-3">
+        <label for="lastNameInput" class="form-label fw-bold">Last Name</label>
+        <input type="text" id="lastNameInput" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="emailInput" class="form-label fw-bold">Email</label>
+        <input type="email" id="emailInput" class="form-control">
+      </div>
+      <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
+      <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
     </div>
 
     <!-- Subscription Group -->
@@ -155,25 +154,33 @@
       };
 
       document.getElementById('saveProfileBtn').onclick = async () => {
-        const firstName = firstNameInput.value;
-        const lastName = lastNameInput.value;
-        const email = emailInput.value;
-
-        // Update app_users
+        // Trim values
+        let firstName = firstNameInput.value.trim();
+        let lastName = lastNameInput.value.trim();
+        let email = emailInput.value.trim();
+      
+        // Simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return alert('Please enter a valid email address.');
+        }
+      
+        // Update app_users table
         await supabaseClient.from('app_users')
           .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
-
-        // Update email in auth if changed
+      
+        // Update auth email if changed
         if (email !== user.email) {
           const { error } = await supabaseClient.auth.updateUser({ email });
           if (error) return alert('Email update failed: ' + error.message);
         }
-
+      
+        // Update view mode
         firstNameText.textContent = firstName;
         lastNameText.textContent = lastName;
         emailText.textContent = email;
-
+      
         profileEdit.style.display = 'none';
         profileView.style.display = 'block';
         alert('Profile updated successfully!');

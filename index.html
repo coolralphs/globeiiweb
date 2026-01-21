@@ -20,29 +20,56 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      z-index: 10;
+      position: relative;
     }
     .site-header img { max-height: 60px; }
 
-    /* Hero section for logged-out users */
+    /* Hero section with background image */
     .hero {
       width: 100%;
-      padding: 80px 20px 40px 20px;
-      background-color: #e9ecef;
-      text-align: center;
-      display: none; /* hidden by default, show only if logged out */
+      height: 400px;
+      display: none; /* only show if not logged in */
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fit=crop&w=1350&q=80') center/cover no-repeat;
+      color: #fff;
     }
+
+    /* Dark overlay */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background-color: rgba(0,0,0,0.5); /* dark overlay */
+      z-index: 1;
+    }
+
+    /* Hero content */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
     .hero h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
+
     .hero p {
       font-size: 1.2rem;
       margin-bottom: 20px;
     }
+
     .hero .input-group {
       max-width: 400px;
-      margin: 0 auto;
     }
 
     .container-center {
@@ -50,7 +77,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: calc(100vh - 250px); /* header + hero + footer */
+      min-height: calc(100vh - 450px); /* header + hero + footer */
       gap: 20px;
     }
 
@@ -78,13 +105,15 @@
     <div id="topButtons" class="d-flex gap-2 align-items-center"></div>
   </header>
 
-  <!-- Hero section (shown only if not logged in) -->
+  <!-- Hero section (only for logged-out users) -->
   <div class="hero" id="heroSection">
-    <h1>Explore Your Next Adventure</h1>
-    <p>Ready to start traveling? Enter your email to start planning!</p>
-    <div class="input-group">
-      <input type="email" class="form-control" placeholder="Your email" id="heroEmail">
-      <button class="btn btn-primary" id="getStartedBtn">Get Started &gt;</button>
+    <div class="hero-content">
+      <h1>Explore Your Next Adventure</h1>
+      <p>Ready to start traveling? Enter your email to start planning!</p>
+      <div class="input-group">
+        <input type="email" class="form-control" placeholder="Your email" id="heroEmail">
+        <button class="btn btn-primary" id="getStartedBtn">Get Started &gt;</button>
+      </div>
     </div>
   </div>
 
@@ -111,13 +140,13 @@
       welcomeText.textContent = '';
       topButtons.innerHTML = '';
       actionButtons.innerHTML = '';
-      heroSection.style.display = 'none'; // hide by default
+      heroSection.style.display = 'none';
 
       if (user) {
-        // Logged in → hide hero section
+        // Logged in → hide hero
         heroSection.style.display = 'none';
 
-        // Fetch first name and avatar from app_users
+        // Fetch first name and avatar
         const { data: profile } = await supabaseClient
           .from('app_users')
           .select('first_name, avatar_url')
@@ -127,7 +156,7 @@
         const firstName = profile?.first_name || user.email;
         welcomeText.textContent = `Welcome back, ${firstName}`;
 
-        // Create dropdown for profile
+        // Profile dropdown
         const dropdownDiv = document.createElement('div');
         dropdownDiv.className = 'dropdown';
 
@@ -170,7 +199,7 @@
 
         topButtons.appendChild(dropdownDiv);
 
-        // Main action buttons (only if logged in)
+        // Main action buttons
         const createTripBtn = document.createElement('a');
         createTripBtn.href = '#';
         createTripBtn.className = 'btn btn-primary';
@@ -185,7 +214,7 @@
         actionButtons.appendChild(viewItinerariesBtn);
 
       } else {
-        // Logged out → show hero section and Sign In button
+        // Logged out → show hero + Sign In
         heroSection.style.display = 'block';
 
         const signInBtn = document.createElement('a');
@@ -195,11 +224,10 @@
 
         topButtons.appendChild(signInBtn);
 
-        // Hero "Get Started" button click
+        // Get Started button click
         document.getElementById('getStartedBtn').addEventListener('click', () => {
           const email = document.getElementById('heroEmail').value;
           if (!email) return alert('Please enter your email');
-          // Redirect to signup page with prefilled email
           window.location.href = `create-account.html?email=${encodeURIComponent(email)}`;
         });
       }

@@ -23,15 +23,21 @@
     }
     .site-header img { max-height: 60px; }
 
-    /* Hero with grayscale world map */
+    /* Hero with Google Maps iframe */
     .hero {
       width: 100%;
       height: 300px;
-      background: url('https://www.pikpng.com/pngl/m/534-5346267_blankmap-world-alt-map-of-the-world-grayscale.png') center/cover no-repeat;
       position: relative;
+      overflow: hidden;
+    }
+    .hero iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: grayscale(100%) contrast(120%) brightness(90%);
     }
 
-    /* Optional overlay text */
+    /* Overlay text */
     .hero-overlay {
       position: absolute;
       top: 50%;
@@ -42,6 +48,7 @@
       font-weight: 600;
       text-align: center;
       text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
+      pointer-events: none;
     }
 
     .container-center {
@@ -77,8 +84,14 @@
     <div id="topButtons" class="d-flex gap-2 align-items-center"></div>
   </header>
 
-  <!-- Hero image -->
+  <!-- Hero image: Google Maps iframe -->
   <div class="hero">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m2!1m1!1s0x0:0x0&output=embed"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
     <div class="hero-overlay">Plan Your Next Adventure</div>
   </div>
 

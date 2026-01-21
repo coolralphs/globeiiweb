@@ -100,25 +100,48 @@
         const firstName = profile?.first_name || user.email;
         welcomeText.textContent = `Welcome back, ${firstName}`;
 
-        // Profile icon button
-        const profileBtn = document.createElement('a');
-        profileBtn.href = 'account.html';
-        const avatar = document.createElement('img');
-        avatar.src = profile?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-        avatar.className = 'profile-icon';
-        profileBtn.appendChild(avatar);
+        // Create dropdown for profile
+        const dropdownDiv = document.createElement('div');
+        dropdownDiv.className = 'dropdown';
 
-        // Log Out button
+        const avatarBtn = document.createElement('button');
+        avatarBtn.className = 'btn btn-light dropdown-toggle p-0';
+        avatarBtn.setAttribute('type', 'button');
+        avatarBtn.setAttribute('data-bs-toggle', 'dropdown');
+        avatarBtn.setAttribute('aria-expanded', 'false');
+
+        const avatarImg = document.createElement('img');
+        avatarImg.src = profile?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+        avatarImg.className = 'profile-icon';
+        avatarBtn.appendChild(avatarImg);
+
+        const dropdownMenu = document.createElement('ul');
+        dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
+
+        const profileItem = document.createElement('li');
+        const profileLink = document.createElement('a');
+        profileLink.className = 'dropdown-item';
+        profileLink.href = 'account.html';
+        profileLink.textContent = 'Profile';
+        profileItem.appendChild(profileLink);
+
+        const logoutItem = document.createElement('li');
         const logoutBtn = document.createElement('button');
-        logoutBtn.className = 'btn btn-danger';
+        logoutBtn.className = 'dropdown-item';
         logoutBtn.textContent = 'Log Out';
         logoutBtn.addEventListener('click', async () => {
           await supabaseClient.auth.signOut();
           window.location.reload();
         });
+        logoutItem.appendChild(logoutBtn);
 
-        topButtons.appendChild(profileBtn);
-        topButtons.appendChild(logoutBtn);
+        dropdownMenu.appendChild(profileItem);
+        dropdownMenu.appendChild(logoutItem);
+
+        dropdownDiv.appendChild(avatarBtn);
+        dropdownDiv.appendChild(dropdownMenu);
+
+        topButtons.appendChild(dropdownDiv);
 
         // Main action buttons (only if logged in)
         const createTripBtn = document.createElement('a');

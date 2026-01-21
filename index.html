@@ -8,21 +8,35 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase config -->
   <script src="supabase-config.js"></script>
+
   <style>
     body, html { height: 100%; margin: 0; background-color: #f8f9fa; }
-    .site-header { background-color: #f8f9fa; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .site-header {
+      background-color: #f8f9fa;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
     .site-header img { max-height: 60px; }
-    .container-center { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 100px); }
+    .container-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 100px);
+    }
     footer { background-color: #f8f9fa; padding: 15px 0; text-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- Header / Logo + Log Out -->
+  <!-- Header / Logo + dynamic button -->
   <header class="site-header">
     <img src="https://dummyimage.com/150x60/cccccc/000000.png&text=Globeii" alt="Globeii Logo">
-    <div id="topButtons"></div>
+    <div id="topButton"></div>
   </header>
 
   <!-- Main content -->
@@ -40,15 +54,14 @@
       const { data: { user } } = await supabaseClient.auth.getUser();
 
       const welcomeText = document.getElementById('welcomeText');
-      const topButtons = document.getElementById('topButtons');
-      topButtons.innerHTML = ''; // clear header buttons
-      welcomeText.textContent = ''; // default empty
+      const topButton = document.getElementById('topButton');
+      topButton.innerHTML = ''; // clear top-right
+      welcomeText.textContent = ''; // default blank
 
       if (user) {
-        // Logged in → show first/last name if you want, otherwise email
+        // Logged in → show welcome and log out
         welcomeText.textContent = `Welcome, ${user.email}`;
 
-        // Add Log Out button in top right
         const logoutBtn = document.createElement('button');
         logoutBtn.className = 'btn btn-danger';
         logoutBtn.textContent = 'Log Out';
@@ -57,11 +70,16 @@
           window.location.reload();
         });
 
-        topButtons.appendChild(logoutBtn);
+        topButton.appendChild(logoutBtn);
 
       } else {
-        // Logged out → no welcome, no log out
-        // Optionally, you could show a Sign In button here if you want
+        // Logged out → show Sign In button
+        const signInBtn = document.createElement('a');
+        signInBtn.className = 'btn btn-primary';
+        signInBtn.href = 'login.html';
+        signInBtn.textContent = 'Sign In';
+
+        topButton.appendChild(signInBtn);
       }
     }
 

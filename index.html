@@ -3,11 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
-  <!-- Temporary redirect to landing.html -->
-  <meta http-equiv="refresh" content="0; URL=landing.html">
+  <title>Home - Globeii</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  
+  <style>
+    body, html { height: 100%; margin: 0; background-color: #f8f9fa; }
+    .site-header { background-color: #f8f9fa; padding: 10px 0; text-align: center; }
+    .site-header img { max-height: 60px; }
+    .container-center { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 100px); }
+    footer { background-color: #f8f9fa; padding: 15px 0; text-align: center; }
+    .btn-group { margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <p>If you are not redirected automatically, <a href="landing.html">click here to go to the landing page</a>.</p>
+
+  <!-- Logo Header -->
+  <header class="site-header">
+    <img src="https://dummyimage.com/150x60/cccccc/000000.png&text=Globeii" alt="Globeii Logo">
+  </header>
+
+  <!-- Main content -->
+  <div class="container-center text-center">
+    <h1 id="welcomeText">Welcome!</h1>
+
+    <div class="btn-group" id="authButtons">
+      <!-- Buttons inserted by JS -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <small>© 2026 Globeii. <a href="#">Privacy</a> | <a href="#">Terms</a></small>
+  </footer>
+
+  <script>
+    async function loadHomePage() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+
+      const welcomeText = document.getElementById('welcomeText');
+      const authButtons = document.getElementById('authButtons');
+      authButtons.innerHTML = ''; // clear buttons
+
+      if (user) {
+        // Logged in → show welcome and logout
+        welcomeText.textContent = `Welcome, ${user.email}`;
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.className = 'btn btn-danger';
+        logoutBtn.textContent = 'Log Out';
+        logoutBtn.addEventListener('click', async () => {
+          await supabaseClient.auth.signOut();
+          window.location.reload();
+        });
+
+        authButtons.appendChild(logoutBtn);
+
+      } else {
+        // Not logged in → show Sign In button
+        welcomeText.textContent = 'Welcome!';
+
+        const signInBtn = document.createElement('a');
+        signInBtn.className = 'btn btn-primary';
+        signInBtn.href = 'login.html';
+        signInBtn.textContent = 'Sign In';
+
+        authButtons.appendChild(signInBtn);
+      }
+    }
+
+    // Load page
+    loadHomePage();
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

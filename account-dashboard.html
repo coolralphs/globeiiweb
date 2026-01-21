@@ -177,12 +177,25 @@
         // Update auth email if changed
         if (email !== user.email) {
           const { error: emailError, data: updatedUser } = await supabaseClient.auth.updateUser({ email });
+      
           if (emailError) {
-            return alert('Email update failed: ' + emailError.message);
+            // Show the email the user tried to enter, not the old one
+            return alert('Email update failed: ' + emailError.message + '\nAttempted: ' + email);
           }
-          // Update the local user object so future checks are correct
+      
+          // Update local user object
           user.email = updatedUser.email;
         }
+      
+        // Update view mode
+        firstNameText.textContent = firstName;
+        lastNameText.textContent = lastName;
+        emailText.textContent = user.email; // always reflect auth value
+      
+        profileEdit.style.display = 'none';
+        profileView.style.display = 'block';
+        alert('Profile updated successfully!');
+      };
       
         // Update view mode
         firstNameText.textContent = firstName;

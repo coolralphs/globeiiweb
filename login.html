@@ -73,7 +73,7 @@
         if (error) {
           errorMsg.textContent = error.message;
         } else if (data?.user) {
-          // ✅ Successful login → redirect to account.html
+          // ✅ Successful login → redirect to index.html
           window.location.href = 'index.html';
         } else {
           errorMsg.textContent = 'Login failed. Please try again.';

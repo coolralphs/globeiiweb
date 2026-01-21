@@ -82,27 +82,37 @@ html, body {
 
 /* account-dashboard.html */
 .dashboard-container {
-      min-height: calc(100vh - 140px); /* header + footer */
-      padding: 30px 15px;
-    }
-    .dashboard-heading {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .dashboard-group {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      padding: 20px;
-      margin-bottom: 25px;
-    }
-    .dashboard-group h4 {
-      margin-bottom: 15px;
-    }
-    .dashboard-group .btn {
-      margin-right: 10px;
-      margin-top: 5px;
-    }
+  min-height: calc(100vh - 140px);
+  padding: 30px 15px;
+}
+
+.dashboard-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-group {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.dashboard-group h4 {
+  margin-bottom: 15px;
+}
+
+.dashboard-group .btn {
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+.dashboard-group .form-control {
+  max-width: 300px;
+  display: inline-block;
+  margin-right: 10px;
+}
 
 /* Footer */
 footer {

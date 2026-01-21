@@ -77,7 +77,7 @@
 
         // 1️⃣ Read redirect URL from query parameter
         const params = new URLSearchParams(window.location.search);
-        const redirectTo = params.get('redirectTo') || 'dashboard.html'; // default if not provided
+        const redirectTo = params.get('redirectTo') || 'index.html'; // default if not provided
 
         // 2️⃣ Redirect user
         window.location.href = redirectTo;

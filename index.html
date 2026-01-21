@@ -52,14 +52,13 @@
     <div id="topButtons" class="d-flex gap-2"></div>
   </header>
 
-    <!-- Hero image -->
+  <!-- Hero image -->
   <div class="hero"></div>
-  
+
   <!-- Main content -->
   <div class="container-center text-center">
     <h2 id="welcomeText"></h2>
-    <a href="#" class="btn btn-primary">Create Trip</a>
-    <a href="#" class="btn btn-secondary">View My Itineraries</a>
+    <div id="actionButtons" class="d-flex flex-column gap-2"></div>
   </div>
 
   <!-- Footer -->
@@ -73,27 +72,29 @@
 
       const welcomeText = document.getElementById('welcomeText');
       const topButtons = document.getElementById('topButtons');
+      const actionButtons = document.getElementById('actionButtons');
+
       welcomeText.textContent = '';
       topButtons.innerHTML = '';
+      actionButtons.innerHTML = ''; // clear main buttons
 
       if (user) {
-        // Get first_name and last_name from app_users table
-        const { data: profile, error } = await supabaseClient
+        // Fetch user's first name from app_users table
+        const { data: profile } = await supabaseClient
           .from('app_users')
-          .select('first_name, last_name')
+          .select('first_name')
           .eq('id', user.id)
           .single();
 
         const firstName = profile?.first_name || user.email;
         welcomeText.textContent = `Welcome back, ${firstName}`;
 
-        // Profile button
+        // Top-right buttons
         const profileBtn = document.createElement('a');
         profileBtn.href = 'account.html';
         profileBtn.className = 'btn btn-outline-secondary';
         profileBtn.textContent = 'Profile';
 
-        // Log Out button
         const logoutBtn = document.createElement('button');
         logoutBtn.className = 'btn btn-danger';
         logoutBtn.textContent = 'Log Out';
@@ -105,8 +106,22 @@
         topButtons.appendChild(profileBtn);
         topButtons.appendChild(logoutBtn);
 
+        // Main action buttons (only visible if logged in)
+        const createTripBtn = document.createElement('a');
+        createTripBtn.href = '#';
+        createTripBtn.className = 'btn btn-primary';
+        createTripBtn.textContent = 'Create Trip';
+
+        const viewItinerariesBtn = document.createElement('a');
+        viewItinerariesBtn.href = '#';
+        viewItinerariesBtn.className = 'btn btn-secondary';
+        viewItinerariesBtn.textContent = 'View My Itineraries';
+
+        actionButtons.appendChild(createTripBtn);
+        actionButtons.appendChild(viewItinerariesBtn);
+
       } else {
-        // Logged out → show Sign In
+        // Logged out → show Sign In at top
         const signInBtn = document.createElement('a');
         signInBtn.href = 'login.html';
         signInBtn.className = 'btn btn-primary';

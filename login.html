@@ -10,12 +10,24 @@
     body, html {
       height: 100%;
       background-color: #f8f9fa;
+      margin: 0;
     }
+    /* Logo header */
+    .site-header {
+      background-color: #f8f9fa;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .site-header img {
+      max-height: 60px;
+    }
+    /* Signin container */
     .signin-container {
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: calc(100vh - 160px); /* adjust for header + footer */
+      padding: 20px;
     }
     .signin-form {
       background-color: #ffffff;
@@ -32,13 +44,16 @@
       background-color: #f8f9fa;
       padding: 15px 0;
       text-align: center;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
     }
   </style>
 </head>
 <body>
+
+  <!-- Header / Logo -->
+  <header class="site-header">
+    <!-- Replace src with your logo path -->
+    <img src="https://dummyimage.com/150x60/cccccc/000000.png&text=Globeii" alt="Globeii Logo">
+  </header>
 
   <!-- Sign In Form -->
   <div class="signin-container">
@@ -56,7 +71,7 @@
         <button type="submit" class="btn btn-primary">Sign In</button>
       </div>
       <div class="text-center">
-        <small>Don't have an account? <a href="#">Create one</a></small>
+        <small>Don't have an account? <a href="create-account.html">Create one</a></small>
       </div>
     </form>
   </div>

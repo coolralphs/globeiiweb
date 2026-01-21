@@ -12,7 +12,6 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-
 </head>
 <body>
 
@@ -27,10 +26,15 @@
     <!-- Profile Group -->
     <div class="dashboard-group">
       <h4>Profile</h4>
-      <p><strong>First Name:</strong> <span id="firstName">John</span></p>
-      <p><strong>Last Name:</strong> <span id="lastName">Doe</span></p>
-      <button class="btn btn-primary btn-sm" onclick="alert('Change password placeholder')">Change Password</button>
-      <button class="btn btn-secondary btn-sm" onclick="alert('Edit profile placeholder')">Edit Profile</button>
+      <div>
+        <input type="text" id="firstNameInput" class="form-control" placeholder="First Name">
+        <input type="text" id="lastNameInput" class="form-control" placeholder="Last Name">
+        <input type="email" id="emailInput" class="form-control" placeholder="Email">
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
+        <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change Password</button>
+      </div>
     </div>
 
     <!-- Subscription Group -->
@@ -58,40 +62,70 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Header logic -->
   <script src="header.js"></script>
-  <!-- Layout loader -->
   <script src="layout.js"></script>
 
-  <!-- Dashboard page logic -->
+  <!-- Dashboard logic -->
   <script>
     window.layoutReady.then(async () => {
-      // Check if user is logged in
       const { data: { user } } = await supabaseClient.auth.getUser();
 
       if (!user) {
         // Not logged in → redirect to login
         window.location.href = 'login.html?redirectTo=account-dashboard.html';
-      } else {
-        // Show dashboard content
-        document.getElementById('dashboardContent').style.display = 'block';
-
-        // Fetch profile placeholders (replace with real data later)
-        const { data: profile } = await supabaseClient
-          .from('app_users')
-          .select('first_name, last_name')
-          .eq('id', user.id)
-          .single()
-          .catch(() => ({ data: { first_name: 'John', last_name: 'Doe' } }));
-
-        document.getElementById('firstName').textContent = profile?.first_name || 'John';
-        document.getElementById('lastName').textContent = profile?.last_name || 'Doe';
-
-        // Placeholder subscription info
-        document.getElementById('planName').textContent = 'Premium';
-        document.getElementById('renewalDate').textContent = '2026-02-15';
+        return;
       }
+
+      document.getElementById('dashboardContent').style.display = 'block';
+
+      // Fetch profile from app_users
+      const { data: profile } = await supabaseClient
+        .from('app_users')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single();
+
+      const firstNameInput = document.getElementById('firstNameInput');
+      const lastNameInput = document.getElementById('lastNameInput');
+      const emailInput = document.getElementById('emailInput');
+
+      firstNameInput.value = profile?.first_name || '';
+      lastNameInput.value = profile?.last_name || '';
+      emailInput.value = user.email;
+
+      // Save profile updates
+      document.getElementById('saveProfileBtn').onclick = async () => {
+        // Update app_users table
+        await supabaseClient.from('app_users')
+          .update({
+            first_name: firstNameInput.value,
+            last_name: lastNameInput.value
+          })
+          .eq('id', user.id);
+
+        // Update email in auth
+        if (emailInput.value !== user.email) {
+          const { error: emailError } = await supabaseClient.auth.updateUser({
+            email: emailInput.value
+          });
+          if (emailError) return alert('Email update failed: ' + emailError.message);
+        }
+
+        alert('Profile updated successfully!');
+      };
+
+      // Change password
+      document.getElementById('changePasswordBtn').onclick = async () => {
+        const newPassword = prompt('Enter your new password:');
+        if (!newPassword) return;
+
+        const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+        if (error) {
+          alert('Password update failed: ' + error.message);
+        } else {
+          alert('Password updated successfully!');
+        }
+      };
     });
   </script>
 

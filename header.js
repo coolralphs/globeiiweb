@@ -32,7 +32,7 @@ async function loadHeader() {
     dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
 
     dropdownMenu.innerHTML = `
-      <li><a class="dropdown-item" href="account.html">Profile</a></li>
+      <li><a class="dropdown-item" href="profile.html">Profile</a></li>
       <li><button class="dropdown-item" id="logoutBtn">Log Out</button></li>
     `;
 

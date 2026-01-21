@@ -36,30 +36,31 @@
         <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change Password</button>
       </div>
 
-      <!-- Edit Mode (hidden by default) -->
+      <!-- Edit Mode -->
       <div id="profileEdit" style="display:none;">
-      <div class="mb-3">
-        <label for="firstNameInput" class="form-label fw-bold">First Name</label>
-        <input type="text" id="firstNameInput" class="form-control">
+        <div class="mb-3">
+          <label for="firstNameInput" class="form-label fw-bold">First Name</label>
+          <input type="text" id="firstNameInput" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="lastNameInput" class="form-label fw-bold">Last Name</label>
+          <input type="text" id="lastNameInput" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="emailInput" class="form-label fw-bold">Email</label>
+          <input type="email" id="emailInput" class="form-control">
+        </div>
+        <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
+        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
       </div>
-      <div class="mb-3">
-        <label for="lastNameInput" class="form-label fw-bold">Last Name</label>
-        <input type="text" id="lastNameInput" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="emailInput" class="form-label fw-bold">Email</label>
-        <input type="email" id="emailInput" class="form-control">
-      </div>
-      <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
-      <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
-    </div>
+    </div> <!-- End Profile Group -->
 
     <!-- Subscription Group -->
     <div class="dashboard-group">
       <h4>Subscription</h4>
       <p><strong>Your Plan:</strong> <span id="planName">Premium</span></p>
       <p><strong>Renewal Date:</strong> <span id="renewalDate">2026-02-15</span></p>
-      <div>
+      <div class="mb-2">
         <button class="btn btn-primary btn-sm" onclick="alert('Manage subscription placeholder')">Manage Subscription</button>
         <button class="btn btn-danger btn-sm" onclick="alert('Cancel subscription placeholder')">Cancel Subscription</button>
       </div>
@@ -68,8 +69,10 @@
     <!-- Billing Group -->
     <div class="dashboard-group">
       <h4>Billing</h4>
-      <button class="btn btn-primary btn-sm" onclick="alert('Manage payment method placeholder')">Manage Payment Method</button>
-      <button class="btn btn-secondary btn-sm" onclick="alert('Billing history placeholder')">Billing History</button>
+      <div class="mb-2">
+        <button class="btn btn-primary btn-sm" onclick="alert('Manage payment method placeholder')">Manage Payment Method</button>
+        <button class="btn btn-secondary btn-sm" onclick="alert('Billing history placeholder')">Billing History</button>
+      </div>
     </div>
 
   </div>
@@ -158,29 +161,29 @@
         let firstName = firstNameInput.value.trim();
         let lastName = lastNameInput.value.trim();
         let email = emailInput.value.trim();
-      
+
         // Simple email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           return alert('Please enter a valid email address.');
         }
-      
+
         // Update app_users table
         await supabaseClient.from('app_users')
           .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
-      
+
         // Update auth email if changed
         if (email !== user.email) {
           const { error } = await supabaseClient.auth.updateUser({ email });
           if (error) return alert('Email update failed: ' + error.message);
         }
-      
+
         // Update view mode
         firstNameText.textContent = firstName;
         lastNameText.textContent = lastName;
         emailText.textContent = email;
-      
+
         profileEdit.style.display = 'none';
         profileView.style.display = 'block';
         alert('Profile updated successfully!');
@@ -223,5 +226,6 @@
       };
     });
   </script>
+
 </body>
 </html>

@@ -126,7 +126,6 @@
         .eq('id', user.id)
         .single();
 
-      // --- Profile Elements ---
       const firstNameInput = document.getElementById('firstNameInput');
       const lastNameInput = document.getElementById('lastNameInput');
       const emailInput = document.getElementById('emailInput');
@@ -146,6 +145,7 @@
       const profileView = document.getElementById('profileView');
       const profileEdit = document.getElementById('profileEdit');
 
+      // Edit profile
       document.getElementById('editProfileBtn').onclick = () => {
         profileView.style.display = 'none';
         profileEdit.style.display = 'block';
@@ -157,58 +157,42 @@
       };
 
       document.getElementById('saveProfileBtn').onclick = async () => {
-        // Trim inputs
         let firstName = firstNameInput.value.trim();
         let lastName = lastNameInput.value.trim();
-        let email = emailInput.value.trim().toLowerCase(); // normalize
-      
-        // Simple email validation
+        let email = emailInput.value.trim().toLowerCase();
+
+        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           return alert('Please enter a valid email address.');
         }
-      
-        // Update app_users table (first_name, last_name)
+
+        // Update app_users table
         const { error: profileError } = await supabaseClient.from('app_users')
           .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
-      
+
         if (profileError) return alert('Profile update failed: ' + profileError.message);
-      
-        // Only update auth email if actually different
-        const currentAuthEmail = user.email.trim().toLowerCase();
-        if (email !== currentAuthEmail) {
+
+        // Update auth email only if changed
+        const currentEmail = user.email.trim().toLowerCase();
+        if (email !== currentEmail) {
           const { error: emailError, data: updatedUser } = await supabaseClient.auth.updateUser({ email });
-      
-          if (emailError) {
-            return alert('Email update failed: ' + emailError.message);
-          }
-      
-          // Update local user object
+          if (emailError) return alert('Email update failed: ' + emailError.message);
           user.email = updatedUser.email;
         }
-      
+
         // Update view mode
         firstNameText.textContent = firstName;
         lastNameText.textContent = lastName;
-        emailText.textContent = user.email; // always reflect auth value
-      
-        profileEdit.style.display = 'none';
-        profileView.style.display = 'block';
-        alert('Profile updated successfully!');
-      };
-      
-        // Update view mode
-        firstNameText.textContent = firstName;
-        lastNameText.textContent = lastName;
-        emailText.textContent = user.email; // always reflect auth value
-      
+        emailText.textContent = user.email;
+
         profileEdit.style.display = 'none';
         profileView.style.display = 'block';
         alert('Profile updated successfully!');
       };
 
-      // --- Password Modal ---
+      // Password modal logic
       const passwordInput = document.getElementById('passwordInput');
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
@@ -245,6 +229,5 @@
       };
     });
   </script>
-
 </body>
 </html>

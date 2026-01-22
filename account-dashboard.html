@@ -157,40 +157,48 @@
       };
 
      document.getElementById('saveProfileBtn').onclick = async () => {
-  let firstName = firstNameInput.value.trim();
-  let lastName = lastNameInput.value.trim();
-  let email = emailInput.value.trim().toLowerCase();
-
-  // --- Validate email first ---
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return alert('Please enter a valid email address.'); // stops here
-  }
-
-  // --- Update app_users table ---
-  const { error: profileError } = await supabaseClient.from('app_users')
-    .update({ first_name: firstName, last_name: lastName })
-    .eq('id', user.id);
-
-  if (profileError) return alert('Profile update failed: ' + profileError.message);
-
-  // --- Update auth email only if changed ---
-  if (email !== user.email.trim().toLowerCase()) {
-    const { error: emailError, data: updatedUser } = await supabaseClient.auth.updateUser({ email });
-    if (emailError) return alert('Email update failed: ' + emailError.message);
-    user.email = updatedUser.email; // update local user object
-  }
-
-  // --- Update view mode ---
-  firstNameText.textContent = firstName;
-  lastNameText.textContent = lastName;
-  emailText.textContent = user.email;
-
-  profileEdit.style.display = 'none';
-  profileView.style.display = 'block';
-  alert('Profile updated successfully!');
-};
-
+        let firstName = firstNameInput.value.trim();
+        let lastName = lastNameInput.value.trim();
+        let email = emailInput.value.trim();
+      
+        // Simple email structure validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return alert('Please enter a valid email address.');
+        }
+      
+        // Update app_users table
+        const { error: profileError } = await supabaseClient.from('app_users')
+          .update({ first_name: firstName, last_name: lastName })
+          .eq('id', user.id);
+      
+        if (profileError) return alert('Profile update failed: ' + profileError.message);
+      
+        // Only update auth email if it is actually different
+        if (email !== user.email) {
+          const { error: emailError } = await supabaseClient.auth.updateUser({ email });
+      
+          if (emailError) {
+            return alert('Email update failed: ' + emailError.message);
+          }
+      
+          // Show pending verification message
+          alert(`We sent a confirmation email to ${email}. Your email will be updated once verified.`);
+      
+          // Keep old email displayed until verification
+          emailText.textContent = user.email;
+        } else {
+          // No email change, just update name fields
+          emailText.textContent = email;
+        }
+      
+        // Update view mode
+        firstNameText.textContent = firstName;
+        lastNameText.textContent = lastName;
+      
+        profileEdit.style.display = 'none';
+        profileView.style.display = 'block';
+      };
       // Password modal logic
       const passwordInput = document.getElementById('passwordInput');
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');

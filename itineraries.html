@@ -5,27 +5,92 @@
   <title>Itineraries – Globeii</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-    header { background:#0077cc; color:white; padding:16px; text-align:center; position:sticky; top:0; z-index:100; }
+    body { 
+      font-family: Arial, sans-serif; 
+      margin:0; 
+      padding:0; 
+      background:#f5f5f5; 
+      padding-bottom: 100px; /* Space for FAB + footer */ 
+    }
+    header { 
+      background:#0077cc; 
+      color:white; 
+      padding:16px; 
+      text-align:center; 
+      position:sticky; 
+      top:0; 
+      z-index:100; 
+    }
     main { padding:16px; }
-    .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
-    .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
+    .filter-row { 
+      display:flex; 
+      justify-content:space-between; 
+      flex-wrap:wrap; 
+      margin-bottom:16px; 
+    }
+    .filter-pill { 
+      padding:6px 16px; 
+      border-radius:20px; 
+      margin-right:8px; 
+      margin-bottom:8px;
+      cursor:pointer; 
+      font-weight:500; 
+    }
     .filter-pill.active { background:#28a745; color:white; }
     .filter-pill.inactive { background:#ccc; color:#333; }
     .itinerary-list { list-style:none; padding:0; margin:0; }
-    .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-    .itinerary-details { display:flex; flex-direction:column; }
+    .itinerary-item { 
+      background:white; 
+      margin-bottom:8px; 
+      border-radius:8px; 
+      padding:12px; 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      box-shadow:0 1px 3px rgba(0,0,0,0.1); 
+      flex-wrap:wrap;
+    }
+    .itinerary-details { display:flex; flex-direction:column; flex:1; min-width:150px; }
     .itinerary-name { font-weight:bold; }
     .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
-    .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; }
+    .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; vertical-align:middle; }
     .badge-owned { background:#28a745; }
     .badge-shared { background:#007bff; }
     .badge-archived { background:#dc3545; }
-    button.fab { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#0077cc; color:white; font-size:28px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
-    footer { text-align:center; margin-top:40px; font-size:0.9em; color:#555; padding:16px; }
+    .fab { 
+      position:fixed; 
+      bottom:24px; 
+      right:24px; 
+      width:56px; 
+      height:56px; 
+      border-radius:50%; 
+      border:none; 
+      background:#28a745; 
+      color:white; 
+      font-size:28px; 
+      cursor:pointer; 
+      box-shadow:0 4px 6px rgba(0,0,0,0.2); 
+      display:flex; 
+      justify-content:center; 
+      align-items:center; 
+    }
+    footer { 
+      text-align:center; 
+      font-size:12px; 
+      color:#555; 
+      padding:16px; 
+      background:#f8f8f8; 
+      position:relative; 
+      bottom:0;
+    }
     footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
     footer a:hover { text-decoration:underline; }
     select { padding:6px 8px; }
+    @media(max-width:480px){
+      .filter-row { flex-direction:column; align-items:flex-start; }
+      .filter-pill { margin-right:0; }
+      .itinerary-item { flex-direction:column; align-items:flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -58,17 +123,15 @@
     </ul>
   </main>
 
+  <footer>
+    <a href="terms.html">Terms of Service</a> |
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="refund.html">Refund Policy</a>
+    <div>© 2026 Globeii</div>
+  </footer>
+
   <!-- Floating Add Button -->
   <button class="fab" onclick="addItinerary()">+</button>
-
-  <footer>
-    <p>© 2026 Globeii</p>
-    <p>
-      <a href="terms.html">Terms of Service</a> | 
-      <a href="privacy.html">Privacy Policy</a> | 
-      <a href="refund.html">Refund Policy</a>
-    </p>
-  </footer>
 
   <script>
     // Sample data
@@ -100,7 +163,17 @@
           case 'Place Count': return b.places - a.places;
         }
       });
-      // Render
+
+      if(filtered.length===0){
+        const li = document.createElement('li');
+        li.style.textAlign='center';
+        li.style.color='gray';
+        li.style.padding='12px';
+        li.textContent='No itineraries found';
+        itineraryList.appendChild(li);
+        return;
+      }
+
       filtered.forEach(it=>{
         const li = document.createElement('li');
         li.className = 'itinerary-item';

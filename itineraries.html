@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Itineraries – Globeii</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+    header { background:#0077cc; color:white; padding:16px; text-align:center; position:sticky; top:0; z-index:100; }
+    main { padding:16px; }
+    .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
+    .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
+    .filter-pill.active { background:#28a745; color:white; }
+    .filter-pill.inactive { background:#ccc; color:#333; }
+    .itinerary-list { list-style:none; padding:0; margin:0; }
+    .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    .itinerary-details { display:flex; flex-direction:column; }
+    .itinerary-name { font-weight:bold; }
+    .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
+    .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; }
+    .badge-owned { background:#28a745; }
+    .badge-shared { background:#007bff; }
+    .badge-archived { background:#dc3545; }
+    button.fab { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#0077cc; color:white; font-size:28px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
+    footer { text-align:center; margin-top:40px; font-size:0.9em; color:#555; padding:16px; }
+    footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
+    select { padding:6px 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Itineraries</h1>
+  </header>
+
+  <main>
+    <!-- Filter Row -->
+    <div class="filter-row">
+      <div id="filterPills">
+        <span class="filter-pill active" data-filter="Active">Active</span>
+        <span class="filter-pill inactive" data-filter="Archived">Archived</span>
+        <span class="filter-pill inactive" data-filter="All">All</span>
+      </div>
+      <div>
+        <label for="sortSelect">Sort: </label>
+        <select id="sortSelect">
+          <option value="Start Date" selected>Start Date</option>
+          <option value="Name">Name</option>
+          <option value="Owned vs Shared">Owned vs Shared</option>
+          <option value="Place Count">Place Count</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Itinerary List -->
+    <ul class="itinerary-list" id="itineraryList">
+      <!-- Dynamically filled by JS -->
+    </ul>
+  </main>
+
+  <!-- Floating Add Button -->
+  <button class="fab" onclick="addItinerary()">+</button>
+
+  <footer>
+    <p>© 2026 Globeii</p>
+    <p>
+      <a href="terms.html">Terms of Service</a> | 
+      <a href="privacy.html">Privacy Policy</a> | 
+      <a href="refund.html">Refund Policy</a>
+    </p>
+  </footer>
+
+  <script>
+    // Sample data
+    let itineraries = [
+      {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
+      {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
+      {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
+    ];
+
+    const itineraryList = document.getElementById('itineraryList');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const sortSelect = document.getElementById('sortSelect');
+    let currentFilter = 'Active';
+    let currentSort = 'Start Date';
+
+    function renderItineraries() {
+      itineraryList.innerHTML = '';
+      let filtered = itineraries.filter(it => {
+        if (currentFilter==='Active') return !it.archived;
+        if (currentFilter==='Archived') return it.archived;
+        return true;
+      });
+      // Sorting
+      filtered.sort((a,b)=>{
+        switch(currentSort){
+          case 'Name': return a.name.localeCompare(b.name);
+          case 'Start Date': return new Date(a.start)-new Date(b.start);
+          case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
+          case 'Place Count': return b.places - a.places;
+        }
+      });
+      // Render
+      filtered.forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'itinerary-item';
+        li.innerHTML = `
+          <div class="itinerary-details">
+            <span class="itinerary-name">${it.name}</span>
+            <span class="itinerary-dates">${it.start} → ${it.end}</span>
+            <span class="itinerary-places">Places: ${it.places}</span>
+          </div>
+          <div>
+            ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
+            ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
+            ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
+          </div>
+        `;
+        itineraryList.appendChild(li);
+      });
+    }
+
+    filterPills.forEach(pill=>{
+      pill.addEventListener('click',()=>{
+        filterPills.forEach(p=>p.classList.remove('active'));
+        filterPills.forEach(p=>p.classList.add('inactive'));
+        pill.classList.add('active');
+        pill.classList.remove('inactive');
+        currentFilter = pill.dataset.filter;
+        renderItineraries();
+      });
+    });
+
+    sortSelect.addEventListener('change',()=>{
+      currentSort = sortSelect.value;
+      renderItineraries();
+    });
+
+    function addItinerary(){
+      const name = prompt("Enter itinerary name:");
+      if(!name) return;
+      const start = prompt("Start date (YYYY-MM-DD):","2026-01-01");
+      const end = prompt("End date (YYYY-MM-DD):","2026-01-02");
+      itineraries.unshift({name,start,end,places:0,owned:true,archived:false});
+      renderItineraries();
+    }
+
+    // Initial render
+    renderItineraries();
+  </script>
+</body>
+</html>

@@ -53,12 +53,17 @@
     main { margin-bottom:0; }
     .fab { bottom:100px; }
   }
+
+  /* Hamburger icon in header */
+  #hamburger { font-size:28px; cursor:pointer; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Itineraries</h1>
+  <!-- Hamburger button inside header -->
+  <div id="hamburger"><i class="fas fa-bars"></i></div>
 </header>
 
 <!-- Filter Row + Sort button -->
@@ -172,30 +177,17 @@ fab.addEventListener('click',()=>{
 // Hamburger menu
 const dropdownMenu=document.getElementById('dropdownMenu');
 let menuOpen=false;
-document.body.insertAdjacentHTML('beforeend','<div id="menuOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:199;"></div>');
-const menuOverlay=document.getElementById('menuOverlay');
+const hamburgerBtn=document.getElementById('hamburger');
 
-function openMenu(){
-  dropdownMenu.style.display='flex';
-  menuOverlay.style.display='block';
-  menuOpen=true;
-}
-function closeMenu(){
-  dropdownMenu.style.display='none';
-  menuOverlay.style.display='none';
-  menuOpen=false;
-}
-menuOverlay.addEventListener('click',closeMenu);
+function openMenu(){ dropdownMenu.style.display='flex'; menuOpen=true; }
+function closeMenu(){ dropdownMenu.style.display='none'; menuOpen=false; }
 
-const hamburgerBtn=document.createElement('div');
-hamburgerBtn.style.position='fixed';
-hamburgerBtn.style.top='18px';
-hamburgerBtn.style.right='16px';
-hamburgerBtn.style.fontSize='28px';
-hamburgerBtn.style.cursor='pointer';
-hamburgerBtn.innerHTML='<i class="fas fa-bars"></i>';
 hamburgerBtn.addEventListener('click',()=>menuOpen?closeMenu():openMenu());
-document.body.appendChild(hamburgerBtn);
+document.addEventListener('click',(e)=>{
+  if(menuOpen && !dropdownMenu.contains(e.target) && !hamburgerBtn.contains(e.target)){
+    closeMenu();
+  }
+});
 
 // Sort button toggle
 let sortOpen=false;
@@ -208,7 +200,7 @@ sortBtn.addEventListener('click',()=>{
 });
 
 // Sort options
-document.querySelectorAll('.sort-menu a[data-sort]').forEach(a=>{
+document.querySelectorAll('.dropdown-menu a[data-sort]').forEach(a=>{
   a.addEventListener('click',()=>{
     currentSort=a.dataset.sort;
     renderItineraries();

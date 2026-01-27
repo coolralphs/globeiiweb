@@ -19,7 +19,7 @@
     nav ul { list-style:none; display:flex; align-items:center; gap:16px; }
     nav ul li { display:flex; align-items:center; gap:6px; }
     nav ul li a { color:white; text-decoration:none; font-weight:400; display:flex; align-items:center; gap:6px; transition: color 0.2s; }
-    nav ul li a:hover { color: #cce5ff; } /* subtle hover color change */
+    nav ul li a:hover { color: #cce5ff; } /* subtle hover */
 
     /* Hamburger menu - mobile */
     @media(max-width:768px) {
@@ -28,7 +28,7 @@
       nav .menu-toggle { display:flex; }
     }
 
-    main { flex:1; padding:16px; padding-bottom:140px; /* leave space for footer + FAB */ }
+    main { flex:1; padding:16px; padding-bottom:220px; /* leave extra space for FAB + footer */ }
 
     .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
     .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
@@ -49,13 +49,13 @@
     .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
 
     /* Footer */
-    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; width:100%; position:relative; }
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; width:100%; position:relative; margin-top:auto; }
     footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
     footer a:hover { text-decoration:underline; }
 
-    /* Push footer higher on mobile if content is short */
+    /* Mobile tweaks: push footer higher */
     @media(max-width:480px){
-      main { padding-bottom:180px; }
+      main { padding-bottom:260px; } /* extra space so footer is visible above FAB */
     }
   </style>
 </head>

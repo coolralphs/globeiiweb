@@ -68,7 +68,7 @@ body{
 }
 .hamburger .fa-xmark{opacity:0;transform:rotate(-90deg)}
 .hamburger.open .fa-bars{opacity:0;transform:rotate(90deg)}
-.hamburger.open .fa-xmark{opacity:1;transform:none}
+.hamburger.open .fa-xmark{opacity:1}
 
 /* ===== MOBILE MENU ===== */
 .overlay{
@@ -128,31 +128,37 @@ h1{margin:16px 0;font-size:22px}
   border-radius:6px;
   cursor:pointer;
 }
+
 .controls button.active{
   background:#0d6efd;
   color:white;
 }
 
+/* ===== SORT ===== */
 .sort-wrapper{
   margin-left:auto;
   position:relative;
 }
 
 .sort-btn{
-  background:#000;
-  color:#fff;
-  border:1px solid #000;
-  padding:8px 16px;
+  background:#000000;        /* DARKER – FINAL */
+  color:#ffffff;
+  border:1px solid #000000;
+  padding:8px 18px;
   border-radius:6px;
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:10px;
+  font-weight:500;
 }
-.sort-btn:hover{background:#111}
+.sort-btn:hover{
+  background:#111111;
+}
 
 .sort-menu{
   position:absolute;
-  right:0;top:44px;
+  right:0;
+  top:44px;
   background:#000;
   color:white;
   display:none;
@@ -216,19 +222,24 @@ h1{margin:16px 0;font-size:22px}
   display:none;
   z-index:1200;
 }
+
 .modal{
   background:white;
   max-width:360px;
-  margin:120px auto;
+  margin:auto;
+  margin-top:60vh;          /* MOVED DOWN */
   padding:20px;
-  border-radius:12px;
+  border-radius:14px;
 }
+
 .modal h3{margin-top:0}
+
 .modal input{
   width:100%;
   padding:10px;
-  margin:8px 0;
+  margin:10px 0;
 }
+
 .modal-actions{
   display:flex;
   justify-content:flex-end;
@@ -290,9 +301,9 @@ footer a:hover{color:black}
 <h1>Itineraries</h1>
 
 <div class="controls">
-  <button class="active">Active</button>
-  <button>Archived</button>
-  <button>All</button>
+  <button class="filter active" data-filter="active">Active</button>
+  <button class="filter" data-filter="archived">Archived</button>
+  <button class="filter" data-filter="all">All</button>
 
   <div class="sort-wrapper">
     <button class="sort-btn" id="sortBtn">
@@ -301,8 +312,6 @@ footer a:hover{color:black}
     <div class="sort-menu" id="sortMenu">
       <button>Name A–Z</button>
       <button>Name Z–A</button>
-      <button>Start Date ↑</button>
-      <button>Start Date ↓</button>
     </div>
   </div>
 </div>
@@ -326,35 +335,42 @@ footer a:hover{color:black}
 <footer>
   <div>© <span id="year"></span> Globeii</div>
   <div>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms of Use</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
   </div>
 </footer>
 
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
+let filter="active";
+
 const data=[
- {name:"Paris Trip",dates:"Feb 10 – Feb 17, 2026",owned:true,places:8},
- {name:"Tokyo Adventure",dates:"Mar 5 – Mar 14, 2026",owned:false,places:6},
- {name:"NYC Weekend",dates:"Jan 20 – Jan 22, 2026",owned:true,places:4},
- {name:"Rome Getaway",dates:"Apr 3 – Apr 10, 2026",owned:true,places:7},
- {name:"Barcelona Escape",dates:"May 1 – May 7, 2026",owned:false,places:5},
- {name:"London City Trip",dates:"Jun 12 – Jun 18, 2026",owned:true,places:6},
- {name:"Amsterdam Tour",dates:"Jul 8 – Jul 13, 2026",owned:false,places:3},
- {name:"Berlin Journey",dates:"Aug 20 – Aug 27, 2026",owned:true,places:4},
+ {name:"Paris Trip",dates:"Feb 10 – Feb 17, 2026",owned:true,places:8,archived:false},
+ {name:"Tokyo Adventure",dates:"Mar 5 – Mar 14, 2026",owned:false,places:6,archived:false},
+ {name:"NYC Weekend",dates:"Jan 20 – Jan 22, 2026",owned:true,places:4,archived:true},
+ {name:"Rome Getaway",dates:"Apr 3 – Apr 10, 2026",owned:true,places:7,archived:false},
+ {name:"Barcelona Escape",dates:"May 1 – May 7, 2026",owned:false,places:5,archived:false},
+ {name:"London City Trip",dates:"Jun 12 – Jun 18, 2026",owned:true,places:6,archived:true},
+ {name:"Amsterdam Tour",dates:"Jul 8 – Jul 13, 2026",owned:false,places:3,archived:false},
+ {name:"Berlin Journey",dates:"Aug 20 – Aug 27, 2026",owned:true,places:4,archived:false},
 ];
 
 const list=document.getElementById("list");
+
 function render(){
  list.innerHTML="";
- data.forEach(i=>{
+ data.filter(i=>{
+   if(filter==="all")return true;
+   if(filter==="active")return !i.archived;
+   return i.archived;
+ }).forEach(i=>{
   list.insertAdjacentHTML("beforeend",`
    <div class="card">
     <i class="fa-solid fa-location-dot card-icon"></i>
     <div>
       <div class="card-title">${i.name}</div>
-      <div class="card-dates">${i.dates}</div>
+      ${i.dates?`<div class="card-dates">${i.dates}</div>`:""}
       <div class="card-meta">
         <span class="tag ${i.owned?'owned':'shared'}">${i.owned?'Owned':'Shared'}</span>
         <span class="tag">${i.places} places</span>
@@ -366,14 +382,31 @@ function render(){
 }
 render();
 
+document.querySelectorAll(".filter").forEach(b=>{
+ b.onclick=()=>{
+   document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
+   b.classList.add("active");
+   filter=b.dataset.filter;
+   render();
+ };
+});
+
 const modal=document.getElementById("modalOverlay");
-document.getElementById("addBtn").onclick=()=>modal.style.display="block";
+const nameInput=document.getElementById("nameInput");
+
+document.getElementById("addBtn").onclick=()=>{
+ modal.style.display="block";
+ nameInput.value="";
+ nameInput.focus();
+};
+
 function closeModal(){modal.style.display="none"}
 
 function addItinerary(){
- const name=document.getElementById("nameInput").value.trim();
+ const name=nameInput.value.trim();
  if(!name)return;
- data.unshift({name,dates:"",owned:true,places:0});
+ data.unshift({name,dates:"",owned:true,places:0,archived:false});
+ nameInput.value="";           /* CLEARED */
  render();
  closeModal();
 }

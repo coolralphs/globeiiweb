@@ -19,17 +19,16 @@
     nav ul { list-style:none; display:flex; align-items:center; gap:16px; }
     nav ul li { display:flex; align-items:center; gap:6px; }
     nav ul li a { color:white; text-decoration:none; font-weight:400; display:flex; align-items:center; gap:6px; transition: color 0.2s; }
-    nav ul li a:hover { color: #cce5ff; text-decoration:none; } /* subtle hover color change */
+    nav ul li a:hover { color: #cce5ff; } /* subtle hover color change */
 
     /* Hamburger menu - mobile */
     @media(max-width:768px) {
       nav ul { display:none; flex-direction:column; background:#0077cc; position:absolute; top:56px; left:0; width:100%; padding:16px 0; }
       nav ul.show { display:flex; }
       nav .menu-toggle { display:flex; }
-      nav ul li a:hover { color:#cce5ff; } /* same subtle color */
     }
 
-    main { flex:1; padding:16px; }
+    main { flex:1; padding:16px; padding-bottom:120px; /* leave space for footer + FAB */ }
 
     .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
     .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
@@ -47,12 +46,10 @@
     .badge-archived { background:#dc3545; }
 
     /* Floating add button */
-    .fab { position:fixed; bottom:70px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
+    .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
 
     /* Footer */
-    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; width:100%; }
-    footer a { margin:0 6px; color:#0077cc; text-decoration:none; }
-    footer a:hover { text-decoration:underline; }
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; width:100%; position:relative; }
   </style>
 </head>
 <body>
@@ -90,9 +87,6 @@
   </main>
 
   <footer>
-    <a href="terms.html">Terms of Service</a> |
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="refund.html">Refund Policy</a>
     <div>© 2026 Globeii</div>
   </footer>
 

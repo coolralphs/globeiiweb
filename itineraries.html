@@ -90,10 +90,8 @@ body{
 
 .mobile-menu-header{
   display:flex;
-  justify-content:space-between;
+  justify-content:flex-end;
   padding:14px 18px;
-  color:white;
-  font-weight:600;
 }
 
 .mobile-menu a{
@@ -242,12 +240,13 @@ footer{
   background:#f5f7fb;
   border-top:1px solid #ddd;
   text-align:center;
-  padding:16px;
+  padding:12px;
+  font-size:12px;
 }
 footer a{
   color:#777;
   text-decoration:none;
-  margin:0 10px;
+  margin:0 8px;
 }
 footer a:hover{color:black}
 
@@ -280,7 +279,6 @@ footer a:hover{color:black}
 
 <nav class="mobile-menu" id="mobileMenu">
   <div class="mobile-menu-header">
-    Menu
     <button id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
   </div>
   <a href="#"><i class="fa-solid fa-house"></i>Dashboard</a>
@@ -309,19 +307,7 @@ footer a:hover{color:black}
   </div>
 </div>
 
-<div id="list">
-  <div class="card">
-    <i class="fa-solid fa-location-dot card-icon"></i>
-    <div>
-      <div class="card-title">Paris Trip</div>
-      <div class="card-dates">Feb 10 – Feb 17, 2026</div>
-      <div class="card-meta">
-        <span class="tag owned">Owned</span>
-        <span class="tag">8 places</span>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="list"></div>
 </main>
 
 <button class="add-btn" id="addBtn">+</button>
@@ -330,7 +316,6 @@ footer a:hover{color:black}
   <div class="modal">
     <h3>Add Itinerary</h3>
     <input id="nameInput" placeholder="Itinerary name" />
-    <input id="dateInput" type="date" />
     <div class="modal-actions">
       <button onclick="closeModal()">Cancel</button>
       <button onclick="addItinerary()">Add</button>
@@ -349,49 +334,70 @@ footer a:hover{color:black}
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
-const hamburger=document.getElementById("hamburger");
-const mobileMenu=document.getElementById("mobileMenu");
-const overlay=document.getElementById("overlay");
-const closeMenu=document.getElementById("closeMenu");
+const data=[
+ {name:"Paris Trip",dates:"Feb 10 – Feb 17, 2026",owned:true,places:8},
+ {name:"Tokyo Adventure",dates:"Mar 5 – Mar 14, 2026",owned:false,places:6},
+ {name:"NYC Weekend",dates:"Jan 20 – Jan 22, 2026",owned:true,places:4},
+ {name:"Rome Getaway",dates:"Apr 3 – Apr 10, 2026",owned:true,places:7},
+ {name:"Barcelona Escape",dates:"May 1 – May 7, 2026",owned:false,places:5},
+ {name:"London City Trip",dates:"Jun 12 – Jun 18, 2026",owned:true,places:6},
+ {name:"Amsterdam Tour",dates:"Jul 8 – Jul 13, 2026",owned:false,places:3},
+ {name:"Berlin Journey",dates:"Aug 20 – Aug 27, 2026",owned:true,places:4},
+];
 
-hamburger.onclick=()=>{
-  hamburger.classList.toggle("open");
-  mobileMenu.classList.toggle("open");
-  overlay.style.display="block";
-};
-closeMenu.onclick=overlay.onclick=()=>{
-  hamburger.classList.remove("open");
-  mobileMenu.classList.remove("open");
-  overlay.style.display="none";
-};
-
-const sortBtn=document.getElementById("sortBtn");
-const sortMenu=document.getElementById("sortMenu");
-sortBtn.onclick=()=>sortMenu.style.display=
-  sortMenu.style.display==="block"?"none":"block";
+const list=document.getElementById("list");
+function render(){
+ list.innerHTML="";
+ data.forEach(i=>{
+  list.insertAdjacentHTML("beforeend",`
+   <div class="card">
+    <i class="fa-solid fa-location-dot card-icon"></i>
+    <div>
+      <div class="card-title">${i.name}</div>
+      <div class="card-dates">${i.dates}</div>
+      <div class="card-meta">
+        <span class="tag ${i.owned?'owned':'shared'}">${i.owned?'Owned':'Shared'}</span>
+        <span class="tag">${i.places} places</span>
+      </div>
+    </div>
+   </div>
+  `);
+ });
+}
+render();
 
 const modal=document.getElementById("modalOverlay");
 document.getElementById("addBtn").onclick=()=>modal.style.display="block";
 function closeModal(){modal.style.display="none"}
 
 function addItinerary(){
-  const name=document.getElementById("nameInput").value;
-  if(!name)return;
-  const date=document.getElementById("dateInput").value;
-  document.getElementById("list").insertAdjacentHTML("afterbegin",`
-  <div class="card">
-    <i class="fa-solid fa-location-dot card-icon"></i>
-    <div>
-      <div class="card-title">${name}</div>
-      ${date?`<div class="card-dates">${date}</div>`:""}
-      <div class="card-meta">
-        <span class="tag owned">Owned</span>
-        <span class="tag">0 places</span>
-      </div>
-    </div>
-  </div>`);
-  closeModal();
+ const name=document.getElementById("nameInput").value.trim();
+ if(!name)return;
+ data.unshift({name,dates:"",owned:true,places:0});
+ render();
+ closeModal();
 }
+
+const hamburger=document.getElementById("hamburger");
+const mobileMenu=document.getElementById("mobileMenu");
+const overlay=document.getElementById("overlay");
+const closeMenu=document.getElementById("closeMenu");
+
+hamburger.onclick=()=>{
+ hamburger.classList.toggle("open");
+ mobileMenu.classList.toggle("open");
+ overlay.style.display="block";
+};
+closeMenu.onclick=overlay.onclick=()=>{
+ hamburger.classList.remove("open");
+ mobileMenu.classList.remove("open");
+ overlay.style.display="none";
+};
+
+document.getElementById("sortBtn").onclick=()=>{
+ const m=document.getElementById("sortMenu");
+ m.style.display=m.style.display==="block"?"none":"block";
+};
 </script>
 
 </body>

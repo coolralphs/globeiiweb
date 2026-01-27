@@ -405,7 +405,7 @@ function render(){
     };
   });
 }
-
+ 
 /* ===== FILTERS ===== */
 document.querySelectorAll(".filter").forEach(b=>{
  b.onclick=()=>{
@@ -482,6 +482,8 @@ closeMenu.onclick=overlay.onclick=()=>{
  mobileMenu.classList.remove("open");
  overlay.style.display="none";
 };
+
+render();
 </script>
 
 </body>

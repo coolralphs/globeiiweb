@@ -15,10 +15,10 @@ body{
   margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
   background:#f5f7fb;
-  min-height:100vh;
+  height:100vh;                 /* ← important */
   display:flex;
   flex-direction:column;
-  overflow-x:hidden;
+  overflow:hidden;              /* ← stop body scrolling */
 }
 
 /* ===== NAV BAR ===== */
@@ -110,6 +110,8 @@ main{
   margin:0 auto;
   padding:16px;
   width:100%;
+  overflow-y:auto;              /* ← content scrolls here */
+  -webkit-overflow-scrolling: touch;
 }
 
 h1{margin:16px 0;font-size:22px}

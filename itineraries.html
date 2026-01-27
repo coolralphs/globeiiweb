@@ -7,21 +7,46 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
   html, body { margin:0; padding:0; height:100%; font-family: Arial, sans-serif; }
-  body { display:flex; flex-direction:column; background:#f5f5f5; min-height:100vh; }
+  body { display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
 
-  header {
-    background:#0077cc; color:white; padding:16px; position:sticky; top:0; z-index:100;
-    display:flex; justify-content:space-between; align-items:center;
+  /* Navbar */
+  nav {
+    background:#0077cc; color:white; display:flex; justify-content:space-between; align-items:center; padding:12px 16px;
+    position:sticky; top:0; z-index:100;
   }
-  header h1 { margin:0; font-size:20px; }
+  nav .brand { font-size:20px; }
+  #hamburger { font-size:24px; cursor:pointer; }
 
-  main { flex:1 0 auto; padding:16px; }
+  /* Dropdown menu */
+  .nav-dropdown {
+    display:none; position:absolute; top:48px; right:16px; background:#0077cc; color:white; border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2); z-index:150; padding:8px 0; min-width:160px;
+  }
+  .nav-dropdown a {
+    display:flex; align-items:center; padding:8px 16px; color:white; text-decoration:none;
+  }
+  .nav-dropdown a i { margin-right:8px; }
+  .nav-dropdown a:hover { background:#005fa3; }
 
-  .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+  /* Page title */
+  header { padding:16px; font-size:24px; font-weight:bold; }
+
+  /* Filter + sort row */
+  .filter-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
   .filter-left { display:flex; gap:8px; flex-wrap:wrap; }
-  .filter-pill { padding:6px 16px; border-radius:20px; cursor:pointer; font-weight:500; background:#ccc; color:#333; }
+  .filter-pill { padding:6px 16px; border-radius:20px; cursor:pointer; background:#ccc; color:#333; font-weight:500; }
   .filter-pill.active { background:#28a745; color:white; }
 
+  .sort-btn { padding:6px 12px; background:#0077cc; color:white; border-radius:8px; cursor:pointer; display:flex; align-items:center; }
+  .sort-btn:hover { background:#005fa3; }
+
+  /* Sort menu */
+  .sort-menu { display:none; position:absolute; background:#0077cc; color:white; border-radius:8px; padding:4px 0; box-shadow:0 2px 6px rgba(0,0,0,0.2); z-index:150; }
+  .sort-menu a { display:block; padding:6px 12px; color:white; text-decoration:none; }
+  .sort-menu a:hover { background:#005fa3; }
+
+  /* Itinerary list */
+  main { flex:1 0 auto; padding:0 16px; }
   .itinerary-list { list-style:none; padding:0; margin:0; }
   .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
   .itinerary-details { display:flex; flex-direction:column; }
@@ -32,53 +57,60 @@
   .badge-shared { background:#007bff; }
   .badge-archived { background:#dc3545; }
 
-  .fab { position:fixed; bottom:80px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:300; }
+  /* FAB */
+  .fab { position:fixed; bottom:80px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:200; }
 
-  footer { text-align:center; background:#f8f8f8; padding:12px; font-size:12px; flex-shrink:0; position:sticky; bottom:0; }
+  /* Footer */
+  footer { text-align:center; background:#f8f8f8; padding:12px; font-size:12px; flex-shrink:0; }
   footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
   footer a:hover { text-decoration:underline; }
 
-  .sort-btn { padding:6px 12px; background:#0077cc; color:white; border-radius:8px; cursor:pointer; font-size:14px; display:flex; align-items:center; }
-  .sort-btn:hover { background:#005fa3; }
-
-  .dropdown-menu {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#0077cc; color:white; z-index:200;
-    flex-direction:column; align-items:center; justify-content:center;
-  }
-  .dropdown-menu a { display:block; color:white; text-decoration:none; margin:12px 0; font-size:18px; }
-  .dropdown-menu a:hover { color:#cce0ff; }
-
   html { overflow-x:hidden; }
   @media(max-width:768px){
-    main { margin-bottom:0; }
     .fab { bottom:100px; }
   }
-
-  /* Hamburger icon in header */
-  #hamburger { font-size:28px; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Itineraries</h1>
-  <!-- Hamburger button inside header -->
+<!-- Navbar -->
+<nav>
+  <div class="brand">Globeii</div>
   <div id="hamburger"><i class="fas fa-bars"></i></div>
-</header>
+  <div class="nav-dropdown" id="navDropdown">
+    <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="itineraries.html"><i class="fas fa-map"></i> Itineraries</a>
+    <a href="account.html"><i class="fas fa-user"></i> Account</a>
+  </div>
+</nav>
 
-<!-- Filter Row + Sort button -->
+<!-- Page title -->
+<header>Itineraries</header>
+
+<!-- Filter + sort row -->
 <div class="filter-row">
   <div class="filter-left" id="filterPills">
     <span class="filter-pill active" data-filter="Active">Active</span>
     <span class="filter-pill" data-filter="Archived">Archived</span>
     <span class="filter-pill" data-filter="All">All</span>
   </div>
-  <div class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i> Sort</div>
+  <div style="position:relative;">
+    <div class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i> Sort</div>
+    <div class="sort-menu" id="sortMenu">
+      <a href="#" data-sort="Name">Name</a>
+      <a href="#" data-sort="Start Date">Start Date</a>
+      <a href="#" data-sort="Owned vs Shared">Owned vs Shared</a>
+      <a href="#" data-sort="Place Count">Place Count</a>
+      <a href="#" id="toggleSortDir">Toggle Asc/Desc</a>
+    </div>
+  </div>
 </div>
 
 <main>
   <ul class="itinerary-list" id="itineraryList"></ul>
 </main>
+
+<a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
 
 <footer>
   <a href="terms.html">Terms of Service</a> |
@@ -87,41 +119,21 @@
   <div>© 2026 Globeii</div>
 </footer>
 
-<a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
-
-<!-- Hamburger menu (full screen) -->
-<div class="dropdown-menu" id="dropdownMenu">
-  <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-  <a href="itineraries.html"><i class="fas fa-map"></i> Itineraries</a>
-  <a href="account.html"><i class="fas fa-user"></i> Account</a>
-</div>
-
-<!-- Sort options menu -->
-<div class="dropdown-menu" id="sortMenu" style="display:none; background:#005fa3;">
-  <a href="#" data-sort="Name">Name</a>
-  <a href="#" data-sort="Start Date">Start Date</a>
-  <a href="#" data-sort="Owned vs Shared">Owned vs Shared</a>
-  <a href="#" data-sort="Place Count">Place Count</a>
-  <a href="#" id="toggleSortDir">Toggle Asc/Desc</a>
-</div>
-
 <script>
 let itineraries = [
   {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
   {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
 ];
 
-const itineraryList = document.getElementById('itineraryList');
-const filterPills = document.querySelectorAll('.filter-pill');
-const sortBtn = document.getElementById('sortBtn');
-const sortMenu = document.getElementById('sortMenu');
-let currentFilter='Active';
-let currentSort='Start Date';
-let sortAsc=true;
+const itineraryList=document.getElementById('itineraryList');
+const filterPills=document.querySelectorAll('.filter-pill');
+const sortBtn=document.getElementById('sortBtn');
+const sortMenu=document.getElementById('sortMenu');
+let currentFilter='Active', currentSort='Start Date', sortAsc=true;
 
 function renderItineraries(){
   itineraryList.innerHTML='';
-  let filtered = itineraries.filter(it=>{
+  let filtered=itineraries.filter(it=>{
     if(currentFilter==='Active') return !it.archived;
     if(currentFilter==='Archived') return it.archived;
     return true;
@@ -130,14 +142,12 @@ function renderItineraries(){
     let val=0;
     switch(currentSort){
       case 'Name': val=a.name.localeCompare(b.name); break;
-      case 'Start Date':
-        val=(a.start?new Date(a.start):0)-(b.start?new Date(b.start):0); break;
+      case 'Start Date': val=(a.start?new Date(a.start):0)-(b.start?new Date(b.start):0); break;
       case 'Owned vs Shared': val=(b.owned?1:0)-(a.owned?1:0); break;
       case 'Place Count': val=b.places - a.places; break;
     }
     return sortAsc?val:-val;
   });
-
   filtered.forEach(it=>{
     const li=document.createElement('li');
     li.className='itinerary-item';
@@ -175,32 +185,39 @@ fab.addEventListener('click',()=>{
 });
 
 // Hamburger menu
-const dropdownMenu=document.getElementById('dropdownMenu');
+const hamburger=document.getElementById('hamburger');
+const navDropdown=document.getElementById('navDropdown');
 let menuOpen=false;
-const hamburgerBtn=document.getElementById('hamburger');
 
-function openMenu(){ dropdownMenu.style.display='flex'; menuOpen=true; }
-function closeMenu(){ dropdownMenu.style.display='none'; menuOpen=false; }
+hamburger.addEventListener('click',e=>{
+  e.stopPropagation();
+  menuOpen=!menuOpen;
+  navDropdown.style.display=menuOpen?'block':'none';
+});
 
-hamburgerBtn.addEventListener('click',()=>menuOpen?closeMenu():openMenu());
-document.addEventListener('click',(e)=>{
-  if(menuOpen && !dropdownMenu.contains(e.target) && !hamburgerBtn.contains(e.target)){
-    closeMenu();
+document.addEventListener('click',e=>{
+  if(menuOpen && !navDropdown.contains(e.target) && !hamburger.contains(e.target)){
+    navDropdown.style.display='none';
+    menuOpen=false;
   }
 });
 
-// Sort button toggle
+// Sort menu
 let sortOpen=false;
-sortBtn.addEventListener('click',()=>{
+sortBtn.addEventListener('click',e=>{
+  e.stopPropagation();
   sortOpen=!sortOpen;
   sortMenu.style.display=sortOpen?'block':'none';
-  sortMenu.style.position='absolute';
-  sortMenu.style.right='16px';
-  sortMenu.style.top=sortBtn.getBoundingClientRect().bottom + 'px';
 });
 
-// Sort options
-document.querySelectorAll('.dropdown-menu a[data-sort]').forEach(a=>{
+document.addEventListener('click',e=>{
+  if(sortOpen && !sortMenu.contains(e.target) && !sortBtn.contains(e.target)){
+    sortMenu.style.display='none';
+    sortOpen=false;
+  }
+});
+
+document.querySelectorAll('.sort-menu a[data-sort]').forEach(a=>{
   a.addEventListener('click',()=>{
     currentSort=a.dataset.sort;
     renderItineraries();
@@ -217,5 +234,6 @@ document.getElementById('toggleSortDir').addEventListener('click',()=>{
 
 renderItineraries();
 </script>
+
 </body>
 </html>

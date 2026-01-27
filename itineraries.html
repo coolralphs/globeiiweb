@@ -19,7 +19,7 @@
     position:sticky; 
     top:0; 
     z-index:100;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    box-shadow:0 4px 6px rgba(0,0,0,0.2);
   }
   nav h1 { font-size:1.5rem; }
 
@@ -32,27 +32,27 @@
   .hamburger.active span:nth-child(2){ opacity:0; }
   .hamburger.active span:nth-child(3){ transform:rotate(-45deg) translate(5px,-5px); }
 
-  /* Side menu */
+  /* Side menu overlay */
   .menu-overlay {
     position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; z-index:99;
   }
+
+  /* Side menu */
   .menu {
     position:fixed; top:0; left:-280px; width:280px; height:100%; background:white; box-shadow:2px 0 8px rgba(0,0,0,0.3);
-    transition:left 0.3s; display:flex; flex-direction:column;
+    transition:left 0.3s; display:flex; flex-direction:column; z-index:100;
   }
   .menu.active { left:0; }
   .menu-header { display:flex; justify-content:flex-end; padding:12px; border-bottom:1px solid #ccc; }
-
   .menu-links { display:flex; flex-direction:column; padding:16px; }
   .menu-links a { margin-bottom:12px; color:#0077cc; text-decoration:none; font-weight:500; }
   .menu-links a:hover { text-decoration:underline; }
-
   .menu-legal { margin-top:20px; padding-left:12px; border-top:1px solid #eee; }
   .menu-legal a { font-size:0.9rem; color:#555; display:block; margin-bottom:8px; }
   .menu-legal a:hover { color:#0077cc; }
 
   /* Main content */
-  main { flex:1; padding:16px; }
+  main { flex:1; padding:16px; display:flex; flex-direction:column; }
 
   main h2 { margin-bottom:16px; font-size:1.8rem; color:#333; }
 
@@ -61,7 +61,8 @@
   .filter-pill.active { background:#28a745; color:white; }
   .filter-pill.inactive { background:#ccc; color:#333; }
 
-  .itinerary-list { list-style:none; padding:0; margin:0; }
+  .itinerary-list { list-style:none; padding:0; margin:0; flex:1 0 auto; overflow-y:auto; }
+
   .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
   .itinerary-details { display:flex; flex-direction:column; }
   .itinerary-name { font-weight:bold; }
@@ -161,7 +162,6 @@
   let itineraries = [
     {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
     {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
-    {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
   ];
 
   const itineraryList = document.getElementById('itineraryList');

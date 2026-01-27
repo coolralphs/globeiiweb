@@ -148,7 +148,7 @@ h1{margin:16px 0;font-size:22px}
   border-radius:6px;
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;                   /* spacing between icon and text */
   font-weight:500;
 }
 .sort-btn:hover{
@@ -164,6 +164,7 @@ h1{margin:16px 0;font-size:22px}
   display:none;
   border-radius:8px;
   min-width:240px;
+  z-index:500;
 }
 .sort-menu button{
   width:100%;
@@ -310,8 +311,8 @@ footer a:hover{color:black}
       <i class="fa-solid fa-sort"></i>Sort
     </button>
     <div class="sort-menu" id="sortMenu">
-      <button>Name A–Z</button>
-      <button>Name Z–A</button>
+      <button data-sort="name" data-order="asc">Name A–Z</button>
+      <button data-sort="name" data-order="desc">Name Z–A</button>
     </div>
   </div>
 </div>
@@ -427,10 +428,36 @@ closeMenu.onclick=overlay.onclick=()=>{
  overlay.style.display="none";
 };
 
-document.getElementById("sortBtn").onclick=()=>{
- const m=document.getElementById("sortMenu");
- m.style.display=m.style.display==="block"?"none":"block";
+/* ===== SORT MENU ===== */
+const sortBtn=document.getElementById("sortBtn");
+const sortMenu=document.getElementById("sortMenu");
+
+sortBtn.onclick=(e)=>{
+ e.stopPropagation();
+ sortMenu.style.display = sortMenu.style.display==="block"?"none":"block";
 };
+
+sortMenu.querySelectorAll("button").forEach(btn=>{
+ btn.onclick=()=>{
+   const sort = btn.dataset.sort;
+   const order = btn.dataset.order;
+   if(sort==="name"){
+     data.sort((a,b)=>{
+       if(a.name<b.name) return order==="asc"?-1:1;
+       if(a.name>b.name) return order==="asc"?1:-1;
+       return 0;
+     });
+   }
+   sortMenu.style.display="none";
+   render();
+ };
+});
+
+document.addEventListener("click",(e)=>{
+ if(!sortMenu.contains(e.target) && e.target!==sortBtn){
+   sortMenu.style.display="none";
+ }
+});
 </script>
 
 </body>

@@ -40,9 +40,21 @@
   .filter-pill { padding:6px 16px; border-radius:20px; cursor:pointer; background:#ccc; color:#333; font-weight:500; }
   .filter-pill.active { background:#28a745; color:white; }
 
-  .sort-btn { padding:6px 12px; background:#0077cc; color:white; border-radius:8px; cursor:pointer; display:flex; align-items:center; }
-  .sort-btn i { margin-right:6px; }
-  .sort-btn:hover { background:#005fa3; }
+  .sort-btn {
+  padding:6px 12px;
+  background:#000;        /* changed from blue to black */
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+}
+.sort-btn i {
+  margin-right:6px;
+}
+.sort-btn:hover {
+  background:#222;        /* slightly lighter black on hover for feedback */
+}
 
   /* Sort menu */
   .sort-menu { display:none; position:absolute; top:36px; right:auto; left:auto; background:#000; color:white; border-radius:8px; padding:4px 0; box-shadow:0 2px 6px rgba(0,0,0,0.2); z-index:150; min-width:180px; }

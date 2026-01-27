@@ -1,248 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Itineraries – Globeii</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Globeii – Itineraries</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<style>
-* { box-sizing:border-box; margin:0; padding:0; }
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
 
-body {
-  font-family: Arial, sans-serif;
-  background:#f5f5f5;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow-x:hidden;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-/* ================= NAV BAR ================= */
-header {
-  background:#0d6efd;
-  color:white;
-  padding:14px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-.brand {
-  font-size:20px;
-  font-weight:600;
-}
+    /* =======================
+       TOP NAV BAR
+    ======================= */
+    .topbar {
+      background: #0d6efd;
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
 
-/* Hamburger */
-.hamburger {
-  width:28px;
-  height:22px;
-  position:relative;
-  cursor:pointer;
-  display:none;
-}
+    .brand {
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-.hamburger span {
-  position:absolute;
-  height:3px;
-  width:100%;
-  background:white;
-  left:0;
-  transition:0.3s;
-}
+    .hamburger {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      position: relative;
+      z-index: 1100;
+    }
 
-.hamburger span:nth-child(1){ top:0; }
-.hamburger span:nth-child(2){ top:9px; }
-.hamburger span:nth-child(3){ bottom:0; }
+    .hamburger i {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
 
-.hamburger.active span:nth-child(1){
-  transform:rotate(45deg);
-  top:9px;
-}
-.hamburger.active span:nth-child(2){
-  opacity:0;
-}
-.hamburger.active span:nth-child(3){
-  transform:rotate(-45deg);
-  bottom:9px;
-}
+    .hamburger.open .fa-bars {
+      opacity: 0;
+      transform: rotate(90deg);
+    }
 
-/* ================= DESKTOP MENU ================= */
-.nav-menu-desktop {
-  display:flex;
-  gap:20px;
-}
+    .hamburger.open .fa-xmark {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
 
-.nav-menu-desktop a {
-  color:white;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:14px;
-}
+    .hamburger .fa-xmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transform: rotate(-90deg);
+    }
 
-.nav-menu-desktop a:hover {
-  opacity:0.85;
-}
+    /* =======================
+       DESKTOP MENU
+    ======================= */
+    .desktop-menu {
+      position: absolute;
+      top: 56px;
+      right: 16px;
+      background: #0d6efd;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      min-width: 200px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
 
-/* ================= MOBILE MENU ================= */
-.overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  opacity:0;
-  pointer-events:none;
-  transition:0.3s;
-  z-index:999;
-}
+    .desktop-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-.overlay.active {
-  opacity:1;
-  pointer-events:auto;
-}
+    .desktop-menu a:hover {
+      background: rgba(255,255,255,0.15);
+    }
 
-.nav-menu-mobile {
-  position:fixed;
-  top:0;
-  right:-260px;
-  width:260px;
-  height:100%;
-  background:#0d6efd;
-  padding:20px;
-  transition:0.3s;
-  z-index:1000;
-  display:flex;
-  flex-direction:column;
-}
+    /* =======================
+       MOBILE SLIDE MENU
+    ======================= */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      z-index: 1050;
+    }
 
-.nav-menu-mobile.active {
-  right:0;
-}
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100%;
+      background: #0d6efd;
+      padding-top: 70px;
+      transition: right 0.3s ease;
+      z-index: 1100;
+    }
 
-.nav-menu-mobile a {
-  color:white;
-  text-decoration:none;
-  padding:12px 0;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:16px;
-}
+    .mobile-menu.open {
+      right: 0;
+    }
 
-/* ================= MAIN ================= */
-main {
-  flex:1;
-  padding:16px;
-}
+    .mobile-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-.page-title {
-  font-size:22px;
-  margin-bottom:12px;
-}
+    .mobile-menu a:hover {
+      background: rgba(255,255,255,0.15);
+    }
 
-/* ================= FOOTER ================= */
-footer {
-  background:#f8f8f8;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-}
+    /* =======================
+       PAGE CONTENT
+    ======================= */
+    main {
+      flex: 1;
+      padding: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-footer a {
-  color:#0d6efd;
-  text-decoration:none;
-  margin:0 6px;
-}
+    h1 {
+      margin: 16px 0;
+      font-size: 22px;
+    }
 
-/* ================= FAB ================= */
-.fab {
-  position:fixed;
-  right:20px;
-  bottom:70px;
-  width:56px;
-  height:56px;
-  background:#28a745;
-  color:white;
-  border-radius:50%;
-  font-size:28px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-decoration:none;
-  box-shadow:0 4px 8px rgba(0,0,0,0.2);
-}
+    /* FILTER + SORT ROW */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px;
+      position: relative;
+    }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width:768px){
-  .nav-menu-desktop { display:none; }
-  .hamburger { display:block; }
-}
-</style>
+    .controls button {
+      border: none;
+      background: #e9ecef;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .controls button.active {
+      background: #0d6efd;
+      color: white;
+    }
+
+    .sort-wrapper {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .sort-btn {
+      background: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sort-menu {
+      position: absolute;
+      right: 0;
+      top: 40px;
+      background: black;
+      color: white;
+      border-radius: 8px;
+      display: none;
+      min-width: 180px;
+    }
+
+    .sort-menu button {
+      width: 100%;
+      background: none;
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .sort-menu button:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* ITINERARIES */
+    .card {
+      background: white;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    /* ADD BUTTON */
+    .add-btn {
+      position: fixed;
+      bottom: 80px;
+      right: 16px;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* =======================
+       FOOTER
+    ======================= */
+    footer {
+      text-align: center;
+      font-size: 14px;
+      padding: 14px;
+      background: #ffffff;
+      border-top: 1px solid #ddd;
+    }
+
+    footer a {
+      color: #0d6efd;
+      margin: 0 6px;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* =======================
+       RESPONSIVE
+    ======================= */
+    @media (min-width: 768px) {
+      .mobile-menu,
+      .overlay {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <div class="brand">Globeii</div>
+  <!-- NAV -->
+  <div class="topbar">
+    <div class="brand">Globeii</div>
 
-  <!-- Desktop Menu -->
-  <nav class="nav-menu-desktop">
-    <a href="#"><span>🏠</span>Dashboard</a>
-    <a href="#"><span>📍</span>Itineraries</a>
-    <a href="#"><span>👤</span>Account</a>
+    <button class="hamburger" id="hamburger">
+      <i class="fa-solid fa-bars"></i>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="desktop-menu" id="desktopMenu">
+      <a href="#"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="#"><i class="fa-solid fa-map-pin"></i> Itineraries</a>
+      <a href="#"><i class="fa-solid fa-user"></i> Account</a>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="overlay" id="overlay"></div>
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="#"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="#"><i class="fa-solid fa-map-pin"></i> Itineraries</a>
+    <a href="#"><i class="fa-solid fa-user"></i> Account</a>
   </nav>
 
-  <!-- Hamburger -->
-  <div class="hamburger" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
-</header>
+  <!-- CONTENT -->
+  <main>
+    <h1>Itineraries</h1>
 
-<!-- Mobile Overlay -->
-<div class="overlay" id="overlay"></div>
+    <div class="controls">
+      <button class="active">Active</button>
+      <button>Archived</button>
+      <button>All</button>
 
-<!-- Mobile Menu -->
-<nav class="nav-menu-mobile" id="mobileMenu">
-  <a href="#"><span>🏠</span>Dashboard</a>
-  <a href="#"><span>📍</span>Itineraries</a>
-  <a href="#"><span>👤</span>Account</a>
-</nav>
+      <div class="sort-wrapper">
+        <button class="sort-btn" id="sortBtn">
+          <i class="fa-solid fa-arrow-up-wide-short"></i> Sort
+        </button>
+        <div class="sort-menu" id="sortMenu">
+          <button>Start Date ↑</button>
+          <button>Start Date ↓</button>
+        </div>
+      </div>
+    </div>
 
-<main>
-  <div class="page-title">Itineraries</div>
-  <p>Sample content goes here.</p>
-</main>
+    <div class="card">Japan Trip — Jan 2026</div>
+    <div class="card">Italy Trip — Mar 2026</div>
+  </main>
 
-<footer>
-  <a href="terms.html">Terms</a> |
-  <a href="privacy.html">Privacy</a> |
-  <a href="refund.html">Refund</a>
-  <div>© 2026 Globeii</div>
-</footer>
+  <button class="add-btn"><i class="fa-solid fa-plus"></i></button>
 
-<a href="#" class="fab">+</a>
+  <footer>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="refund.html">Refund</a>
+    <div>© 2026 Globeii</div>
+  </footer>
 
 <script>
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-const overlay = document.getElementById('overlay');
+  const hamburger = document.getElementById('hamburger');
+  const desktopMenu = document.getElementById('desktopMenu');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('overlay');
+  const sortBtn = document.getElementById('sortBtn');
+  const sortMenu = document.getElementById('sortMenu');
 
-function closeMenu(){
-  hamburger.classList.remove('active');
-  mobileMenu.classList.remove('active');
-  overlay.classList.remove('active');
-}
+  hamburger.onclick = () => {
+    hamburger.classList.toggle('open');
 
-hamburger.addEventListener('click', ()=>{
-  hamburger.classList.toggle('active');
-  mobileMenu.classList.toggle('active');
-  overlay.classList.toggle('active');
-});
+    if (window.innerWidth >= 768) {
+      desktopMenu.style.display =
+        desktopMenu.style.display === 'flex' ? 'none' : 'flex';
+    } else {
+      overlay.style.display = 'block';
+      mobileMenu.classList.add('open');
+    }
+  };
 
-overlay.addEventListener('click', closeMenu);
+  overlay.onclick = () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    overlay.style.display = 'none';
+  };
+
+  sortBtn.onclick = () => {
+    sortMenu.style.display =
+      sortMenu.style.display === 'block' ? 'none' : 'block';
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!sortBtn.contains(e.target)) {
+      sortMenu.style.display = 'none';
+    }
+  });
 </script>
 
 </body>

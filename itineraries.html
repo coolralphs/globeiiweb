@@ -1,299 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Itineraries – Globeii</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+  <meta charset="UTF-8">
+  <title>Itineraries – Globeii</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset & basic styling */
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body, html { height:100%; font-family: Arial, sans-serif; display:flex; flex-direction:column; background:#f5f5f5; }
+    a { text-decoration:none; color:inherit; }
 
-  /* Top Navigation */
-  nav {
-    background: #0077cc;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+    /* Header */
+    header { background:#0077cc; color:white; padding:16px; position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; }
+    header h1 { font-size:1.5em; }
+    .hamburger { width:30px; height:22px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; }
+    .hamburger div { height:4px; background:white; border-radius:2px; transition:0.3s; }
+    .hamburger.open div:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .hamburger.open div:nth-child(2) { opacity:0; }
+    .hamburger.open div:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
 
-  nav h1 {
-    margin: 0;
-    font-size: 20px;
-  }
+    /* Mobile menu */
+    .mobile-menu { background:#0077cc; overflow:hidden; max-height:0; transition:max-height 0.3s ease; display:flex; flex-direction:column; }
+    .mobile-menu.open { max-height:300px; }
+    .mobile-menu a { color:white; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.2); }
+    .mobile-menu a:hover { background:rgba(255,255,255,0.1); }
 
-  .nav-links {
-    display: flex;
-    gap: 16px;
-  }
+    /* Main content */
+    main { flex:1; padding:16px; }
 
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-  }
+    .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
+    .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
+    .filter-pill.active { background:#28a745; color:white; }
+    .filter-pill.inactive { background:#ccc; color:#333; }
 
-  .nav-links a:hover { text-decoration: underline; }
+    .itinerary-list { list-style:none; padding:0; margin:0; }
+    .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    .itinerary-details { display:flex; flex-direction:column; }
+    .itinerary-name { font-weight:bold; }
+    .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
+    .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; }
+    .badge-owned { background:#28a745; }
+    .badge-shared { background:#007bff; }
+    .badge-archived { background:#dc3545; }
 
-  .hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    padding: 10px;
-  }
+    /* Floating Add Button */
+    .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
 
-  .hamburger div {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 4px 0;
-  }
+    /* Footer pinned at bottom */
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; }
+    footer a { margin:0 8px; color:#0077cc; }
+    footer a:hover { text-decoration:underline; }
 
-  /* Dropdown for mobile */
-  .mobile-menu {
-    display: none;
-    flex-direction: column;
-    background: #0077cc;
-  }
-
-  .mobile-menu a {
-    padding: 12px 16px;
-    border-top: 1px solid rgba(255,255,255,0.2);
-  }
-
-  main {
-    flex: 1;
-    padding: 16px;
-  }
-
-  .filter-row { 
-    display:flex; 
-    justify-content:space-between; 
-    flex-wrap:wrap; 
-    margin-bottom:16px; 
-  }
-  .filter-pill { 
-    padding:6px 16px; 
-    border-radius:20px; 
-    margin-right:8px; 
-    margin-bottom:8px;
-    cursor:pointer; 
-    font-weight:500; 
-  }
-  .filter-pill.active { background:#28a745; color:white; }
-  .filter-pill.inactive { background:#ccc; color:#333; }
-
-  .itinerary-list { list-style:none; padding:0; margin:0; }
-  .itinerary-item { 
-    background:white; 
-    margin-bottom:8px; 
-    border-radius:8px; 
-    padding:12px; 
-    display:flex; 
-    justify-content:space-between; 
-    align-items:center; 
-    box-shadow:0 1px 3px rgba(0,0,0,0.1); 
-    flex-wrap:wrap;
-  }
-  .itinerary-details { display:flex; flex-direction:column; flex:1; min-width:150px; }
-  .itinerary-name { font-weight:bold; }
-  .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
-  .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; vertical-align:middle; }
-  .badge-owned { background:#28a745; }
-  .badge-shared { background:#007bff; }
-  .badge-archived { background:#dc3545; }
-
-  .fab { 
-    position:fixed; 
-    bottom:24px; 
-    right:24px; 
-    width:56px; 
-    height:56px; 
-    border-radius:50%; 
-    border:none; 
-    background:#28a745; 
-    color:white; 
-    font-size:28px; 
-    cursor:pointer; 
-    box-shadow:0 4px 6px rgba(0,0,0,0.2); 
-    display:flex; 
-    justify-content:center; 
-    align-items:center; 
-  }
-
-  footer {
-    text-align:center; 
-    font-size:12px; 
-    color:#555; 
-    padding:16px; 
-    background:#f8f8f8; 
-  }
-
-  select { padding:6px 8px; }
-
-  @media(max-width:768px){
-    .nav-links { display: none; }
-    .hamburger { display: flex; }
-    .mobile-menu { display: none; }
-  }
-</style>
+    /* Responsive adjustments */
+    @media(max-width:600px){
+      .filter-row { flex-direction:column; gap:8px; }
+    }
+  </style>
 </head>
 <body>
-
-<!-- Navigation -->
-<nav>
-  <h1>Itineraries</h1>
-  <div class="nav-links">
-    <a href="#">Home</a>
-    <a href="#">Dashboard</a>
-    <a href="terms.html">Terms</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="refund.html">Refund</a>
-  </div>
-  <div class="hamburger" onclick="toggleMenu()">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-</nav>
-
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#">Home</a>
-  <a href="#">Dashboard</a>
-  <a href="terms.html">Terms</a>
-  <a href="privacy.html">Privacy</a>
-  <a href="refund.html">Refund</a>
-</div>
-
-<main>
-  <!-- Filter Row -->
-  <div class="filter-row">
-    <div id="filterPills">
-      <span class="filter-pill active" data-filter="Active">Active</span>
-      <span class="filter-pill inactive" data-filter="Archived">Archived</span>
-      <span class="filter-pill inactive" data-filter="All">All</span>
+  <header>
+    <h1>Itineraries</h1>
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div><div></div><div></div>
     </div>
-    <div>
-      <label for="sortSelect">Sort: </label>
-      <select id="sortSelect">
-        <option value="Start Date" selected>Start Date</option>
-        <option value="Name">Name</option>
-        <option value="Owned vs Shared">Owned vs Shared</option>
-        <option value="Place Count">Place Count</option>
-      </select>
-    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="add-itinerary.html">Add Itinerary</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="refund.html">Refund Policy</a>
   </div>
 
-  <!-- Itinerary List -->
-  <ul class="itinerary-list" id="itineraryList"></ul>
-</main>
+  <main>
+    <!-- Filter Row -->
+    <div class="filter-row">
+      <div id="filterPills">
+        <span class="filter-pill active" data-filter="Active">Active</span>
+        <span class="filter-pill inactive" data-filter="Archived">Archived</span>
+        <span class="filter-pill inactive" data-filter="All">All</span>
+      </div>
+      <div>
+        <label for="sortSelect">Sort: </label>
+        <select id="sortSelect">
+          <option value="Start Date" selected>Start Date</option>
+          <option value="Name">Name</option>
+          <option value="Owned vs Shared">Owned vs Shared</option>
+          <option value="Place Count">Place Count</option>
+        </select>
+      </div>
+    </div>
 
-<!-- Floating Add Button -->
-<button class="fab" onclick="addItinerary()">+</button>
+    <!-- Itinerary List -->
+    <ul class="itinerary-list" id="itineraryList">
+      <!-- Filled by JS -->
+    </ul>
+  </main>
 
-<footer>© 2026 Globeii</footer>
+  <footer>
+    <a href="terms.html">Terms of Service</a> |
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="refund.html">Refund Policy</a>
+    <div>© 2026 Globeii</div>
+  </footer>
 
-<script>
-  const mobileMenu = document.getElementById('mobileMenu');
-  function toggleMenu(){
-    mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
-  }
+  <!-- Floating Add Button -->
+  <a href="add-itinerary.html" class="fab">+</a>
 
-  let itineraries = [
-    {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
-    {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
-    {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
-  ];
+  <script>
+    const mobileMenu = document.getElementById('mobileMenu');
+    function toggleMenu() {
+      mobileMenu.classList.toggle('open');
+      document.querySelector('.hamburger').classList.toggle('open');
+    }
 
-  const itineraryList = document.getElementById('itineraryList');
-  const filterPills = document.querySelectorAll('.filter-pill');
-  const sortSelect = document.getElementById('sortSelect');
-  let currentFilter = 'Active';
-  let currentSort = 'Start Date';
-
-  function renderItineraries() {
-    itineraryList.innerHTML = '';
-    let filtered = itineraries.filter(it => {
-      if (currentFilter==='Active') return !it.archived;
-      if (currentFilter==='Archived') return it.archived;
-      return true;
-    });
-    filtered.sort((a,b)=>{
-      switch(currentSort){
-        case 'Name': return a.name.localeCompare(b.name);
-        case 'Start Date': return new Date(a.start)-new Date(b.start);
-        case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
-        case 'Place Count': return b.places - a.places;
+    // Close menu if clicking outside
+    document.addEventListener('click', (e)=>{
+      const hamburger = document.querySelector('.hamburger');
+      if(!hamburger.contains(e.target) && !mobileMenu.contains(e.target)){
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('open');
       }
     });
 
-    if(filtered.length===0){
-      const li = document.createElement('li');
-      li.style.textAlign='center';
-      li.style.color='gray';
-      li.style.padding='12px';
-      li.textContent='No itineraries found';
-      itineraryList.appendChild(li);
-      return;
+    // Sample itineraries
+    let itineraries = [
+      {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
+      {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
+      {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
+    ];
+
+    const itineraryList = document.getElementById('itineraryList');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const sortSelect = document.getElementById('sortSelect');
+    let currentFilter = 'Active';
+    let currentSort = 'Start Date';
+
+    function renderItineraries() {
+      itineraryList.innerHTML = '';
+      let filtered = itineraries.filter(it => {
+        if (currentFilter==='Active') return !it.archived;
+        if (currentFilter==='Archived') return it.archived;
+        return true;
+      });
+
+      // Sorting
+      filtered.sort((a,b)=>{
+        switch(currentSort){
+          case 'Name': return a.name.localeCompare(b.name);
+          case 'Start Date': return new Date(a.start)-new Date(b.start);
+          case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
+          case 'Place Count': return b.places - a.places;
+        }
+      });
+
+      // Render
+      filtered.forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'itinerary-item';
+        li.innerHTML = `
+          <div class="itinerary-details">
+            <span class="itinerary-name">${it.name}</span>
+            <span class="itinerary-dates">${it.start} → ${it.end}</span>
+            <span class="itinerary-places">Places: ${it.places}</span>
+          </div>
+          <div>
+            ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
+            ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
+            ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
+          </div>
+        `;
+        itineraryList.appendChild(li);
+      });
     }
 
-    filtered.forEach(it=>{
-      const li = document.createElement('li');
-      li.className = 'itinerary-item';
-      li.innerHTML = `
-        <div class="itinerary-details">
-          <span class="itinerary-name">${it.name}</span>
-          <span class="itinerary-dates">${it.start} → ${it.end}</span>
-          <span class="itinerary-places">Places: ${it.places}</span>
-        </div>
-        <div>
-          ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
-          ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
-          ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
-        </div>
-      `;
-      itineraryList.appendChild(li);
+    filterPills.forEach(pill=>{
+      pill.addEventListener('click',()=>{
+        filterPills.forEach(p=>p.classList.remove('active'));
+        filterPills.forEach(p=>p.classList.add('inactive'));
+        pill.classList.add('active');
+        pill.classList.remove('inactive');
+        currentFilter = pill.dataset.filter;
+        renderItineraries();
+      });
     });
-  }
 
-  filterPills.forEach(pill=>{
-    pill.addEventListener('click',()=>{
-      filterPills.forEach(p=>p.classList.remove('active'));
-      filterPills.forEach(p=>p.classList.add('inactive'));
-      pill.classList.add('active');
-      pill.classList.remove('inactive');
-      currentFilter = pill.dataset.filter;
+    sortSelect.addEventListener('change',()=>{
+      currentSort = sortSelect.value;
       renderItineraries();
     });
-  });
 
-  sortSelect.addEventListener('change',()=>{
-    currentSort = sortSelect.value;
+    // Initial render
     renderItineraries();
-  });
-
-  function addItinerary(){
-    const name = prompt("Enter itinerary name:");
-    if(!name) return;
-    const start = prompt("Start date (YYYY-MM-DD):","2026-01-01");
-    const end = prompt("End date (YYYY-MM-DD):","2026-01-02");
-    itineraries.unshift({name,start,end,places:0,owned:true,archived:false});
-    renderItineraries();
-  }
-
-  renderItineraries();
-</script>
-
+  </script>
 </body>
 </html>

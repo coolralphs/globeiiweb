@@ -1,242 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Itineraries – Globeii</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family: Arial, sans-serif; display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
+  <meta charset="UTF-8">
+  <title>Itineraries – Globeii</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Reset */
+    * { box-sizing:border-box; margin:0; padding:0; }
 
-  /* Navbar */
-  nav {
-    background: linear-gradient(90deg,#0077cc,#005fa3); 
-    color:white; 
-    display:flex; 
-    justify-content:space-between; 
-    align-items:center;
-    padding:12px 16px; 
-    position:sticky; 
-    top:0; 
-    z-index:100;
-    box-shadow:0 4px 6px rgba(0,0,0,0.2);
-  }
-  nav h1 { font-size:1.5rem; }
+    body { font-family: Arial, sans-serif; display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
 
-  /* Hamburger animation */
-  .hamburger { width:28px; height:20px; position:relative; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; }
-  .hamburger span {
-    display:block; height:4px; background:white; border-radius:2px; transition:0.3s;
-  }
-  .hamburger.active span:nth-child(1){ transform:rotate(45deg) translate(5px,5px);}
-  .hamburger.active span:nth-child(2){ opacity:0; }
-  .hamburger.active span:nth-child(3){ transform:rotate(-45deg) translate(5px,-5px); }
+    /* Navbar */
+    nav {
+      background:#0077cc; color:white; padding:0 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:1000; height:56px;
+    }
+    nav .brand { font-weight:bold; font-size:1.2em; display:flex; align-items:center; gap:8px; }
+    nav .menu-toggle { font-size:1.4em; cursor:pointer; display:none; align-items:center; justify-content:center; width:40px; height:40px; }
+    nav ul { list-style:none; display:flex; align-items:center; gap:16px; }
+    nav ul li { display:flex; align-items:center; gap:6px; }
+    nav ul li a { color:white; text-decoration:none; font-weight:500; display:flex; align-items:center; gap:6px; }
+    nav ul li a:hover { text-decoration:underline; }
 
-  /* Side menu overlay */
-  .menu-overlay {
-    position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; z-index:99;
-  }
+    /* Hamburger menu - mobile */
+    @media(max-width:768px) {
+      nav ul { display:none; flex-direction:column; background:#0077cc; position:absolute; top:56px; left:0; width:100%; padding:16px 0; }
+      nav ul.show { display:flex; }
+      nav .menu-toggle { display:flex; }
+    }
 
-  /* Side menu */
-  .menu {
-    position:fixed; top:0; left:-280px; width:280px; height:100%; background:#004a99; color:white; box-shadow:2px 0 8px rgba(0,0,0,0.3);
-    transition:left 0.3s; display:flex; flex-direction:column; z-index:100;
-  }
-  .menu.active { left:0; }
-  .menu-header { display:flex; justify-content:flex-end; padding:12px; }
-  .menu-header i { font-size:1.5rem; cursor:pointer; }
-  .menu-links { display:flex; flex-direction:column; padding:16px; flex:1; }
-  .menu-links a { margin-bottom:12px; color:white; text-decoration:none; font-weight:500; display:flex; align-items:center; font-size:1rem; }
-  .menu-links a i { margin-right:12px; font-size:1.1rem; }
-  .menu-links a:hover { background:rgba(255,255,255,0.1); border-radius:6px; }
+    /* Hamburger animation */
+    .menu-toggle span { display:block; width:24px; height:2px; background:white; margin:4px 0; transition:0.3s; }
+    .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .menu-toggle.active span:nth-child(2) { opacity:0; }
+    .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
 
-  .menu-legal { padding:16px; border-top:1px solid rgba(255,255,255,0.2); font-size:0.85rem; flex-shrink:0; }
-  .menu-legal a { color:rgba(255,255,255,0.8); display:block; margin-bottom:6px; text-decoration:none; }
-  .menu-legal a:hover { color:white; }
+    main { flex:1; padding:16px; }
 
-  /* Main content */
-  main { flex:1; padding:16px; display:flex; flex-direction:column; }
+    .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
+    .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
+    .filter-pill.active { background:#28a745; color:white; }
+    .filter-pill.inactive { background:#ccc; color:#333; }
 
-  main h2 { margin-bottom:16px; font-size:1.8rem; color:#333; }
+    .itinerary-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+    .itinerary-item { background:white; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    .itinerary-details { display:flex; flex-direction:column; }
+    .itinerary-name { font-weight:bold; }
+    .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
+    .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; }
+    .badge-owned { background:#28a745; }
+    .badge-shared { background:#007bff; }
+    .badge-archived { background:#dc3545; }
 
-  .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
-  .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
-  .filter-pill.active { background:#28a745; color:white; }
-  .filter-pill.inactive { background:#ccc; color:#333; }
+    /* Floating add button */
+    .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
 
-  .itinerary-list { list-style:none; padding:0; margin:0; flex:1 0 auto; overflow-y:auto; }
-
-  .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-  .itinerary-details { display:flex; flex-direction:column; }
-  .itinerary-name { font-weight:bold; }
-  .itinerary-dates, .itinerary-places { font-size:12px; color:gray; }
-  .badge { display:inline-block; padding:2px 6px; border-radius:6px; font-size:10px; color:white; margin-left:4px; }
-  .badge-owned { background:#28a745; }
-  .badge-shared { background:#007bff; }
-  .badge-archived { background:#dc3545; }
-
-  /* Floating Add Button */
-  .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:50; cursor:pointer; }
-
-  /* Footer sticky at bottom */
-  footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; }
-
-  select { padding:6px 8px; }
-
-  @media (max-width:600px){
-    .filter-row { flex-direction:column; }
-    .filter-row > div { margin-bottom:8px; }
-  }
-</style>
+    /* Footer */
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; }
+  </style>
 </head>
 <body>
+  <nav>
+    <div class="brand"><i class="fas fa-plane"></i> Globeii</div>
+    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+    <ul id="navMenu">
+      <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="#"><i class="fas fa-map"></i> Itineraries</a></li>
+      <li><a href="#"><i class="fas fa-user"></i> Account</a></li>
+      <li><a href="#"><i class="fas fa-file-contract"></i> Terms</a></li>
+      <li><a href="#"><i class="fas fa-user-secret"></i> Privacy</a></li>
+      <li><a href="#"><i class="fas fa-money-bill-wave"></i> Refund</a></li>
+    </ul>
+  </nav>
 
-<!-- Navbar -->
-<nav>
-  <h1>Globeii</h1>
-  <div class="hamburger" id="hamburgerBtn">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</nav>
+  <main>
+    <h1>Itineraries</h1>
 
-<!-- Side Menu -->
-<div class="menu-overlay" id="menuOverlay"></div>
-<div class="menu" id="menu">
-  <div class="menu-header">
-    <i class="fas fa-times" id="menuClose"></i>
-  </div>
-  <div class="menu-links">
-    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-    <a href="itineraries.html"><i class="fas fa-map"></i>Itineraries</a>
-    <a href="account.html"><i class="fas fa-user"></i>Account</a>
-  </div>
-  <div class="menu-legal">
-    <a href="terms.html">Terms of Service</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="refund.html">Refund Policy</a>
-  </div>
-</div>
-
-<main>
-  <h2>Itineraries</h2>
-
-  <div class="filter-row">
-    <div id="filterPills">
-      <span class="filter-pill active" data-filter="Active">Active</span>
-      <span class="filter-pill inactive" data-filter="Archived">Archived</span>
-      <span class="filter-pill inactive" data-filter="All">All</span>
+    <div class="filter-row">
+      <div id="filterPills">
+        <span class="filter-pill active" data-filter="Active">Active</span>
+        <span class="filter-pill inactive" data-filter="Archived">Archived</span>
+        <span class="filter-pill inactive" data-filter="All">All</span>
+      </div>
+      <div>
+        <label for="sortSelect">Sort: </label>
+        <select id="sortSelect">
+          <option value="Start Date" selected>Start Date</option>
+          <option value="Name">Name</option>
+          <option value="Owned vs Shared">Owned vs Shared</option>
+          <option value="Place Count">Place Count</option>
+        </select>
+      </div>
     </div>
-    <div>
-      <label for="sortSelect">Sort: </label>
-      <select id="sortSelect">
-        <option value="Start Date" selected>Start Date</option>
-        <option value="Name">Name</option>
-        <option value="Owned vs Shared">Owned vs Shared</option>
-        <option value="Place Count">Place Count</option>
-      </select>
-    </div>
-  </div>
 
-  <ul class="itinerary-list" id="itineraryList"></ul>
-</main>
+    <ul class="itinerary-list" id="itineraryList"></ul>
+  </main>
 
-<!-- Floating Add Button -->
-<div class="fab" id="addBtn">+</div>
+  <footer>
+    © 2026 Globeii
+  </footer>
 
-<footer>© 2026 Globeii</footer>
+  <a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
 
-<script>
-  // Hamburger menu animation
-  const hamburger = document.getElementById('hamburgerBtn');
-  const menu = document.getElementById('menu');
-  const menuOverlay = document.getElementById('menuOverlay');
-  const menuClose = document.getElementById('menuClose');
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
 
-  function openMenu(){ menu.classList.add('active'); menuOverlay.style.display='block'; hamburger.classList.add('active'); }
-  function closeMenu(){ menu.classList.remove('active'); menuOverlay.style.display='none'; hamburger.classList.remove('active'); }
-
-  hamburger.addEventListener('click', ()=>{ if(menu.classList.contains('active')) closeMenu(); else openMenu(); });
-  menuClose.addEventListener('click', closeMenu);
-  menuOverlay.addEventListener('click', closeMenu);
-
-  // Sample itinerary data
-  let itineraries = [
-    {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
-    {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
-  ];
-
-  const itineraryList = document.getElementById('itineraryList');
-  const filterPills = document.querySelectorAll('.filter-pill');
-  const sortSelect = document.getElementById('sortSelect');
-  let currentFilter = 'Active';
-  let currentSort = 'Start Date';
-
-  function renderItineraries(){
-    itineraryList.innerHTML='';
-    let filtered = itineraries.filter(it=>{
-      if(currentFilter==='Active') return !it.archived;
-      if(currentFilter==='Archived') return it.archived;
-      return true;
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navMenu.classList.toggle('show');
     });
 
-    filtered.sort((a,b)=>{
-      switch(currentSort){
-        case 'Name': return a.name.localeCompare(b.name);
-        case 'Start Date': return new Date(a.start)-new Date(b.start);
-        case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
-        case 'Place Count': return b.places - a.places;
-      }
+    // Sample data
+    let itineraries = [
+      {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
+      {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
+      {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
+    ];
+
+    const itineraryList = document.getElementById('itineraryList');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const sortSelect = document.getElementById('sortSelect');
+    let currentFilter = 'Active';
+    let currentSort = 'Start Date';
+
+    function renderItineraries() {
+      itineraryList.innerHTML = '';
+      let filtered = itineraries.filter(it => {
+        if(currentFilter==='Active') return !it.archived;
+        if(currentFilter==='Archived') return it.archived;
+        return true;
+      });
+
+      // Sorting
+      filtered.sort((a,b)=>{
+        switch(currentSort){
+          case 'Name': return a.name.localeCompare(b.name);
+          case 'Start Date': return new Date(a.start)-new Date(b.start);
+          case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
+          case 'Place Count': return b.places - a.places;
+        }
+      });
+
+      filtered.forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'itinerary-item';
+        li.innerHTML = `
+          <div class="itinerary-details">
+            <span class="itinerary-name">${it.name}</span>
+            <span class="itinerary-dates">${it.start} → ${it.end}</span>
+            <span class="itinerary-places">Places: ${it.places}</span>
+          </div>
+          <div>
+            ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
+            ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
+            ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
+          </div>
+        `;
+        itineraryList.appendChild(li);
+      });
+    }
+
+    filterPills.forEach(pill=>{
+      pill.addEventListener('click', ()=>{
+        filterPills.forEach(p=>p.classList.remove('active'));
+        filterPills.forEach(p=>p.classList.add('inactive'));
+        pill.classList.add('active');
+        pill.classList.remove('inactive');
+        currentFilter = pill.dataset.filter;
+        renderItineraries();
+      });
     });
 
-    filtered.forEach(it=>{
-      const li = document.createElement('li');
-      li.className='itinerary-item';
-      li.innerHTML=`
-        <div class="itinerary-details">
-          <span class="itinerary-name">${it.name}</span>
-          <span class="itinerary-dates">${it.start} → ${it.end}</span>
-          <span class="itinerary-places">Places: ${it.places}</span>
-        </div>
-        <div>
-          ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
-          ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
-          ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
-        </div>
-      `;
-      itineraryList.appendChild(li);
-    });
-  }
-
-  filterPills.forEach(pill=>{
-    pill.addEventListener('click',()=>{
-      filterPills.forEach(p=>p.classList.remove('active'));
-      filterPills.forEach(p=>p.classList.add('inactive'));
-      pill.classList.add('active'); pill.classList.remove('inactive');
-      currentFilter=pill.dataset.filter;
+    sortSelect.addEventListener('change', ()=>{
+      currentSort = sortSelect.value;
       renderItineraries();
     });
-  });
 
-  sortSelect.addEventListener('change',()=>{
-    currentSort = sortSelect.value;
+    const fab = document.getElementById('fab');
+    fab.addEventListener('click', ()=>{
+      const name = prompt("Enter itinerary name:");
+      if(!name) return;
+      const start = prompt("Start date (YYYY-MM-DD):","2026-01-01");
+      const end = prompt("End date (YYYY-MM-DD):","2026-01-02");
+      itineraries.unshift({name,start,end,places:0,owned:true,archived:false});
+      renderItineraries();
+    });
+
     renderItineraries();
-  });
-
-  // Add button functionality
-  document.getElementById('addBtn').addEventListener('click', ()=>{
-    const name = prompt("Enter itinerary name:");
-    if(!name) return;
-    const start = prompt("Start date (YYYY-MM-DD)","2026-01-01");
-    const end = prompt("End date (YYYY-MM-DD)","2026-01-02");
-    itineraries.unshift({name,start,end,places:0,owned:true,archived:false});
-    renderItineraries();
-  });
-
-  renderItineraries();
-</script>
-
+  </script>
 </body>
 </html>

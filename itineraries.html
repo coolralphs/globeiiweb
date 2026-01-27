@@ -18,15 +18,15 @@
     nav .menu-toggle { font-size:1.4em; cursor:pointer; display:none; align-items:center; justify-content:center; width:40px; height:40px; }
     nav ul { list-style:none; display:flex; align-items:center; gap:16px; }
     nav ul li { display:flex; align-items:center; gap:6px; }
-    nav ul li a { color:white; text-decoration:none; font-weight:400; display:flex; align-items:center; gap:6px; transition:font-weight 0.2s; }
-    nav ul li a:hover { font-weight:bold; text-decoration:none; background:none; }
+    nav ul li a { color:white; text-decoration:none; font-weight:400; display:flex; align-items:center; gap:6px; transition: color 0.2s; }
+    nav ul li a:hover { color: #cce5ff; text-decoration:none; } /* subtle hover color change */
 
     /* Hamburger menu - mobile */
     @media(max-width:768px) {
       nav ul { display:none; flex-direction:column; background:#0077cc; position:absolute; top:56px; left:0; width:100%; padding:16px 0; }
       nav ul.show { display:flex; }
       nav .menu-toggle { display:flex; }
-      nav ul li a:hover { font-weight:400; } /* no bold on mobile hover */
+      nav ul li a:hover { color:#cce5ff; } /* same subtle color */
     }
 
     main { flex:1; padding:16px; }

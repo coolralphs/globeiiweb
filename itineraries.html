@@ -1,430 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Globeii – Itineraries</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<title>Globeii – Itineraries</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f7fb;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f5f7fb;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+}
 
-    /* ===== TOP BAR ===== */
-    .topbar {
-      background: #0d6efd;
-      color: white;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+/* ===== NAV BAR ===== */
+.topbar{
+  background:#0d6efd;
+  color:#fff;
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
 
-    .brand {
-      font-size: 18px;
-      font-weight: 600;
-    }
+.brand{font-size:18px;font-weight:600}
 
-    .hamburger {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 22px;
-      cursor: pointer;
-      position: relative;
-      width: 32px;
-      height: 32px;
-    }
+.nav-links{
+  display:none;
+  gap:22px;
+}
 
-    .hamburger i {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
+.nav-links a{
+  color:white;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  opacity:.9;
+}
+.nav-links a:hover{opacity:1}
 
-    .hamburger .fa-xmark {
-      opacity: 0;
-      transform: rotate(-90deg);
-    }
+.hamburger{
+  background:none;
+  border:none;
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+  position:relative;
+  width:32px;height:32px;
+}
 
-    .hamburger.open .fa-bars {
-      opacity: 0;
-      transform: rotate(90deg);
-    }
+.hamburger i{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:.25s;
+}
+.hamburger .fa-xmark{opacity:0;transform:rotate(-90deg)}
+.hamburger.open .fa-bars{opacity:0;transform:rotate(90deg)}
+.hamburger.open .fa-xmark{opacity:1;transform:none}
 
-    .hamburger.open .fa-xmark {
-      opacity: 1;
-      transform: rotate(0);
-    }
+/* ===== MOBILE MENU ===== */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;
+  z-index:1050;
+}
 
-    /* ===== OVERLAY ===== */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none;
-      z-index: 1050;
-    }
+.mobile-menu{
+  position:fixed;
+  top:0;right:-300px;
+  width:300px;height:100%;
+  background:#0d6efd;
+  transition:.3s;
+  z-index:1100;
+}
+.mobile-menu.open{right:0}
 
-    /* ===== MOBILE MENU ===== */
-    .mobile-menu {
-      position: fixed;
-      top: 0;
-      right: -300px;
-      width: 300px;
-      height: 100%;
-      background: #0d6efd;
-      padding-top: 16px;
-      transition: right 0.3s ease;
-      z-index: 1100;
-      display: flex;
-      flex-direction: column;
-    }
+.mobile-menu-header{
+  display:flex;
+  justify-content:space-between;
+  padding:14px 18px;
+  color:white;
+  font-weight:600;
+}
 
-    .mobile-menu.open {
-      right: 0;
-    }
+.mobile-menu a{
+  color:white;
+  text-decoration:none;
+  padding:14px 18px;
+  display:flex;
+  gap:10px;
+}
+.mobile-menu a:hover{background:rgba(255,255,255,.15)}
 
-    .mobile-menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
-      color: white;
-      font-weight: 600;
-    }
+/* ===== MAIN ===== */
+main{
+  flex:1;
+  max-width:900px;
+  margin:0 auto;
+  padding:16px;
+  width:100%;
+}
 
-    .mobile-menu-header button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 22px;
-      cursor: pointer;
-    }
+h1{margin:16px 0;font-size:22px}
 
-    .mobile-menu a {
-      color: white;
-      text-decoration: none;
-      padding: 14px 20px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
+/* ===== FILTERS ===== */
+.controls{
+  display:flex;
+  gap:8px;
+  padding:0 8px;
+}
 
-    .mobile-menu a:hover {
-      background: rgba(255,255,255,0.15);
-    }
+.controls button{
+  background:#e9ecef;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.controls button.active{
+  background:#0d6efd;
+  color:white;
+}
 
-    main {
-      flex: 1;
-      padding: 16px;
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-    }
+.sort-wrapper{
+  margin-left:auto;
+  position:relative;
+}
 
-    h1 {
-      margin: 16px 0;
-      font-size: 22px;
-    }
+.sort-btn{
+  background:#000;
+  color:#fff;
+  border:1px solid #000;
+  padding:8px 16px;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sort-btn:hover{background:#111}
 
-    /* ===== CONTROLS ===== */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 8px;
-      position: relative;
-    }
+.sort-menu{
+  position:absolute;
+  right:0;top:44px;
+  background:#000;
+  color:white;
+  display:none;
+  border-radius:8px;
+  min-width:240px;
+}
+.sort-menu button{
+  width:100%;
+  background:none;
+  color:white;
+  padding:12px 16px;
+  border:none;
+  text-align:left;
+}
+.sort-menu button:hover{background:rgba(255,255,255,.15)}
 
-    .controls button {
-      border: none;
-      background: #e9ecef;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+/* ===== CARD ===== */
+.card{
+  background:white;
+  margin-top:12px;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+  display:flex;
+  gap:14px;
+}
 
-    .controls button.active {
-      background: #0d6efd;
-      color: white;
-    }
+.card-icon{color:#0d6efd;font-size:20px;margin-top:4px}
+.card-title{font-weight:600}
+.card-dates{font-size:13px;color:#666;margin-top:2px}
+.card-meta{display:flex;gap:8px;margin-top:8px}
 
-    .sort-wrapper {
-      margin-left: auto;
-      position: relative;
-    }
+.tag{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#e9ecef;
+}
+.tag.owned{background:#e7f1ff;color:#0d6efd}
+.tag.shared{background:#fff3cd;color:#856404}
 
-    /* 🔥 Higher contrast sort button */
-    .sort-btn {
-      background: #111;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #000;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 500;
-    }
+/* ===== ADD BUTTON ===== */
+.add-btn{
+  position:fixed;
+  bottom:16px;right:16px;
+  background:#0d6efd;
+  color:white;
+  width:56px;height:56px;
+  border-radius:50%;
+  border:none;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  z-index:900;
+}
 
-    .sort-btn:hover {
-      background: #000;
-    }
+/* ===== ADD MODAL ===== */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;
+  z-index:1200;
+}
+.modal{
+  background:white;
+  max-width:360px;
+  margin:120px auto;
+  padding:20px;
+  border-radius:12px;
+}
+.modal h3{margin-top:0}
+.modal input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
 
-    .sort-menu {
-      position: absolute;
-      right: 0;
-      top: 44px;
-      background: #000;
-      color: white;
-      border-radius: 8px;
-      display: none;
-      min-width: 220px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-    }
+/* ===== FOOTER ===== */
+footer{
+  background:#f5f7fb;
+  border-top:1px solid #ddd;
+  text-align:center;
+  padding:16px;
+}
+footer a{
+  color:#777;
+  text-decoration:none;
+  margin:0 10px;
+}
+footer a:hover{color:black}
 
-    .sort-menu button {
-      width: 100%;
-      background: none;
-      color: white;
-      padding: 12px 16px;
-      text-align: left;
-      border: none;
-      cursor: pointer;
-    }
-
-    .sort-menu button:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    /* ===== CARDS ===== */
-    .card {
-      background: white;
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-      display: flex;
-      gap: 14px;
-    }
-
-    .card-icon {
-      font-size: 20px;
-      color: #0d6efd;
-      margin-top: 4px;
-    }
-
-    .card-title {
-      font-weight: 600;
-      font-size: 16px;
-    }
-
-    .card-dates {
-      font-size: 13px;
-      color: #666;
-      margin-top: 2px;
-    }
-
-    .card-meta {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #e9ecef;
-    }
-
-    .tag.owned {
-      background: #e7f1ff;
-      color: #0d6efd;
-    }
-
-    .tag.shared {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    /* ===== ADD BUTTON ===== */
-    .add-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      z-index: 900;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      text-align: center;
-      font-size: 14px;
-      padding: 16px 12px;
-      background: #f5f7fb;
-      border-top: 1px solid #ddd;
-    }
-
-    footer .copyright {
-      margin-bottom: 6px;
-      color: #555;
-    }
-
-    footer .legal-links {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    footer a {
-      color: #777;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    footer a:hover {
-      color: #000;
-    }
-  </style>
+/* ===== DESKTOP ===== */
+@media(min-width:768px){
+  .hamburger{display:none}
+  .nav-links{display:flex}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="topbar">
-    <div class="brand">Globeii</div>
-    <button class="hamburger" id="hamburger">
-      <i class="fa-solid fa-bars"></i>
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+<div class="topbar">
+  <div class="brand">Globeii</div>
+
+  <div class="nav-links">
+    <a href="#"><i class="fa-solid fa-house"></i>Dashboard</a>
+    <a href="#"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
+    <a href="#"><i class="fa-solid fa-user"></i>Account</a>
   </div>
 
-  <div class="overlay" id="overlay"></div>
+  <button class="hamburger" id="hamburger">
+    <i class="fa-solid fa-bars"></i>
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</div>
 
-  <nav class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-header">
-      Menu
-      <button id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
+<div class="overlay" id="overlay"></div>
+
+<nav class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    Menu
+    <button id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <a href="#"><i class="fa-solid fa-house"></i>Dashboard</a>
+  <a href="#"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
+  <a href="#"><i class="fa-solid fa-user"></i>Account</a>
+</nav>
+
+<main>
+<h1>Itineraries</h1>
+
+<div class="controls">
+  <button class="active">Active</button>
+  <button>Archived</button>
+  <button>All</button>
+
+  <div class="sort-wrapper">
+    <button class="sort-btn" id="sortBtn">
+      <i class="fa-solid fa-sort"></i>Sort
+    </button>
+    <div class="sort-menu" id="sortMenu">
+      <button>Name A–Z</button>
+      <button>Name Z–A</button>
+      <button>Start Date ↑</button>
+      <button>Start Date ↓</button>
     </div>
-    <a href="#"><i class="fa-solid fa-house"></i> Dashboard</a>
-    <a href="#"><i class="fa-solid fa-map-location-dot"></i> Itineraries</a>
-    <a href="#"><i class="fa-solid fa-user"></i> Account</a>
-  </nav>
+  </div>
+</div>
 
-  <main>
-    <h1>Itineraries</h1>
-
-    <div class="controls">
-      <button class="active">Active</button>
-      <button>Archived</button>
-      <button>All</button>
-
-      <div class="sort-wrapper">
-        <button class="sort-btn" id="sortBtn">
-          <i class="fa-solid fa-sort"></i> Sort
-        </button>
-        <div class="sort-menu" id="sortMenu">
-          <button>Start Date ↑</button>
-          <button>Start Date ↓</button>
-          <button>Name A–Z</button>
-          <button>Name Z–A</button>
-        </div>
+<div id="list">
+  <div class="card">
+    <i class="fa-solid fa-location-dot card-icon"></i>
+    <div>
+      <div class="card-title">Paris Trip</div>
+      <div class="card-dates">Feb 10 – Feb 17, 2026</div>
+      <div class="card-meta">
+        <span class="tag owned">Owned</span>
+        <span class="tag">8 places</span>
       </div>
     </div>
+  </div>
+</div>
+</main>
 
-    <div class="card">
-      <i class="fa-solid fa-location-dot card-icon"></i>
-      <div>
-        <div class="card-title">Paris Trip</div>
-        <div class="card-dates">Feb 10 – Feb 17, 2026</div>
-        <div class="card-meta">
-          <span class="tag owned">Owned</span>
-          <span class="tag">5 places</span>
-        </div>
+<button class="add-btn" id="addBtn">+</button>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Add Itinerary</h3>
+    <input id="nameInput" placeholder="Itinerary name" />
+    <input id="dateInput" type="date" />
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="addItinerary()">Add</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© <span id="year"></span> Globeii</div>
+  <div>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+  </div>
+</footer>
+
+<script>
+document.getElementById("year").textContent=new Date().getFullYear();
+
+const hamburger=document.getElementById("hamburger");
+const mobileMenu=document.getElementById("mobileMenu");
+const overlay=document.getElementById("overlay");
+const closeMenu=document.getElementById("closeMenu");
+
+hamburger.onclick=()=>{
+  hamburger.classList.toggle("open");
+  mobileMenu.classList.toggle("open");
+  overlay.style.display="block";
+};
+closeMenu.onclick=overlay.onclick=()=>{
+  hamburger.classList.remove("open");
+  mobileMenu.classList.remove("open");
+  overlay.style.display="none";
+};
+
+const sortBtn=document.getElementById("sortBtn");
+const sortMenu=document.getElementById("sortMenu");
+sortBtn.onclick=()=>sortMenu.style.display=
+  sortMenu.style.display==="block"?"none":"block";
+
+const modal=document.getElementById("modalOverlay");
+document.getElementById("addBtn").onclick=()=>modal.style.display="block";
+function closeModal(){modal.style.display="none"}
+
+function addItinerary(){
+  const name=document.getElementById("nameInput").value;
+  if(!name)return;
+  const date=document.getElementById("dateInput").value;
+  document.getElementById("list").insertAdjacentHTML("afterbegin",`
+  <div class="card">
+    <i class="fa-solid fa-location-dot card-icon"></i>
+    <div>
+      <div class="card-title">${name}</div>
+      ${date?`<div class="card-dates">${date}</div>`:""}
+      <div class="card-meta">
+        <span class="tag owned">Owned</span>
+        <span class="tag">0 places</span>
       </div>
     </div>
-  </main>
-
-  <button class="add-btn">+</button>
-
-  <footer>
-    <div class="copyright">
-      Copyright © <span id="year"></span> Globeii
-    </div>
-    <div class="legal-links">
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Use</a>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const overlay = document.getElementById('overlay');
-    const closeMenu = document.getElementById('closeMenu');
-
-    function openMenu() {
-      hamburger.classList.add('open');
-      mobileMenu.classList.add('open');
-      overlay.style.display = 'block';
-    }
-
-    function closeMenuFn() {
-      hamburger.classList.remove('open');
-      mobileMenu.classList.remove('open');
-      overlay.style.display = 'none';
-    }
-
-    hamburger.onclick = openMenu;
-    closeMenu.onclick = closeMenuFn;
-    overlay.onclick = closeMenuFn;
-
-    const sortBtn = document.getElementById('sortBtn');
-    const sortMenu = document.getElementById('sortMenu');
-
-    sortBtn.onclick = () => {
-      sortMenu.style.display =
-        sortMenu.style.display === 'block' ? 'none' : 'block';
-    };
-
-    document.addEventListener('click', e => {
-      if (!sortBtn.contains(e.target) && !sortMenu.contains(e.target)) {
-        sortMenu.style.display = 'none';
-      }
-    });
-  </script>
+  </div>`);
+  closeModal();
+}
+</script>
 
 </body>
 </html>

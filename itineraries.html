@@ -6,19 +6,64 @@
 <title>Itineraries – Globeii</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
-  header { background:#0077cc; color:white; padding:16px; text-align:center; position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; }
+  html, body {
+    margin:0;
+    padding:0;
+    min-height:100%;
+    font-family: Arial, sans-serif;
+  }
+  body {
+    display:flex;
+    flex-direction:column;
+    background:#f5f5f5;
+  }
+
+  /* Header / Navbar */
+  header {
+    background:#0077cc;
+    color:white;
+    padding:16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
   header h1 { margin:0; font-size:20px; }
 
   /* Hamburger menu icon */
   .hamburger { font-size:24px; cursor:pointer; display:flex; align-items:center; }
 
   /* Dropdown menu */
-  .dropdown-menu { display:none; position:absolute; top:60px; left:50%; transform:translateX(-50%); background:#0077cc; color:white; border-radius:8px; padding:16px; text-align:center; min-width:200px; z-index:200; }
-  .dropdown-menu a { display:block; color:white; text-decoration:none; margin:8px 0; }
+  .dropdown-menu {
+    display:none;
+    position:absolute;
+    top:60px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#0077cc;
+    color:white;
+    border-radius:8px;
+    padding:16px;
+    text-align:center;
+    min-width:200px;
+    z-index:200;
+  }
+  .dropdown-menu a {
+    display:block;
+    color:white;
+    text-decoration:none;
+    margin:8px 0;
+  }
   .dropdown-menu a:hover { color:#cce0ff; }
 
-  main { flex:1; padding:16px; }
+  main {
+    flex:1;
+    padding:16px;
+  }
+
   .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
   .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; background:#ccc; color:#333; }
   .filter-pill.active { background:#28a745; color:white; }
@@ -33,18 +78,27 @@
   .badge-archived { background:#dc3545; }
 
   /* Floating Add Button */
-  .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
+  .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:300; }
 
   /* Footer */
-  footer { width:100%; text-align:center; background:#f8f8f8; padding:12px; font-size:12px; flex-shrink:0; }
+  footer {
+    text-align:center;
+    background:#f8f8f8;
+    padding:12px;
+    font-size:12px;
+    flex-shrink:0;
+  }
   footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
   footer a:hover { text-decoration:underline; }
 
-  /* Move footer higher on mobile to be visible above FAB */
+  /* Mobile adjustments */
   @media(max-width:768px){
-    footer { position:fixed; bottom:90px; left:0; } /* slightly above FAB */
-    main { margin-bottom:80px; }
+    footer { position:relative; margin-top:20px; } /* footer moves below content */
+    main { margin-bottom:80px; } /* leave space for FAB */
   }
+
+  /* Remove scrollbar overflow */
+  html { overflow-x:hidden; }
 </style>
 </head>
 <body>
@@ -100,11 +154,9 @@ const sortSelect = document.getElementById('sortSelect');
 let currentFilter = 'Active';
 let currentSort = 'Start Date';
 
-// Sample itineraries
 let itineraries = [
   {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
   {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
-  {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
 ];
 
 function renderItineraries(){
@@ -178,6 +230,5 @@ hamburger.addEventListener('click', ()=>{
 
 renderItineraries();
 </script>
-
 </body>
 </html>

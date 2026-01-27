@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <style>
-    /* Reset */
     * { box-sizing:border-box; margin:0; padding:0; }
 
     body { font-family: Arial, sans-serif; display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
@@ -29,12 +28,6 @@
       nav .menu-toggle { display:flex; }
     }
 
-    /* Hamburger animation */
-    .menu-toggle span { display:block; width:24px; height:2px; background:white; margin:4px 0; transition:0.3s; }
-    .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
-    .menu-toggle.active span:nth-child(2) { opacity:0; }
-    .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
-
     main { flex:1; padding:16px; }
 
     .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
@@ -53,16 +46,16 @@
     .badge-archived { background:#dc3545; }
 
     /* Floating add button */
-    .fab { position:fixed; bottom:20px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
+    .fab { position:fixed; bottom:70px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
 
     /* Footer */
-    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; }
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; position:sticky; bottom:0; width:100%; }
   </style>
 </head>
 <body>
   <nav>
     <div class="brand"><i class="fas fa-plane"></i> Globeii</div>
-    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+    <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
     <ul id="navMenu">
       <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
       <li><a href="#"><i class="fas fa-map"></i> Itineraries</a></li>
@@ -107,8 +100,15 @@
     const navMenu = document.getElementById('navMenu');
 
     menuToggle.addEventListener('click', () => {
-      menuToggle.classList.toggle('active');
       navMenu.classList.toggle('show');
+      const icon = menuToggle.querySelector('i');
+      if(icon.classList.contains('fa-bars')){
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-x');
+      } else {
+        icon.classList.remove('fa-x');
+        icon.classList.add('fa-bars');
+      }
     });
 
     // Sample data

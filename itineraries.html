@@ -18,8 +18,8 @@ body{
   min-height:100vh;
   display:flex;
   flex-direction:column;
-  overflow-x:hidden;   /* keep */
-  overflow-y:auto;     /* ensure page scroll */
+  overflow-x:hidden;
+  overflow-y:auto;
 }
 
 /* ===== NAV BAR ===== */
@@ -111,7 +111,6 @@ main{
   margin:0 auto;
   padding:16px;
   width:100%;
-  overflow:visible;   /* IMPORTANT */
 }
 
 h1{margin:16px 0;font-size:22px}
@@ -144,18 +143,15 @@ h1{margin:16px 0;font-size:22px}
 
 .sort-btn{
   background:#212529 !important;
-  color:#ffffff !important;
+  color:#fff !important;
   border:1px solid #212529 !important;
   padding:8px 18px !important;
   border-radius:6px !important;
   display:flex !important;
   align-items:center !important;
   gap:10px !important;
-  font-weight:500 !important;
 }
-.sort-btn:hover{
-  background:#2c3034 !important;
-}
+.sort-btn:hover{background:#2c3034 !important}
 
 .sort-menu{
   position:absolute;
@@ -235,6 +231,12 @@ h1{margin:16px 0;font-size:22px}
   border-radius:14px;
 }
 
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
 /* ===== FOOTER ===== */
 footer{
   background:#f5f7fb;
@@ -289,9 +291,9 @@ footer a:hover{color:black}
 <h1>Itineraries</h1>
 
 <div class="controls">
-  <button class="filter" data-filter="all">All</button>
   <button class="filter active" data-filter="active">Active</button>
   <button class="filter" data-filter="archived">Archived</button>
+  <button class="filter" data-filter="all">All</button>
 
   <div class="sort-wrapper">
     <button class="sort-btn" id="sortBtn">
@@ -311,6 +313,17 @@ footer a:hover{color:black}
 
 <button class="add-btn" id="addBtn">+</button>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Add Itinerary</h3>
+    <input id="nameInput" placeholder="Itinerary name" />
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="addItinerary()">Add</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div>© <span id="year"></span> Globeii</div>
   <div>
@@ -322,22 +335,30 @@ footer a:hover{color:black}
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
+/* ===== UUID ===== */
+function uuidv4(){
+  return crypto.randomUUID();
+}
+
+/* ===== STATE ===== */
 let filter="active";
 let currentSort=null;
 
+/* ===== DATA ===== */
 const data=[
- {name:"Paris Trip",dates:"2026-02-10",owned:true,places:8,archived:false},
- {name:"Tokyo Adventure",dates:"2026-03-05",owned:false,places:6,archived:false},
- {name:"NYC Weekend",dates:"2026-01-20",owned:true,places:4,archived:true},
- {name:"Rome Getaway",dates:"2026-04-03",owned:true,places:7,archived:false},
- {name:"Barcelona Escape",dates:"2026-05-01",owned:false,places:5,archived:false},
- {name:"London City Trip",dates:"2026-06-12",owned:true,places:6,archived:true},
- {name:"Amsterdam Tour",dates:"2026-07-08",owned:false,places:3,archived:false},
- {name:"Berlin Journey",dates:"2026-08-20",owned:true,places:4,archived:false},
+ {id:uuidv4(),name:"Paris Trip",dates:"2026-02-10",owned:true,places:8,archived:false},
+ {id:uuidv4(),name:"Tokyo Adventure",dates:"2026-03-05",owned:false,places:6,archived:false},
+ {id:uuidv4(),name:"NYC Weekend",dates:"2026-01-20",owned:true,places:4,archived:true},
+ {id:uuidv4(),name:"Rome Getaway",dates:"2026-04-03",owned:true,places:7,archived:false},
+ {id:uuidv4(),name:"Barcelona Escape",dates:"2026-05-01",owned:false,places:5,archived:false},
+ {id:uuidv4(),name:"London City Trip",dates:"2026-06-12",owned:true,places:6,archived:true},
+ {id:uuidv4(),name:"Amsterdam Tour",dates:"2026-07-08",owned:false,places:3,archived:false},
+ {id:uuidv4(),name:"Berlin Journey",dates:"2026-08-20",owned:true,places:4,archived:false},
 ];
 
 const list=document.getElementById("list");
 
+/* ===== SORT ===== */
 function applySort(){
  if(!currentSort) return;
  data.sort((a,b)=>{
@@ -348,6 +369,7 @@ function applySort(){
  });
 }
 
+/* ===== RENDER ===== */
 function render(){
  applySort();
  list.innerHTML="";
@@ -373,6 +395,7 @@ function render(){
 }
 render();
 
+/* ===== FILTERS ===== */
 document.querySelectorAll(".filter").forEach(b=>{
  b.onclick=()=>{
   document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
@@ -382,6 +405,7 @@ document.querySelectorAll(".filter").forEach(b=>{
  };
 });
 
+/* ===== SORT MENU ===== */
 const sortBtn=document.getElementById("sortBtn");
 const sortMenu=document.getElementById("sortMenu");
 
@@ -400,6 +424,53 @@ document.querySelectorAll("#sortMenu button").forEach(btn=>{
 });
 
 document.addEventListener("click",()=>sortMenu.style.display="none");
+
+/* ===== ADD MODAL ===== */
+const modal=document.getElementById("modalOverlay");
+const nameInput=document.getElementById("nameInput");
+
+document.getElementById("addBtn").onclick=()=>{
+ modal.style.display="block";
+ nameInput.value="";
+ nameInput.focus();
+};
+
+function closeModal(){modal.style.display="none"}
+
+function addItinerary(){
+ const name=nameInput.value.trim();
+ if(!name) return;
+
+ data.unshift({
+   id: uuidv4(),
+   name,
+   dates:"",
+   owned:true,
+   places:0,
+   archived:false
+ });
+
+ nameInput.value="";
+ render();
+ closeModal();
+}
+
+/* ===== MOBILE MENU ===== */
+const hamburger=document.getElementById("hamburger");
+const mobileMenu=document.getElementById("mobileMenu");
+const overlay=document.getElementById("overlay");
+const closeMenu=document.getElementById("closeMenu");
+
+hamburger.onclick=()=>{
+ hamburger.classList.toggle("open");
+ mobileMenu.classList.toggle("open");
+ overlay.style.display="block";
+};
+closeMenu.onclick=overlay.onclick=()=>{
+ hamburger.classList.remove("open");
+ mobileMenu.classList.remove("open");
+ overlay.style.display="none";
+};
 </script>
 
 </body>

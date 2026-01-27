@@ -371,29 +371,40 @@ function applySort(){
 
 /* ===== RENDER ===== */
 function render(){
- applySort();
- list.innerHTML="";
- data.filter(i=>{
-   if(filter==="all")return true;
-   if(filter==="active")return !i.archived;
-   return i.archived;
- }).forEach(i=>{
-  list.insertAdjacentHTML("beforeend",`
-   <div class="card">
-    <i class="fa-solid fa-location-dot card-icon"></i>
-    <div>
-      <div class="card-title">${i.name}</div>
-      ${i.dates?`<div class="card-dates">${i.dates}</div>`:""}
-      <div class="card-meta">
-        <span class="tag ${i.owned?'owned':'shared'}">${i.owned?'Owned':'Shared'}</span>
-        <span class="tag">${i.places} places</span>
+  applySort();
+  list.innerHTML="";
+  data.filter(i=>{
+    if(filter==="all") return true;
+    if(filter==="active") return !i.archived;
+    return i.archived;
+  }).forEach(i=>{
+    list.insertAdjacentHTML("beforeend",`
+      <div class="card" data-id="${i.id}">
+        <i class="fa-solid fa-location-dot card-icon"></i>
+        <div style="flex:1">
+          <div class="card-title">${i.name}</div>
+          ${i.dates ? `<div class="card-dates">${i.dates}</div>` : ""}
+          <div class="card-meta">
+            <span class="tag ${i.owned?'owned':'shared'}">${i.owned?'Owned':'Shared'}</span>
+            <span class="tag">${i.places} places</span>
+          </div>
+        </div>
+        <button class="open-btn" style="margin-left:8px;padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">
+          Open
+        </button>
       </div>
-    </div>
-   </div>
-  `);
- });
+    `);
+  });
+
+  // Add click handler to all open buttons
+  document.querySelectorAll(".open-btn").forEach(btn=>{
+    btn.onclick=(e)=>{
+      const id = e.currentTarget.closest(".card").dataset.id;
+      alert(`Open itinerary with ID: ${id}`);
+      // Later you can replace this alert with opening a details page or modal
+    };
+  });
 }
-render();
 
 /* ===== FILTERS ===== */
 document.querySelectorAll(".filter").forEach(b=>{

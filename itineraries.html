@@ -91,6 +91,10 @@ const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 const closeNav = document.getElementById('closeNav');
 
+// Ensure nav is closed on load
+navMenu.classList.remove('open');
+navMenu.style.left = '-250px';
+
 hamburger.addEventListener('click', ()=>{
   navMenu.classList.add('open');
 });

@@ -312,8 +312,10 @@ footer a:hover{color:black}
       <i class="fa-solid fa-sort"></i>Sort
     </button>
     <div class="sort-menu" id="sortMenu">
-      <button data-sort="name" data-order="asc">Name A–Z</button>
-      <button data-sort="name" data-order="desc">Name Z–A</button>
+      <button data-sort="name-asc">Name A–Z</button>
+      <button data-sort="name-desc">Name Z–A</button>
+      <button data-sort="date-asc">Date ↑ (Earliest)</button>
+      <button data-sort="date-desc">Date ↓ (Latest)</button>
     </div>
   </div>
 </div>
@@ -458,6 +460,46 @@ document.addEventListener("click",(e)=>{
  if(!sortMenu.contains(e.target) && e.target!==sortBtn){
    sortMenu.style.display="none";
  }
+});
+
+let currentSort = null;
+
+document.querySelectorAll("#sortMenu button").forEach(btn=>{
+  btn.onclick = () => {
+    currentSort = btn.dataset.sort;
+    applySort();
+    document.getElementById("sortMenu").style.display = "none";
+  };
+});
+
+function applySort(){
+  if(!currentSort) return;
+
+  data.sort((a,b)=>{
+    switch(currentSort){
+      case "name-asc":
+        return a.name.localeCompare(b.name);
+      case "name-desc":
+        return b.name.localeCompare(a.name);
+      case "date-asc":
+        return new Date(a.dates || "9999") - new Date(b.dates || "9999");
+      case "date-desc":
+        return new Date(b.dates || "0000") - new Date(a.dates || "0000");
+      default:
+        return 0;
+    }
+  });
+
+  render();
+}
+
+/* Close sort menu when clicking outside */
+document.addEventListener("click", e=>{
+  const sortBtn = document.getElementById("sortBtn");
+  const sortMenu = document.getElementById("sortMenu");
+  if(!sortBtn.contains(e.target) && !sortMenu.contains(e.target)){
+    sortMenu.style.display = "none";
+  }
 });
 </script>
 

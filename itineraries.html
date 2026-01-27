@@ -5,7 +5,6 @@
   <title>Globeii – Itineraries</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -24,7 +23,7 @@
       overflow-x: hidden;
     }
 
-    /* ===== NAV ===== */
+    /* NAV */
     .topbar {
       background: #0d6efd;
       color: white;
@@ -72,7 +71,6 @@
       transform: rotate(0);
     }
 
-    /* Desktop Menu */
     .desktop-menu {
       position: absolute;
       top: 56px;
@@ -98,7 +96,6 @@
       background: rgba(255,255,255,0.15);
     }
 
-    /* Mobile Menu */
     .overlay {
       position: fixed;
       inset: 0;
@@ -130,7 +127,6 @@
       align-items: center;
     }
 
-    /* ===== CONTENT ===== */
     main {
       flex: 1;
       padding: 16px;
@@ -166,7 +162,6 @@
       color: white;
     }
 
-    /* Sort */
     .sort-wrapper {
       margin-left: auto;
       position: relative;
@@ -180,6 +175,7 @@
       gap: 8px;
       border: 1px solid #333;
       padding: 8px 14px;
+      border-radius: 6px;
     }
 
     .sort-btn:hover {
@@ -203,13 +199,13 @@
       color: white;
       padding: 10px 14px;
       text-align: left;
+      border: none;
     }
 
     .sort-menu button:hover {
       background: rgba(255,255,255,0.15);
     }
 
-    /* ===== ITINERARY CARDS ===== */
     .card {
       background: white;
       margin-top: 12px;
@@ -218,17 +214,12 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.08);
       display: flex;
       gap: 14px;
-      align-items: flex-start;
     }
 
     .card-icon {
       font-size: 20px;
       color: #0d6efd;
       margin-top: 4px;
-    }
-
-    .card-content {
-      flex: 1;
     }
 
     .card-title {
@@ -266,7 +257,6 @@
       color: #856404;
     }
 
-    /* ===== ADD BUTTON ===== */
     .add-btn {
       position: fixed;
       bottom: 16px;
@@ -283,19 +273,35 @@
       z-index: 900;
     }
 
-    /* ===== FOOTER ===== */
+    /* ===== FOOTER (UPDATED) ===== */
     footer {
       text-align: center;
       font-size: 14px;
-      padding: 14px;
-      background: white;
+      padding: 16px 12px;
+      background: #f5f7fb;
       border-top: 1px solid #ddd;
     }
 
+    footer .copyright {
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    footer .legal-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
     footer a {
-      margin: 0 6px;
-      color: #0d6efd;
+      color: #777;
       text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: #000;
     }
 
     @media (min-width: 768px) {
@@ -380,10 +386,13 @@
   </button>
 
   <footer>
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a href="refund.html">Refund</a>
-    <div>© 2026 Globeii</div>
+    <div class="copyright">
+      Copyright © 2026 Globeii
+    </div>
+    <div class="legal-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+    </div>
   </footer>
 
 <script>

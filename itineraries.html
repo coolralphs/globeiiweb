@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Itineraries – Globeii</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family: Arial, sans-serif; display:flex; flex-direction:column; min-height:100vh; background:#f5f5f5; }
@@ -39,17 +40,20 @@
 
   /* Side menu */
   .menu {
-    position:fixed; top:0; left:-280px; width:280px; height:100%; background:white; box-shadow:2px 0 8px rgba(0,0,0,0.3);
+    position:fixed; top:0; left:-280px; width:280px; height:100%; background:#004a99; color:white; box-shadow:2px 0 8px rgba(0,0,0,0.3);
     transition:left 0.3s; display:flex; flex-direction:column; z-index:100;
   }
   .menu.active { left:0; }
-  .menu-header { display:flex; justify-content:flex-end; padding:12px; border-bottom:1px solid #ccc; }
-  .menu-links { display:flex; flex-direction:column; padding:16px; }
-  .menu-links a { margin-bottom:12px; color:#0077cc; text-decoration:none; font-weight:500; }
-  .menu-links a:hover { text-decoration:underline; }
-  .menu-legal { margin-top:20px; padding-left:12px; border-top:1px solid #eee; }
-  .menu-legal a { font-size:0.9rem; color:#555; display:block; margin-bottom:8px; }
-  .menu-legal a:hover { color:#0077cc; }
+  .menu-header { display:flex; justify-content:flex-end; padding:12px; }
+  .menu-header i { font-size:1.5rem; cursor:pointer; }
+  .menu-links { display:flex; flex-direction:column; padding:16px; flex:1; }
+  .menu-links a { margin-bottom:12px; color:white; text-decoration:none; font-weight:500; display:flex; align-items:center; font-size:1rem; }
+  .menu-links a i { margin-right:12px; font-size:1.1rem; }
+  .menu-links a:hover { background:rgba(255,255,255,0.1); border-radius:6px; }
+
+  .menu-legal { padding:16px; border-top:1px solid rgba(255,255,255,0.2); font-size:0.85rem; flex-shrink:0; }
+  .menu-legal a { color:rgba(255,255,255,0.8); display:block; margin-bottom:6px; text-decoration:none; }
+  .menu-legal a:hover { color:white; }
 
   /* Main content */
   main { flex:1; padding:16px; display:flex; flex-direction:column; }
@@ -102,12 +106,12 @@
 <div class="menu-overlay" id="menuOverlay"></div>
 <div class="menu" id="menu">
   <div class="menu-header">
-    <button class="menu-close" id="menuClose">&times;</button>
+    <i class="fas fa-times" id="menuClose"></i>
   </div>
   <div class="menu-links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="itineraries.html">Itineraries</a>
-    <a href="account.html">Account</a>
+    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+    <a href="itineraries.html"><i class="fas fa-map"></i>Itineraries</a>
+    <a href="account.html"><i class="fas fa-user"></i>Account</a>
   </div>
   <div class="menu-legal">
     <a href="terms.html">Terms of Service</a>

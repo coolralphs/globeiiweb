@@ -183,12 +183,25 @@ h1{margin:16px 0;font-size:22px}
   box-shadow:0 4px 14px rgba(0,0,0,.08);
   display:flex;
   gap:14px;
+  align-items:center;
+  cursor:pointer;
+  transition:transform 0.1s;
+}
+
+.card:hover {
+  transform:translateY(-2px);
 }
 
 .card-icon{color:#0d6efd;font-size:20px;margin-top:4px}
 .card-title{font-weight:600}
 .card-dates{font-size:13px;color:#666;margin-top:2px}
 .card-meta{display:flex;gap:8px;margin-top:8px}
+
+.card-chevron{
+  margin-left:auto;
+  color:#0d6efd;
+  font-size:16px;
+}
 
 .tag{
   font-size:12px;
@@ -333,12 +346,10 @@ footer a:hover{color:black}
 </footer>
 
 <script>
-document.getElementById("year").textContent=new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 
 /* ===== UUID ===== */
-function uuidv4(){
-  return crypto.randomUUID();
-}
+function uuidv4(){ return crypto.randomUUID(); }
 
 /* ===== STATE ===== */
 let filter="active";
@@ -389,23 +400,21 @@ function render(){
             <span class="tag">${i.places} places</span>
           </div>
         </div>
-        <button class="open-btn" style="margin-left:8px;padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">
-          Open
-        </button>
+        <i class="fa-solid fa-chevron-right card-chevron"></i>
       </div>
     `);
   });
 
-  // Add click handler to all open buttons
-  document.querySelectorAll(".open-btn").forEach(btn=>{
-    btn.onclick=(e)=>{
-      const id = e.currentTarget.closest(".card").dataset.id;
+  // Make entire card clickable
+  document.querySelectorAll(".card").forEach(card=>{
+    card.onclick=(e)=>{
+      const id=card.dataset.id;
       alert(`Open itinerary with ID: ${id}`);
-      // Later you can replace this alert with opening a details page or modal
+      // Replace alert with modal/page navigation
     };
   });
 }
- 
+
 /* ===== FILTERS ===== */
 document.querySelectorAll(".filter").forEach(b=>{
  b.onclick=()=>{
@@ -483,6 +492,7 @@ closeMenu.onclick=overlay.onclick=()=>{
  overlay.style.display="none";
 };
 
+/* ===== INITIAL RENDER ===== */
 render();
 </script>
 

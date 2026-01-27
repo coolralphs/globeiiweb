@@ -6,62 +6,25 @@
 <title>Itineraries – Globeii</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
-  html, body {
-    margin:0;
-    padding:0;
-    height:100%;
-    font-family: Arial, sans-serif;
-  }
-
-  body {
-    display:flex;
-    flex-direction:column;
-    background:#f5f5f5;
-    min-height:100vh;
-  }
+  html, body { margin:0; padding:0; height:100%; font-family: Arial, sans-serif; }
+  body { display:flex; flex-direction:column; background:#f5f5f5; min-height:100vh; }
 
   header {
-    background:#0077cc;
-    color:white;
-    padding:16px;
-    text-align:center;
-    position:sticky;
-    top:0;
-    z-index:100;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    background:#0077cc; color:white; padding:16px; position:sticky; top:0; z-index:100;
+    display:flex; justify-content:space-between; align-items:center;
   }
   header h1 { margin:0; font-size:20px; }
+  .hamburger, .sort-btn { font-size:24px; cursor:pointer; display:flex; align-items:center; }
 
-  .hamburger { font-size:24px; cursor:pointer; display:flex; align-items:center; }
+  .dropdown-menu, .sort-menu {
+    display:none; position:absolute; background:#0077cc; color:white; border-radius:8px; padding:16px;
+    text-align:center; min-width:180px; z-index:200;
+  }
+  .dropdown-menu { top:60px; left:50%; transform:translateX(-50%); }
+  .dropdown-menu a, .sort-menu a { display:block; color:white; text-decoration:none; margin:8px 0; }
+  .dropdown-menu a:hover, .sort-menu a:hover { color:#cce0ff; }
 
-  .dropdown-menu {
-    display:none;
-    position:absolute;
-    top:60px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#0077cc;
-    color:white;
-    border-radius:8px;
-    padding:16px;
-    text-align:center;
-    min-width:200px;
-    z-index:200;
-  }
-  .dropdown-menu a {
-    display:block;
-    color:white;
-    text-decoration:none;
-    margin:8px 0;
-  }
-  .dropdown-menu a:hover { color:#cce0ff; }
-
-  main {
-    flex:1 0 auto;
-    padding:16px;
-  }
+  main { flex:1 0 auto; padding:16px; }
 
   .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
   .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; background:#ccc; color:#333; }
@@ -79,24 +42,14 @@
 
   .fab { position:fixed; bottom:80px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:300; }
 
-  footer {
-    text-align:center;
-    background:#f8f8f8;
-    padding:12px;
-    font-size:12px;
-    flex-shrink:0;
-    position:sticky;
-    bottom:0;
-  }
+  footer { text-align:center; background:#f8f8f8; padding:12px; font-size:12px; flex-shrink:0; position:sticky; bottom:0; }
   footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
   footer a:hover { text-decoration:underline; }
 
   html { overflow-x:hidden; }
-
-  /* Mobile spacing for FAB */
   @media(max-width:768px){
     main { margin-bottom:0; }
-    .fab { bottom:100px; } /* Ensure FAB floats above footer */
+    .fab { bottom:100px; }
   }
 </style>
 </head>
@@ -104,13 +57,26 @@
 
 <header>
   <h1>Itineraries</h1>
-  <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  <div style="display:flex; gap:12px; align-items:center;">
+    <div class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i></div>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </div>
 </header>
 
+<!-- Hamburger menu -->
 <div class="dropdown-menu" id="dropdownMenu">
   <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
   <a href="itineraries.html"><i class="fas fa-map"></i> Itineraries</a>
   <a href="account.html"><i class="fas fa-user"></i> Account</a>
+</div>
+
+<!-- Sort menu -->
+<div class="sort-menu" id="sortMenu">
+  <a href="#" data-sort="Name">Name</a>
+  <a href="#" data-sort="Start Date">Start Date</a>
+  <a href="#" data-sort="Owned vs Shared">Owned vs Shared</a>
+  <a href="#" data-sort="Place Count">Place Count</a>
+  <a href="#" id="toggleSortDir">Toggle Asc/Desc</a>
 </div>
 
 <main>
@@ -119,15 +85,6 @@
       <span class="filter-pill active" data-filter="Active">Active</span>
       <span class="filter-pill" data-filter="Archived">Archived</span>
       <span class="filter-pill" data-filter="All">All</span>
-    </div>
-    <div>
-      <label for="sortSelect">Sort: </label>
-      <select id="sortSelect">
-        <option value="Start Date" selected>Start Date</option>
-        <option value="Name">Name</option>
-        <option value="Owned vs Shared">Owned vs Shared</option>
-        <option value="Place Count">Place Count</option>
-      </select>
     </div>
   </div>
 
@@ -144,16 +101,18 @@
 <a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
 
 <script>
+let itineraries = [
+  {name:"Paris Trip", start:null, end:null, places:5, owned:true, archived:false},
+  {name:"Tokyo Adventure", start:null, end:null, places:3, owned:false, archived:false},
+];
+
 const itineraryList = document.getElementById('itineraryList');
 const filterPills = document.querySelectorAll('.filter-pill');
-const sortSelect = document.getElementById('sortSelect');
-let currentFilter = 'Active';
-let currentSort = 'Start Date';
-
-let itineraries = [
-  {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
-  {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
-];
+const sortBtn = document.getElementById('sortBtn');
+const sortMenu = document.getElementById('sortMenu');
+let currentFilter='Active';
+let currentSort='Start Date';
+let sortAsc=true;
 
 function renderItineraries(){
   itineraryList.innerHTML='';
@@ -163,20 +122,24 @@ function renderItineraries(){
     return true;
   });
   filtered.sort((a,b)=>{
+    let val=0;
     switch(currentSort){
-      case 'Name': return a.name.localeCompare(b.name);
-      case 'Start Date': return new Date(a.start)-new Date(b.start);
-      case 'Owned vs Shared': return (b.owned?1:0)-(a.owned?1:0);
-      case 'Place Count': return b.places - a.places;
+      case 'Name': val=a.name.localeCompare(b.name); break;
+      case 'Start Date':
+        val=(a.start?new Date(a.start):0)-(b.start?new Date(b.start):0); break;
+      case 'Owned vs Shared': val=(b.owned?1:0)-(a.owned?1:0); break;
+      case 'Place Count': val=b.places - a.places; break;
     }
+    return sortAsc?val:-val;
   });
+
   filtered.forEach(it=>{
-    const li = document.createElement('li');
+    const li=document.createElement('li');
     li.className='itinerary-item';
     li.innerHTML=`
       <div class="itinerary-details">
         <span class="itinerary-name">${it.name}</span>
-        <span class="itinerary-dates">${it.start} → ${it.end}</span>
+        <span class="itinerary-dates">${it.start?it.start:'—'} → ${it.end?it.end:'—'}</span>
         <span class="itinerary-places">Places: ${it.places}</span>
       </div>
       <div>
@@ -193,33 +156,52 @@ filterPills.forEach(pill=>{
   pill.addEventListener('click',()=>{
     filterPills.forEach(p=>p.classList.remove('active'));
     pill.classList.add('active');
-    currentFilter = pill.dataset.filter;
+    currentFilter=pill.dataset.filter;
     renderItineraries();
   });
 });
 
-sortSelect.addEventListener('change',()=>{
-  currentSort = sortSelect.value;
-  renderItineraries();
-});
-
-const fab = document.getElementById('fab');
-fab.addEventListener('click', ()=>{
-  const name = prompt("Enter itinerary name:");
+const fab=document.getElementById('fab');
+fab.addEventListener('click',()=>{
+  const name=prompt("Enter itinerary name:");
   if(!name) return;
-  const start = prompt("Start date (YYYY-MM-DD):","2026-01-01");
-  const end = prompt("End date (YYYY-MM-DD):","2026-01-02");
-  itineraries.unshift({name,start,end,places:0,owned:true,archived:false});
+  itineraries.unshift({name,start:null,end:null,places:0,owned:true,archived:false});
   renderItineraries();
 });
 
-const hamburger = document.getElementById('hamburger');
-const dropdownMenu = document.getElementById('dropdownMenu');
-let menuOpen = false;
-hamburger.addEventListener('click', ()=>{
-  menuOpen = !menuOpen;
-  dropdownMenu.style.display = menuOpen ? 'block' : 'none';
-  hamburger.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+// Hamburger menu toggle
+const hamburger=document.getElementById('hamburger');
+const dropdownMenu=document.getElementById('dropdownMenu');
+let menuOpen=false;
+hamburger.addEventListener('click',()=>{
+  menuOpen=!menuOpen;
+  dropdownMenu.style.display=menuOpen?'block':'none';
+  hamburger.innerHTML=menuOpen?'<i class="fas fa-times"></i>':'<i class="fas fa-bars"></i>';
+});
+
+// Sort menu toggle
+let sortOpen=false;
+sortBtn.addEventListener('click',()=>{
+  sortOpen=!sortOpen;
+  sortMenu.style.display=sortOpen?'block':'none';
+});
+
+// Sort options
+document.querySelectorAll('.sort-menu a[data-sort]').forEach(a=>{
+  a.addEventListener('click',()=>{
+    currentSort=a.dataset.sort;
+    renderItineraries();
+    sortMenu.style.display='none';
+    sortOpen=false;
+  });
+});
+
+// Toggle ascending/descending
+document.getElementById('toggleSortDir').addEventListener('click',()=>{
+  sortAsc=!sortAsc;
+  renderItineraries();
+  sortMenu.style.display='none';
+  sortOpen=false;
 });
 
 renderItineraries();

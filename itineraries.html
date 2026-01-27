@@ -12,9 +12,7 @@
   />
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -26,16 +24,14 @@
       overflow-x: hidden;
     }
 
-    /* =======================
-       TOP NAV BAR
-    ======================= */
+    /* ===== NAV ===== */
     .topbar {
       background: #0d6efd;
       color: white;
       padding: 14px 16px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -53,11 +49,17 @@
       font-size: 22px;
       cursor: pointer;
       position: relative;
-      z-index: 1100;
     }
 
     .hamburger i {
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .hamburger .fa-xmark {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: rotate(-90deg);
     }
 
     .hamburger.open .fa-bars {
@@ -67,20 +69,10 @@
 
     .hamburger.open .fa-xmark {
       opacity: 1;
-      transform: rotate(0deg);
+      transform: rotate(0);
     }
 
-    .hamburger .fa-xmark {
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      transform: rotate(-90deg);
-    }
-
-    /* =======================
-       DESKTOP MENU
-    ======================= */
+    /* Desktop Menu */
     .desktop-menu {
       position: absolute;
       top: 56px;
@@ -90,7 +82,7 @@
       display: none;
       flex-direction: column;
       min-width: 200px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
     }
 
     .desktop-menu a {
@@ -98,17 +90,15 @@
       text-decoration: none;
       padding: 12px 16px;
       display: flex;
-      align-items: center;
       gap: 10px;
+      align-items: center;
     }
 
     .desktop-menu a:hover {
       background: rgba(255,255,255,0.15);
     }
 
-    /* =======================
-       MOBILE SLIDE MENU
-    ======================= */
+    /* Mobile Menu */
     .overlay {
       position: fixed;
       inset: 0;
@@ -129,26 +119,18 @@
       z-index: 1100;
     }
 
-    .mobile-menu.open {
-      right: 0;
-    }
+    .mobile-menu.open { right: 0; }
 
     .mobile-menu a {
       color: white;
       text-decoration: none;
       padding: 14px 20px;
       display: flex;
-      align-items: center;
       gap: 12px;
+      align-items: center;
     }
 
-    .mobile-menu a:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    /* =======================
-       PAGE CONTENT
-    ======================= */
+    /* ===== CONTENT ===== */
     main {
       flex: 1;
       padding: 16px;
@@ -162,7 +144,7 @@
       font-size: 22px;
     }
 
-    /* FILTER + SORT ROW */
+    /* Controls */
     .controls {
       display: flex;
       align-items: center;
@@ -184,28 +166,35 @@
       color: white;
     }
 
+    /* Sort */
     .sort-wrapper {
       margin-left: auto;
       position: relative;
     }
 
     .sort-btn {
-      background: black;
+      background: #000;
       color: white;
       display: flex;
       align-items: center;
       gap: 8px;
+      border: 1px solid #333;
+      padding: 8px 14px;
+    }
+
+    .sort-btn:hover {
+      background: #111;
     }
 
     .sort-menu {
       position: absolute;
       right: 0;
-      top: 40px;
+      top: 42px;
       background: black;
       color: white;
       border-radius: 8px;
       display: none;
-      min-width: 180px;
+      min-width: 200px;
     }
 
     .sort-menu button {
@@ -220,19 +209,67 @@
       background: rgba(255,255,255,0.15);
     }
 
-    /* ITINERARIES */
+    /* ===== ITINERARY CARDS ===== */
     .card {
       background: white;
       margin-top: 12px;
       padding: 14px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
     }
 
-    /* ADD BUTTON */
+    .card-icon {
+      font-size: 20px;
+      color: #0d6efd;
+      margin-top: 4px;
+    }
+
+    .card-content {
+      flex: 1;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .card-dates {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #e9ecef;
+    }
+
+    .tag.owned {
+      background: #e7f1ff;
+      color: #0d6efd;
+    }
+
+    .tag.shared {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    /* ===== ADD BUTTON ===== */
     .add-btn {
       position: fixed;
-      bottom: 80px;
+      bottom: 16px;
       right: 16px;
       background: #0d6efd;
       color: white;
@@ -243,32 +280,24 @@
       font-size: 22px;
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      z-index: 900;
     }
 
-    /* =======================
-       FOOTER
-    ======================= */
+    /* ===== FOOTER ===== */
     footer {
       text-align: center;
       font-size: 14px;
       padding: 14px;
-      background: #ffffff;
+      background: white;
       border-top: 1px solid #ddd;
     }
 
     footer a {
-      color: #0d6efd;
       margin: 0 6px;
+      color: #0d6efd;
       text-decoration: none;
     }
 
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* =======================
-       RESPONSIVE
-    ======================= */
     @media (min-width: 768px) {
       .mobile-menu,
       .overlay {
@@ -280,7 +309,6 @@
 
 <body>
 
-  <!-- NAV -->
   <div class="topbar">
     <div class="brand">Globeii</div>
 
@@ -296,7 +324,6 @@
     </div>
   </div>
 
-  <!-- MOBILE -->
   <div class="overlay" id="overlay"></div>
   <nav class="mobile-menu" id="mobileMenu">
     <a href="#"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -304,7 +331,6 @@
     <a href="#"><i class="fa-solid fa-user"></i> Account</a>
   </nav>
 
-  <!-- CONTENT -->
   <main>
     <h1>Itineraries</h1>
 
@@ -324,11 +350,34 @@
       </div>
     </div>
 
-    <div class="card">Japan Trip — Jan 2026</div>
-    <div class="card">Italy Trip — Mar 2026</div>
+    <div class="card">
+      <i class="fa-solid fa-location-dot card-icon"></i>
+      <div class="card-content">
+        <div class="card-title">Japan Trip</div>
+        <div class="card-dates">Jan 10 – Jan 25, 2026</div>
+        <div class="card-meta">
+          <span class="tag owned">Owned</span>
+          <span class="tag">12 places</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <i class="fa-solid fa-location-dot card-icon"></i>
+      <div class="card-content">
+        <div class="card-title">Italy Trip</div>
+        <div class="card-dates">Mar 5 – Mar 18, 2026</div>
+        <div class="card-meta">
+          <span class="tag shared">Shared</span>
+          <span class="tag">9 places</span>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <button class="add-btn"><i class="fa-solid fa-plus"></i></button>
+  <button class="add-btn">
+    <i class="fa-solid fa-plus"></i>
+  </button>
 
   <footer>
     <a href="privacy.html">Privacy</a>
@@ -347,7 +396,6 @@
 
   hamburger.onclick = () => {
     hamburger.classList.toggle('open');
-
     if (window.innerWidth >= 768) {
       desktopMenu.style.display =
         desktopMenu.style.display === 'flex' ? 'none' : 'flex';
@@ -363,15 +411,14 @@
     overlay.style.display = 'none';
   };
 
-  sortBtn.onclick = () => {
+  sortBtn.onclick = (e) => {
+    e.stopPropagation();
     sortMenu.style.display =
       sortMenu.style.display === 'block' ? 'none' : 'block';
   };
 
-  document.addEventListener('click', (e) => {
-    if (!sortBtn.contains(e.target)) {
-      sortMenu.style.display = 'none';
-    }
+  document.addEventListener('click', () => {
+    sortMenu.style.display = 'none';
   });
 </script>
 

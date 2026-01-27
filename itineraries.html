@@ -14,20 +14,12 @@
     display:flex; justify-content:space-between; align-items:center;
   }
   header h1 { margin:0; font-size:20px; }
-  .hamburger, .sort-btn { font-size:24px; cursor:pointer; display:flex; align-items:center; }
-
-  .dropdown-menu, .sort-menu {
-    display:none; position:absolute; background:#0077cc; color:white; border-radius:8px; padding:16px;
-    text-align:center; min-width:180px; z-index:200;
-  }
-  .dropdown-menu { top:60px; left:50%; transform:translateX(-50%); }
-  .dropdown-menu a, .sort-menu a { display:block; color:white; text-decoration:none; margin:8px 0; }
-  .dropdown-menu a:hover, .sort-menu a:hover { color:#cce0ff; }
 
   main { flex:1 0 auto; padding:16px; }
 
-  .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
-  .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; background:#ccc; color:#333; }
+  .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+  .filter-left { display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-pill { padding:6px 16px; border-radius:20px; cursor:pointer; font-weight:500; background:#ccc; color:#333; }
   .filter-pill.active { background:#28a745; color:white; }
 
   .itinerary-list { list-style:none; padding:0; margin:0; }
@@ -46,6 +38,16 @@
   footer a { margin:0 8px; color:#0077cc; text-decoration:none; }
   footer a:hover { text-decoration:underline; }
 
+  .sort-btn { padding:6px 12px; background:#0077cc; color:white; border-radius:8px; cursor:pointer; font-size:14px; display:flex; align-items:center; }
+  .sort-btn:hover { background:#005fa3; }
+
+  .dropdown-menu {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#0077cc; color:white; z-index:200;
+    flex-direction:column; align-items:center; justify-content:center;
+  }
+  .dropdown-menu a { display:block; color:white; text-decoration:none; margin:12px 0; font-size:18px; }
+  .dropdown-menu a:hover { color:#cce0ff; }
+
   html { overflow-x:hidden; }
   @media(max-width:768px){
     main { margin-bottom:0; }
@@ -57,37 +59,19 @@
 
 <header>
   <h1>Itineraries</h1>
-  <div style="display:flex; gap:12px; align-items:center;">
-    <div class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i></div>
-    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
-  </div>
 </header>
 
-<!-- Hamburger menu -->
-<div class="dropdown-menu" id="dropdownMenu">
-  <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-  <a href="itineraries.html"><i class="fas fa-map"></i> Itineraries</a>
-  <a href="account.html"><i class="fas fa-user"></i> Account</a>
-</div>
-
-<!-- Sort menu -->
-<div class="sort-menu" id="sortMenu">
-  <a href="#" data-sort="Name">Name</a>
-  <a href="#" data-sort="Start Date">Start Date</a>
-  <a href="#" data-sort="Owned vs Shared">Owned vs Shared</a>
-  <a href="#" data-sort="Place Count">Place Count</a>
-  <a href="#" id="toggleSortDir">Toggle Asc/Desc</a>
+<!-- Filter Row + Sort button -->
+<div class="filter-row">
+  <div class="filter-left" id="filterPills">
+    <span class="filter-pill active" data-filter="Active">Active</span>
+    <span class="filter-pill" data-filter="Archived">Archived</span>
+    <span class="filter-pill" data-filter="All">All</span>
+  </div>
+  <div class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i> Sort</div>
 </div>
 
 <main>
-  <div class="filter-row">
-    <div id="filterPills">
-      <span class="filter-pill active" data-filter="Active">Active</span>
-      <span class="filter-pill" data-filter="Archived">Archived</span>
-      <span class="filter-pill" data-filter="All">All</span>
-    </div>
-  </div>
-
   <ul class="itinerary-list" id="itineraryList"></ul>
 </main>
 
@@ -100,10 +84,26 @@
 
 <a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
 
+<!-- Hamburger menu (full screen) -->
+<div class="dropdown-menu" id="dropdownMenu">
+  <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="itineraries.html"><i class="fas fa-map"></i> Itineraries</a>
+  <a href="account.html"><i class="fas fa-user"></i> Account</a>
+</div>
+
+<!-- Sort options menu -->
+<div class="dropdown-menu" id="sortMenu" style="display:none; background:#005fa3;">
+  <a href="#" data-sort="Name">Name</a>
+  <a href="#" data-sort="Start Date">Start Date</a>
+  <a href="#" data-sort="Owned vs Shared">Owned vs Shared</a>
+  <a href="#" data-sort="Place Count">Place Count</a>
+  <a href="#" id="toggleSortDir">Toggle Asc/Desc</a>
+</div>
+
 <script>
 let itineraries = [
-  {name:"Paris Trip", start:null, end:null, places:5, owned:true, archived:false},
-  {name:"Tokyo Adventure", start:null, end:null, places:3, owned:false, archived:false},
+  {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
+  {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
 ];
 
 const itineraryList = document.getElementById('itineraryList');
@@ -169,21 +169,42 @@ fab.addEventListener('click',()=>{
   renderItineraries();
 });
 
-// Hamburger menu toggle
-const hamburger=document.getElementById('hamburger');
+// Hamburger menu
 const dropdownMenu=document.getElementById('dropdownMenu');
 let menuOpen=false;
-hamburger.addEventListener('click',()=>{
-  menuOpen=!menuOpen;
-  dropdownMenu.style.display=menuOpen?'block':'none';
-  hamburger.innerHTML=menuOpen?'<i class="fas fa-times"></i>':'<i class="fas fa-bars"></i>';
-});
+document.body.insertAdjacentHTML('beforeend','<div id="menuOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:199;"></div>');
+const menuOverlay=document.getElementById('menuOverlay');
 
-// Sort menu toggle
+function openMenu(){
+  dropdownMenu.style.display='flex';
+  menuOverlay.style.display='block';
+  menuOpen=true;
+}
+function closeMenu(){
+  dropdownMenu.style.display='none';
+  menuOverlay.style.display='none';
+  menuOpen=false;
+}
+menuOverlay.addEventListener('click',closeMenu);
+
+const hamburgerBtn=document.createElement('div');
+hamburgerBtn.style.position='fixed';
+hamburgerBtn.style.top='18px';
+hamburgerBtn.style.right='16px';
+hamburgerBtn.style.fontSize='28px';
+hamburgerBtn.style.cursor='pointer';
+hamburgerBtn.innerHTML='<i class="fas fa-bars"></i>';
+hamburgerBtn.addEventListener('click',()=>menuOpen?closeMenu():openMenu());
+document.body.appendChild(hamburgerBtn);
+
+// Sort button toggle
 let sortOpen=false;
 sortBtn.addEventListener('click',()=>{
   sortOpen=!sortOpen;
   sortMenu.style.display=sortOpen?'block':'none';
+  sortMenu.style.position='absolute';
+  sortMenu.style.right='16px';
+  sortMenu.style.top=sortBtn.getBoundingClientRect().bottom + 'px';
 });
 
 // Sort options
@@ -195,8 +216,6 @@ document.querySelectorAll('.sort-menu a[data-sort]').forEach(a=>{
     sortOpen=false;
   });
 });
-
-// Toggle ascending/descending
 document.getElementById('toggleSortDir').addEventListener('click',()=>{
   sortAsc=!sortAsc;
   renderItineraries();

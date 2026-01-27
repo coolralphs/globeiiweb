@@ -2,41 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Globeii – Itineraries</title>
+<title>Itineraries – Globeii</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
   body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-  header { background:#0077cc; color:white; padding:16px; text-align:center; position:sticky; top:0; z-index:100; }
-  header h1 { margin:0; font-size:20px; }
+  header { background:#0077cc; color:white; padding:16px; text-align:center; position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; font-size:1.5em; }
   main { padding:16px; }
-  
-  /* Pills and sort */
-  .filter-row { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; align-items:center; padding:0 8px; }
-  .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; }
+  .filter-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding:0 8px; }
+  .filter-pill { padding:6px 16px; border-radius:20px; margin-right:8px; cursor:pointer; font-weight:500; background:#ccc; color:#333; user-select:none; }
   .filter-pill.active { background:#28a745; color:white; }
-  .filter-pill.inactive { background:#ccc; color:#333; }
-
-  .sort-btn {
-    background:#222;
-    color:#fff;
-    border:1px solid #222;
-    padding:6px 12px;
-    border-radius:6px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-  }
-  .sort-btn:hover { background:#333; }
-
-  .sort-menu li {
-    padding:6px 12px;
-    cursor:pointer;
-    list-style:none;
-  }
-  .sort-menu li:hover { background:#444; }
-
   .itinerary-list { list-style:none; padding:0; margin:0; }
   .itinerary-item { background:white; margin-bottom:8px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
   .itinerary-details { display:flex; flex-direction:column; }
@@ -46,99 +23,77 @@
   .badge-owned { background:#28a745; }
   .badge-shared { background:#007bff; }
   .badge-archived { background:#dc3545; }
-
-  button.fab, a.fab {
-    position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#28a745; color:white; font-size:28px; cursor:pointer; display:flex; justify-content:center; align-items:center; box-shadow:0 4px 6px rgba(0,0,0,0.2); text-decoration:none;
-  }
-
-  footer {
-    text-align:center;
-    margin-top:40px;
-    font-size:0.75em;
-    color:#555;
-    padding:16px 8px;
-    background: #f5f5f5;
-  }
-  footer a {
-    color:#666;
-    margin:0 4px;
-    text-decoration:none;
-  }
+  button.fab { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#28a745; color:white; font-size:28px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); display:flex; justify-content:center; align-items:center; }
+  footer { text-align:center; font-size:12px; color:#555; padding:16px; }
+  footer a { margin:0 8px; color:#777; text-decoration:none; }
   footer a:hover { color:black; }
-
-  /* Hamburger & mobile menu - keep previous styles */
-  /* ... your previous nav/menu CSS remains unchanged ... */
+  .sort-btn { background:#444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; }
+  .sort-btn i { margin-right:6px; } /* icon spacing */
+  .sort-menu { position:absolute; background:#444; color:white; border-radius:6px; padding:8px 0; display:none; min-width:160px; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:200; }
+  .sort-menu div { padding:6px 12px; cursor:pointer; }
+  .sort-menu div:hover { background:#555; }
 </style>
 </head>
-
 <body>
+
 <header>
   <h1>Globeii</h1>
+  <button class="sort-btn" id="sortBtn"><i class="fas fa-sort"></i>Sort</button>
 </header>
 
-<main>
-  <h2>Itineraries</h2>
+<h2 style="padding:0 16px;">Itineraries</h2>
 
-  <!-- Filter Row -->
+<main>
   <div class="filter-row">
     <div id="filterPills">
       <span class="filter-pill active" data-filter="Active">Active</span>
-      <span class="filter-pill inactive" data-filter="Archived">Archived</span>
-      <span class="filter-pill inactive" data-filter="All">All</span>
-    </div>
-
-    <div style="position:relative;">
-      <button id="sortBtn" class="sort-btn"><i class="fas fa-sort"></i> <span style="margin-left:6px;">Sort</span></button>
-      <ul id="sortMenu" class="sort-menu" style="display:none; position:absolute; right:0; top:36px; background:#333; color:white; padding:8px; border-radius:6px; min-width:160px; z-index:1000;">
-        <li data-sort="Start Date-asc">Start Date ↑</li>
-        <li data-sort="Start Date-desc">Start Date ↓</li>
-        <li data-sort="Name-asc">Name ↑</li>
-        <li data-sort="Name-desc">Name ↓</li>
-        <li data-sort="Owned vs Shared-asc">Owned vs Shared ↑</li>
-        <li data-sort="Owned vs Shared-desc">Owned vs Shared ↓</li>
-        <li data-sort="Place Count-asc">Place Count ↑</li>
-        <li data-sort="Place Count-desc">Place Count ↓</li>
-      </ul>
+      <span class="filter-pill" data-filter="Archived">Archived</span>
+      <span class="filter-pill" data-filter="All">All</span>
     </div>
   </div>
 
-  <!-- Itinerary List -->
   <ul class="itinerary-list" id="itineraryList"></ul>
 </main>
 
-<!-- Floating Add Button -->
-<a href="#" class="fab" id="addBtn">+</a>
-
 <footer>
-  <div>&copy; <span id="year"></span> Globeii</div>
-  <div>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="terms.html">Terms of Use</a>
-  </div>
+  <div>© <span id="year"></span> Globeii</div>
+  <div><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Use</a></div>
 </footer>
 
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
+<button class="fab" id="addBtn"><i class="fas fa-plus"></i></button>
 
-  // Hardcoded itineraries
+<!-- Sort Menu -->
+<div class="sort-menu" id="sortMenu">
+  <div data-sort="Name" data-order="asc">Name Asc</div>
+  <div data-sort="Name" data-order="desc">Name Desc</div>
+  <div data-sort="Start Date" data-order="asc">Start Date Asc</div>
+  <div data-sort="Start Date" data-order="desc">Start Date Desc</div>
+  <div data-sort="Owned vs Shared" data-order="asc">Owned First</div>
+  <div data-sort="Place Count" data-order="desc">Places Desc</div>
+</div>
+
+<script>
+  document.getElementById('year').innerText = new Date().getFullYear();
+
   let itineraries = [
     {name:"Paris Trip", start:"2026-02-10", end:"2026-02-17", places:5, owned:true, archived:false},
     {name:"Tokyo Adventure", start:"2026-03-05", end:"2026-03-12", places:3, owned:false, archived:false},
     {name:"NYC Weekend", start:"2026-01-30", end:"2026-02-01", places:0, owned:true, archived:true},
-    {name:"London Tour", start:"2026-04-01", end:"2026-04-07", places:8, owned:true, archived:false},
-    {name:"Sydney Trip", start:"2026-05-12", end:"2026-05-19", places:6, owned:false, archived:false},
-    {name:"Rome Escape", start:"2026-06-15", end:"2026-06-21", places:4, owned:true, archived:false},
-    {name:"Barcelona Break", start:"2026-07-10", end:"2026-07-16", places:7, owned:false, archived:true},
-    {name:"Dubai Adventure", start:"2026-08-05", end:"2026-08-12", places:5, owned:true, archived:false}
+    {name:"London Escape", start:"2026-04-10", end:"2026-04-15", places:4, owned:true, archived:false},
+    {name:"Rome Getaway", start:"2026-05-01", end:"2026-05-07", places:6, owned:false, archived:false},
+    {name:"Barcelona Trip", start:"2026-06-12", end:"2026-06-18", places:2, owned:true, archived:false},
+    {name:"Sydney Vacation", start:"2026-07-20", end:"2026-07-27", places:7, owned:false, archived:false},
+    {name:"Cairo Adventure", start:"2026-08-05", end:"2026-08-12", places:3, owned:true, archived:false},
   ];
 
   const itineraryList = document.getElementById('itineraryList');
   const filterPills = document.querySelectorAll('.filter-pill');
+  let currentFilter = 'Active';
+  let currentSort = 'Start Date';
+  let currentOrder = 'asc';
+
   const sortBtn = document.getElementById('sortBtn');
   const sortMenu = document.getElementById('sortMenu');
-
-  let currentFilter = 'Active';
-  let currentSort = 'Start Date-asc';
 
   function renderItineraries() {
     itineraryList.innerHTML = '';
@@ -147,35 +102,45 @@
       if (currentFilter==='Archived') return it.archived;
       return true;
     });
-
     // Sorting
-    const [field, order] = currentSort.split('-');
-    filtered.sort((a, b) => {
-      let res = 0;
-      switch(field){
-        case 'Name': res = a.name.localeCompare(b.name); break;
-        case 'Start Date': 
-          res = (a.start ? new Date(a.start) : new Date(0)) - (b.start ? new Date(b.start) : new Date(0));
+    filtered.sort((a,b)=>{
+      let valA, valB;
+      switch(currentSort){
+        case 'Name':
+          valA = a.name.toLowerCase();
+          valB = b.name.toLowerCase();
           break;
-        case 'Owned vs Shared': res = (b.owned?1:0)-(a.owned?1:0); break;
-        case 'Place Count': res = b.places - a.places; break;
+        case 'Start Date':
+          valA = a.start ? new Date(a.start) : new Date(0);
+          valB = b.start ? new Date(b.start) : new Date(0);
+          break;
+        case 'Owned vs Shared':
+          valA = a.owned?1:0;
+          valB = b.owned?1:0;
+          break;
+        case 'Place Count':
+          valA = a.places;
+          valB = b.places;
+          break;
       }
-      return order==='asc'? res : -res;
+      if(valA < valB) return currentOrder==='asc'? -1 : 1;
+      if(valA > valB) return currentOrder==='asc'? 1 : -1;
+      return 0;
     });
-
     filtered.forEach(it=>{
       const li = document.createElement('li');
-      li.className='itinerary-item';
+      li.className = 'itinerary-item';
       li.innerHTML = `
+        <div style="margin-right:8px;"><i class="fas fa-map-marker-alt"></i></div>
         <div class="itinerary-details">
-          <span class="itinerary-name"><i class="fas fa-map-marker-alt"></i> ${it.name}</span>
-          <span class="itinerary-dates">${it.start ? it.start + ' → ' + (it.end||'') : ''}</span>
+          <span class="itinerary-name">${it.name}</span>
+          <span class="itinerary-dates">${it.start || ''} → ${it.end || ''}</span>
           <span class="itinerary-places">Places: ${it.places}</span>
-        </div>
-        <div>
-          ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
-          ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
-          ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
+          <div>
+            ${it.owned?'<span class="badge badge-owned">Owned</span>':''}
+            ${!it.owned?'<span class="badge badge-shared">Shared</span>':''}
+            ${it.archived?'<span class="badge badge-archived">Archived</span>':''}
+          </div>
         </div>
       `;
       itineraryList.appendChild(li);
@@ -186,39 +151,49 @@
     pill.addEventListener('click',()=>{
       filterPills.forEach(p=>p.classList.remove('active'));
       filterPills.forEach(p=>p.classList.add('inactive'));
-      pill.classList.add('active'); pill.classList.remove('inactive');
+      pill.classList.add('active');
+      pill.classList.remove('inactive');
       currentFilter = pill.dataset.filter;
       renderItineraries();
     });
   });
 
-  // Sort menu behavior
+  // Sort button events
   sortBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    sortMenu.style.display = sortMenu.style.display==='block' ? 'none':'block';
+    const rect = sortBtn.getBoundingClientRect();
+    sortMenu.style.display = sortMenu.style.display==='block'?'none':'block';
+    sortMenu.style.top = rect.bottom + 'px';
+    sortMenu.style.left = rect.right - sortMenu.offsetWidth + 'px';
   });
 
-  document.addEventListener('click', ()=>{ sortMenu.style.display='none'; });
-
-  sortMenu.querySelectorAll('li').forEach(item=>{
+  // Sort menu selection
+  sortMenu.querySelectorAll('div').forEach(item=>{
     item.addEventListener('click', ()=>{
       currentSort = item.dataset.sort;
+      currentOrder = item.dataset.order;
       sortMenu.style.display='none';
       renderItineraries();
     });
   });
 
-  // Add itinerary modal (simple prompt)
+  // Click outside to close sort menu
+  document.addEventListener('click', (e)=>{
+    if(!sortMenu.contains(e.target) && !sortBtn.contains(e.target)){
+      sortMenu.style.display='none';
+    }
+  });
+
+  // Add itinerary
   const addBtn = document.getElementById('addBtn');
   addBtn.addEventListener('click', ()=>{
     const name = prompt("Enter itinerary name:");
     if(!name) return;
-    itineraries.unshift({name:start=null,end:null,places:0,owned:true,archived:false});
+    itineraries.unshift({name,start:null,end:null,places:0,owned:true,archived:false});
     renderItineraries();
   });
 
-  // Initial render
   renderItineraries();
 </script>
+
 </body>
 </html>

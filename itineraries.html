@@ -49,7 +49,9 @@
     .fab { position:fixed; bottom:70px; right:20px; background:#28a745; color:white; border-radius:50%; width:56px; height:56px; display:flex; justify-content:center; align-items:center; font-size:28px; text-decoration:none; box-shadow:0 4px 6px rgba(0,0,0,0.2); z-index:999; }
 
     /* Footer */
-    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; position:sticky; bottom:0; width:100%; }
+    footer { text-align:center; font-size:12px; color:#555; padding:16px; background:#f8f8f8; margin-top:auto; width:100%; }
+    footer a { margin:0 6px; color:#0077cc; text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
@@ -60,9 +62,6 @@
       <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
       <li><a href="#"><i class="fas fa-map"></i> Itineraries</a></li>
       <li><a href="#"><i class="fas fa-user"></i> Account</a></li>
-      <li><a href="#"><i class="fas fa-file-contract"></i> Terms</a></li>
-      <li><a href="#"><i class="fas fa-user-secret"></i> Privacy</a></li>
-      <li><a href="#"><i class="fas fa-money-bill-wave"></i> Refund</a></li>
     </ul>
   </nav>
 
@@ -90,7 +89,10 @@
   </main>
 
   <footer>
-    © 2026 Globeii
+    <a href="terms.html">Terms of Service</a> |
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="refund.html">Refund Policy</a>
+    <div>© 2026 Globeii</div>
   </footer>
 
   <a href="#" class="fab" id="fab"><i class="fas fa-plus"></i></a>
@@ -132,7 +134,6 @@
         return true;
       });
 
-      // Sorting
       filtered.sort((a,b)=>{
         switch(currentSort){
           case 'Name': return a.name.localeCompare(b.name);

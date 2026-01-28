@@ -500,7 +500,7 @@ footer a:hover {
 .signup-text {
   color: #6c757d;         /* muted text */
   text-align: center;
-  font-size: 0.79rem;      /* slightly smaller than before */
+  font-size: 0.75rem;      /* slightly smaller than before */
   margin-top: 20px;       /* extra spacing from the button above */
 }
 

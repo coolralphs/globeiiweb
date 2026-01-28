@@ -58,6 +58,21 @@ body.menu-open {
   gap: 6px;
 }
 
+.nav-links > a,
+.nav-links > .dropdown {
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links > a,
+.nav-links .dropdown-toggle {
+  padding: 0 14px;
+}
+
+.nav-links .dropdown {
+  margin: 0 !important;
+}
+
 /* Make desktop account dropdown open to the left */
 #accountDropdown {
   position: relative;
@@ -110,14 +125,26 @@ body.menu-open {
 }
 
 .mobile-menu a {
+  display: flex;               /* flex container */
+  flex-direction: row;          /* ensure row layout */
+  align-items: center;          /* vertical center */
+  gap: 10px;                    /* space between icon and text */
+  padding: 14px 18px;
   color: white;
   text-decoration: none;
-  padding: 14px 18px;
-  display: flex;
+  font-size: 16px;
+  line-height: 1;               /* prevents extra height from text */
+  white-space: nowrap;          /* prevents wrapping onto next line */
+}
+
+.mobile-menu a i {
+  display: inline-flex;         /* ensure icon behaves as flex item */
   align-items: center;
-  gap: 10px;
-   /* padding-left: 25px !important;
-   padding-left: 25px !important; */
+  justify-content: center;
+  width: 20px;                  /* fixed width to align all icons */
+  min-width: 20px;              /* prevents stacking */
+  font-size: 16px;              /* match text size */
+  line-height: 1;
 }
 
 .mobile-menu a:hover {
@@ -229,8 +256,22 @@ body.menu-open {
 
 /* =========================
    MOBILE NAV BUTTONS (Sign Out / Log In)
-   ========================= */
-/* Mobile Sign Out / Log In buttons inside the mobile menu */
+
+   /* Mobile auth buttons (Log In / Sign Out) */
+#loginMobileBtn,
+#signOutMobileBtn {
+  display: block;
+  width: auto;                 /* NOT full width */
+  margin: 12px 18px 0;         /* spacing from menu edges */
+  padding: 10px 18px;          /* horizontal + vertical padding */
+  text-align: center;          /* center the text */
+  border-radius: 6px;
+}
+
+#loginMobileBtn:hover {
+  background-color: #111 !important;
+}
+
 #mobileAccountDropdown > #signOutMobileBtn,
 #mobileAccountDropdown > #loginMobileBtn {
   display: block;           /* make buttons block elements */
@@ -252,50 +293,49 @@ body.menu-open {
 /* Mobile account toggle styled like links but denoting dropdown */
 #mobileAccountToggle {
   display: flex;
-  align-items: center;    /* icon + text vertically centered */
-  gap: 10px;              /* space between icon and text */
-  padding: 14px 18px;     /* same as other links */
+  flex-direction: row;       /* horizontal layout */
+  align-items: center;       /* vertically center icon + text */
+  justify-content: space-between; /* push arrow to right */
+  gap: 10px;                 /* space between icon and text */
+  padding: 14px 18px;        /* same as <a> links */
+  font-size: 16px;           /* same as <a> links */
+  line-height: 1;            /* remove extra height */
   background: none;
   border: none;
   color: white;
-  text-align: left;
   width: 100%;
+  text-align: left;
   cursor: pointer;
-  font-size: 16px;
-  position: relative;
-  transition: background 0.2s;
+  box-sizing: border-box;    /* include padding in height */
 }
-
 #mobileAccountToggle:hover {
   background: rgba(255, 255, 255, 0.15); /* match hover of links */
 }
 
-/* Arrow indicating dropdown */
 #mobileAccountToggle .arrow {
-  margin-left: auto;          /* push to right */
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease;
-  color: #fff;                /* could make slightly lighter if needed */
-  font-size: 14px;            /* slightly bigger for visibility */
+}
+
+/* Optional: when expanded, same background as link hover */
+#mobileAccountToggle.expanded {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 #mobileAccountToggle.expanded .arrow {
   transform: rotate(90deg);   /* rotates on expand */
 }
 
-/* Highlight Account toggle when expanded */
-#mobileAccountToggle.expanded {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Keep hover consistent */
-#mobileAccountToggle:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 /* =========================
    DESKTOP LOGIN BUTTON
    ========================= */
 .nav-login-btn {
+  margin-left: 16px;
   padding-left: 16px;
   padding-right: 16px;
   display: flex;
@@ -318,10 +358,21 @@ body.menu-open {
     display: block;
   }
 
-  /* Reduce spacing between icon and account text */
-  #mobileAccountMenu li a i {
-    margin-right: 8px;
-  }
+/* Remove extra padding from icon inside submenu */
+#mobileAccountMenu li a i {
+  margin: 0;                /* no extra right margin */
+  padding: 0;               /* remove inline padding */
+  width: 18px;              /* optional: fixed icon width to align all icons */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Optional: fix span text alignment */
+#mobileAccountMenu li a span {
+  display: inline-block;
+  flex: 1;                  /* fill remaining space if needed */
+}
 
   /* Ensure Sign Out button padding stays correct */
   #signOutMobileBtn {

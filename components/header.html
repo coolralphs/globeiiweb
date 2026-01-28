@@ -6,19 +6,25 @@
   </div>
 
   <div class="nav-links" id="navLinks">
-    <a href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-    <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i> Itineraries</a>
+    <a href="index.html" id="navDashboard">
+      <i class="fa-solid fa-dashboard"></i> Dashboard
+    </a>
 
-    <!-- Desktop Account Dropdown -->
+    <a href="itineraries.html" id="navItineraries">
+      <i class="fa-solid fa-map-location-dot"></i> Itineraries
+    </a>
+
+    <!-- Desktop Account -->
     <div class="dropdown" id="accountDropdown">
-      <button class="btn dropdown-toggle text-white" type="button" id="accountMenuButton">
+      <button class="btn dropdown-toggle text-white" type="button">
         <i class="fa-solid fa-user"></i> Account
       </button>
       <ul class="dropdown-menu" id="accountMenu"></ul>
     </div>
 
-    <!-- Desktop Log In Button -->
-    <a href="login.html" class="btn btn-dark btn-sm nav-login-btn" id="loginDesktopBtn">Log In</a>
+    <a href="login.html" class="btn btn-dark btn-sm nav-login-btn" id="loginDesktopBtn">
+      Log In
+    </a>
   </div>
 
   <button class="hamburger" id="hamburger">
@@ -27,7 +33,6 @@
   </button>
 </header>
 
-<!-- Mobile menu -->
 <div class="overlay" id="overlay"></div>
 
 <nav class="mobile-menu" id="mobileMenu">
@@ -35,22 +40,25 @@
     <i id="closeMenu" class="fa-solid fa-xmark"></i>
   </div>
 
-  <a href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-  <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i> Itineraries</a>
+  <a href="index.html" id="mobileDashboard">
+    <i class="fa-solid fa-dashboard"></i> Dashboard
+  </a>
+
+  <a href="itineraries.html" id="mobileItineraries">
+    <i class="fa-solid fa-map-location-dot"></i> <span style="padding-left:6px;"> Itineraries</span>
+  </a>
 
   <div id="mobileAccountDropdown">
-    <!-- <button id="mobileAccountToggle" class="mobile-account-btn">
-      <i class="fa-solid fa-user"></i> Account
-       <i class="fa-solid fa-chevron-right arrow"></i>
-    </button> -->
     <button id="mobileAccountToggle" class="mobile-account-btn">
-  <i class="fa-solid fa-user"></i> Account
-  <i class="fa-solid fa-chevron-right arrow"></i>
-</button>
+      <i class="fa-solid fa-user" style="padding-left:4px;"></i>
+      <span style="padding-left:2px;">Account</span>
+      <i class="fa-solid fa-chevron-right arrow"></i>
+    </button>
 
-    <ul id="mobileAccountMenu" class="collapsed"></ul>
+    <ul id="mobileAccountMenu"></ul>
 
     <button class="btn btn-dark mt-2" id="signOutMobileBtn">Sign Out</button>
-    <a href="login.html" class="btn btn-dark mt-2 " id="loginMobileBtn">Log In</a>
   </div>
-</nav>  
+
+  <a href="login.html" class="btn btn-dark mt-2" id="loginMobileBtn">Log In</a>
+</nav>

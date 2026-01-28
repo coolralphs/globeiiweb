@@ -6,16 +6,19 @@
   </div>
 
   <div class="nav-links" id="navLinks">
-    <a href="index.html"><i class="fa-solid fa-house"></i>Dashboard</a>
-    <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+    <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i> Itineraries</a>
 
-    <!-- Account dropdown -->
+    <!-- Desktop Account Dropdown -->
     <div class="dropdown" id="accountDropdown">
-      <a href="account-dashboard.html"><i class="fa-solid fa-user"></i>Account</a>
-      <ul class="dropdown-menu" id="accountMenu">
-        <!-- JS will inject "Sign Out" if logged in -->
-      </ul>
+      <button class="btn dropdown-toggle text-white" type="button" id="accountMenuButton">
+        <i class="fa-solid fa-user"></i> Account
+      </button>
+      <ul class="dropdown-menu" id="accountMenu"></ul>
     </div>
+
+    <!-- Desktop Log In Button -->
+    <a href="login.html" class="btn btn-dark btn-sm nav-login-btn" id="loginDesktopBtn">Log In</a>
   </div>
 
   <button class="hamburger" id="hamburger">
@@ -26,18 +29,28 @@
 
 <!-- Mobile menu -->
 <div class="overlay" id="overlay"></div>
+
 <nav class="mobile-menu" id="mobileMenu">
   <div class="mobile-menu-header">
-  <button id="closeMenu" style="background:none; border:none; color:white; font-size:24px;">
-    <i class="fa-solid fa-xmark"></i>
-  </button>
-</div>
-  <a href="index.html"><i class="fa-solid fa-house"></i>Dashboard</a>
-  <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
-  <div id="mobileAccountDropdown">
-    <a href="account-dashboard.html"><i class="fa-solid fa-user"></i>Account</a>
-    <ul id="mobileAccountMenu">
-      <!-- JS will inject "Sign Out" if logged in -->
-    </ul>
+    <i id="closeMenu" class="fa-solid fa-xmark"></i>
   </div>
-</nav>
+
+  <a href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+  <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i> Itineraries</a>
+
+  <div id="mobileAccountDropdown">
+    <!-- <button id="mobileAccountToggle" class="mobile-account-btn">
+      <i class="fa-solid fa-user"></i> Account
+       <i class="fa-solid fa-chevron-right arrow"></i>
+    </button> -->
+    <button id="mobileAccountToggle" class="mobile-account-btn">
+  <i class="fa-solid fa-user"></i> Account
+  <i class="fa-solid fa-chevron-right arrow"></i>
+</button>
+
+    <ul id="mobileAccountMenu" class="collapsed"></ul>
+
+    <button class="btn btn-dark mt-2" id="signOutMobileBtn">Sign Out</button>
+    <a href="login.html" class="btn btn-dark mt-2 " id="loginMobileBtn">Log In</a>
+  </div>
+</nav>  

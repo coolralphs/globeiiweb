@@ -44,19 +44,10 @@ body.menu-open {
   z-index: 1000;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-}
-
-.brand-logo {
-  height: 32px;
-  width: auto;
-}
-
 .nav-links {
-  display: none;
-  gap: 22px;
+  display: flex;
+  gap: 0; /* remove gap */
+  align-items: center;
 }
 
 .nav-links a {
@@ -65,11 +56,292 @@ body.menu-open {
   display: flex;
   align-items: center;
   gap: 6px;
-  opacity: 0.9;
 }
 
-.nav-links a:hover {
-  opacity: 1;
+/* Make desktop account dropdown open to the left */
+#accountDropdown {
+  position: relative;
+}
+
+#accountDropdown .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  min-width: 220px;
+  z-index: 2000;
+}
+
+#accountDropdown .dropdown-item {
+  color: black !important;
+}
+
+#accountDropdown .dropdown-item:hover {
+  background-color: #f0f0f0;
+  color: black !important;
+}
+
+#accountDropdown button#desktopSignOutBtn {
+  width: 100%;
+}
+
+/* =========================
+   MOBILE MENU (existing)
+   ========================= */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100%;
+  background: #0d6efd;
+  transition: 0.3s;
+  z-index: 1100;
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 18px;
+}
+
+.mobile-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+   /* padding-left: 25px !important;
+   padding-left: 25px !important; */
+}
+
+.mobile-menu a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Remove bullets from mobile menu lists */
+.mobile-menu ul,
+.mobile-menu li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Mobile login/sign-out button */
+.mobile-login-btn.btn-dark,
+.mobile-login-btn.btn-dark:hover,
+.mobile-login-btn.btn-dark:focus,
+.mobile-login-btn.btn-dark:active {
+  background-color: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+.mobile-login-btn.btn-dark:hover {
+  background-color: #111 !important;
+}
+
+/* Mobile Account dropdown */
+#mobileAccountDropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Toggle button */
+.mobile-account-btn {
+  background: none;
+  border: none;
+  color: white;
+  width: 100%;
+  text-align: left;
+  padding: 14px 18px;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.mobile-account-btn .arrow {
+  transition: transform 0.2s ease;
+}
+
+.mobile-account-btn.expanded .arrow {
+  transform: rotate(90deg);
+}
+
+/* =========================
+   MOBILE ACCOUNT SUBMENU LINKS
+   ========================= */
+/* Mobile Account submenu */
+#mobileAccountMenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+
+#mobileAccountMenu.expanded {
+  display: block;
+}
+
+/* Submenu links */
+#mobileAccountMenu li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: white;
+  text-decoration: none;
+
+  padding: 14px 18px;       /* same vertical padding */
+  padding-left: 36px;       /* 👈 indent ENTIRE row (icon + text) */
+
+  transition: background 0.2s;
+}
+
+#mobileAccountMenu li a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  color: white;
+}
+
+/* Icon spacing stays normal */
+#mobileAccountMenu li a i {
+  margin-right: 6px;
+}
+
+/* =========================
+   MOBILE MENU CLOSE ICON
+   ========================= */
+.mobile-menu-header i#closeMenu {
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+
+/* =========================
+   MOBILE NAV BUTTONS (Sign Out / Log In)
+   ========================= */
+/* Mobile Sign Out / Log In buttons inside the mobile menu */
+#mobileAccountDropdown > #signOutMobileBtn,
+#mobileAccountDropdown > #loginMobileBtn {
+  display: block;           /* make buttons block elements */
+  width: calc(100% - 36px); /* full width minus left/right padding */
+  margin: 10px 18px 0 18px; /* top margin 10px, left/right 18px */
+  padding: 12px;            /* top/bottom 12px, left/right automatically from margin */
+  text-align: left;         /* align text to left */
+  border-radius: 6px;
+  box-sizing: border-box;   /* include padding in width */
+  font-size: 16px;
+  text-align: center;
+}
+
+#mobileAccountDropdown > #signOutMobileBtn:hover,
+#mobileAccountDropdown > #loginMobileBtn:hover {
+  background-color: #111 !important;
+}
+
+/* Mobile account toggle styled like links but denoting dropdown */
+#mobileAccountToggle {
+  display: flex;
+  align-items: center;    /* icon + text vertically centered */
+  gap: 10px;              /* space between icon and text */
+  padding: 14px 18px;     /* same as other links */
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+#mobileAccountToggle:hover {
+  background: rgba(255, 255, 255, 0.15); /* match hover of links */
+}
+
+/* Arrow indicating dropdown */
+#mobileAccountToggle .arrow {
+  margin-left: auto;          /* push to right */
+  transition: transform 0.2s ease;
+  color: #fff;                /* could make slightly lighter if needed */
+  font-size: 14px;            /* slightly bigger for visibility */
+}
+
+#mobileAccountToggle.expanded .arrow {
+  transform: rotate(90deg);   /* rotates on expand */
+}
+
+/* Highlight Account toggle when expanded */
+#mobileAccountToggle.expanded {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Keep hover consistent */
+#mobileAccountToggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================
+   DESKTOP LOGIN BUTTON
+   ========================= */
+.nav-login-btn {
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  align-items: center; /* vertically center text */
+  justify-content: center; /* optional: centers text horizontally inside the button */
+  height: 36px; /* match btn-sm height */
+  line-height: 1; /* reset line-height */
+}
+
+/* =========================
+   MOBILE RESPONSIVE FIXES
+   ========================= */
+@media(max-width: 767px) {
+  /* Hide desktop nav links */
+  .nav-links {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  /* Reduce spacing between icon and account text */
+  #mobileAccountMenu li a i {
+    margin-right: 8px;
+  }
+
+  /* Ensure Sign Out button padding stays correct */
+  #signOutMobileBtn {
+    padding-left: 16px;
+    padding-right: 16px;
+    width: calc(100% - 32px);
+  }
+}
+
+/* =========================
+   BRAND / HAMBURGER
+   ========================= */
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
 }
 
 .hamburger {
@@ -116,7 +388,7 @@ body.menu-open {
 }
 
 /* =========================
-   MOBILE MENU
+   OVERLAY
    ========================= */
 .overlay {
   position: fixed;
@@ -126,64 +398,8 @@ body.menu-open {
   z-index: 1050;
 }
 
-.mobile-menu {
-  position: fixed;
-  top: 0;
-  right: -300px;
-  width: 300px;
-  height: 100%;
-  background: #0d6efd;
-  transition: 0.3s;
-  z-index: 1100;
-}
-
-.mobile-menu.open {
-  right: 0;
-}
-
-.mobile-menu-header {
-  display: flex;
-  justify-content: flex-end;
-  padding: 14px 18px;
-}
-
-.mobile-menu a {
-  color: white;
-  text-decoration: none;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mobile-menu a:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Remove bullets from mobile menu lists */
-.mobile-menu ul,
-.mobile-menu li {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Mobile login/sign-out button */
-.mobile-login-btn.btn-dark,
-.mobile-login-btn.btn-dark:hover,
-.mobile-login-btn.btn-dark:focus,
-.mobile-login-btn.btn-dark:active {
-  background-color: #000 !important;
-  border-color: #000 !important;
-  color: #fff !important;
-}
-
-.mobile-login-btn.btn-dark:hover {
-  background-color: #111 !important;
-}
-
 /* =========================
-   HERO SECTION (index.html)
+   HERO SECTION
    ========================= */
 .hero {
   height: 400px;
@@ -228,7 +444,7 @@ body.menu-open {
 }
 
 /* =========================
-   MAIN CONTENT (index.html / shared)
+   MAIN CONTENT
    ========================= */
 .container-center {
   min-height: calc(100vh - 450px);
@@ -242,7 +458,7 @@ body.menu-open {
 }
 
 /* =========================
-   ACCOUNT DASHBOARD (account-dashboard.html)
+   ACCOUNT DASHBOARD
    ========================= */
 .dashboard-container {
   min-height: calc(100vh - 140px);
@@ -277,7 +493,7 @@ body.menu-open {
 }
 
 /* =========================
-   CARDS (shared)
+   CARDS
    ========================= */
 .card {
   background: white;
@@ -361,7 +577,7 @@ body.menu-open {
 }
 
 /* =========================
-   ADD MODAL
+   MODALS
    ========================= */
 .modal-overlay {
   position: fixed;
@@ -369,15 +585,6 @@ body.menu-open {
   background: rgba(0, 0, 0, 0.45);
   display: none;
   z-index: 1200;
-}
-
-.modal {
-  background: white;
-  max-width: 360px;
-  margin: auto;
-  margin-top: 60vh;
-  padding: 20px;
-  border-radius: 14px;
 }
 
 .modal-actions {
@@ -408,7 +615,7 @@ footer a:hover {
 }
 
 /* =========================
-   RESPONSIVE MEDIA
+   RESPONSIVE
    ========================= */
 @media(min-width:768px) {
   .hamburger {
@@ -418,19 +625,6 @@ footer a:hover {
   .nav-links {
     display: flex;
   }
-}
-
-/* =========================
-   ACCOUNT DROPDOWNS
-   ========================= */
-#accountDropdown .dropdown-menu {
-  left: 0 !important;   /* open to the left of the account link */
-  right: auto !important;
-}
-
-#mobileAccountMenu li button {
-  color: white;         
-  padding-left: 24px;   
 }
 
 /* =========================
@@ -452,18 +646,15 @@ footer a:hover {
 /* =========================
    LOGIN PAGE
    ========================= */
-
-/* Container for login form */
 .signin-container {
   display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center;     /* vertical center */
-  padding: 20px;           /* some breathing room */
-  min-height: calc(100vh - 100px); /* full screen minus header */
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: calc(100vh - 100px);
   flex: 1;
 }
 
-/* Form card */
 .signin-form {
   background-color: #fff;
   padding: 30px;
@@ -473,19 +664,16 @@ footer a:hover {
   max-width: 400px;
 }
 
-/* Form fields */
 .signin-form .form-control {
   margin-bottom: 15px;
 }
 
-/* Error message */
 .signin-form #errorMsg {
   color: red;
   margin-bottom: 15px;
   text-align: center;
 }
 
-/* Minimal header for login page (just logo) */
 .login-header {
   background-color: #f8f9fa;
   padding: 10px 0;
@@ -498,27 +686,48 @@ footer a:hover {
 
 .terms-notice,
 .signup-text {
-  color: #6c757d;         /* muted text */
+  color: #6c757d;
   text-align: center;
-  font-size: 0.75rem;      /* slightly smaller than before */
-  margin-top: 20px;       /* extra spacing from the button above */
+  font-size: 0.75rem;
+  margin-top: 20px;
 }
 
 .terms-notice a,
 .signup-text a {
-  color: #6c757d;        
-  text-decoration: underline !important; /* always underlined */
+  color: #6c757d;
+  text-decoration: underline !important;
 }
 
 .terms-notice a:hover,
 .signup-text a:hover {
-  color: #5a6268;         /* slightly darker on hover */
+  color: #5a6268;
 }
 
-/* Footer always at bottom */
-/* .login-footer {
-  background-color: #f8f9fa;
-  padding: 15px 0;
-  text-align: center;
-  margin-top: auto; 
-} */
+/* =========================
+   PROFILE ROWS
+   ========================= */
+.profile-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.profile-row .label {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.profile-row .value {
+  font-weight: 500;
+  color: #212529;
+  word-break: break-word;
+}

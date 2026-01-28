@@ -7,24 +7,28 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
 
-  <!-- Supabase JS SDK -->
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-  <!-- Header placeholder -->
+  <!-- HEADER -->
   <div id="header-placeholder"></div>
 
-  <!-- Dashboard container -->
-  <div class="dashboard-container container" id="dashboardContent" style="display:none;">
-
-    <h2 class="dashboard-heading">Account Management</h2>
+  <!-- DASHBOARD CONTENT -->
+  <main class="flex-fill container my-4" id="dashboardContent" style="display:none;">
+    <h2 class="mb-4 text-center">Account Management</h2>
 
     <!-- Profile Group -->
-    <div class="dashboard-group">
+    <div class="dashboard-group mb-4">
       <h4>Profile</h4>
 
       <!-- View Mode -->
@@ -32,8 +36,12 @@
         <p><strong>First Name:</strong> <span id="firstNameText"></span></p>
         <p><strong>Last Name:</strong> <span id="lastNameText"></span></p>
         <p><strong>Email:</strong> <span id="emailText"></span></p>
-        <button class="btn btn-primary btn-sm" id="editProfileBtn">Edit Profile</button>
-        <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change Password</button>
+        <button class="btn btn-primary btn-sm me-2" id="editProfileBtn">
+          <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+        </button>
+        <button class="btn btn-secondary btn-sm" id="changePasswordBtn">
+          <i class="fa-solid fa-key"></i> Change Password
+        </button>
       </div>
 
       <!-- Edit Mode -->
@@ -50,65 +58,78 @@
           <label for="emailInput" class="form-label fw-bold">Email</label>
           <input type="email" id="emailInput" class="form-control">
         </div>
-        <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
-        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm me-2" id="saveProfileBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">
+          <i class="fa-solid fa-xmark"></i> Cancel
+        </button>
       </div>
-    </div> <!-- End Profile Group -->
+    </div>
 
     <!-- Subscription Group -->
-    <div class="dashboard-group">
+    <div class="dashboard-group mb-4">
       <h4>Subscription</h4>
       <p><strong>Your Plan:</strong> <span id="planName">Premium</span></p>
       <p><strong>Renewal Date:</strong> <span id="renewalDate">2026-02-15</span></p>
-      <div class="mb-2">
-        <button class="btn btn-primary btn-sm" onclick="alert('Manage subscription placeholder')">Manage Subscription</button>
-        <button class="btn btn-danger btn-sm" onclick="alert('Cancel subscription placeholder')">Cancel Subscription</button>
+      <div>
+        <button class="btn btn-primary btn-sm me-2">
+          <i class="fa-solid fa-gear"></i> Manage Subscription
+        </button>
+        <button class="btn btn-danger btn-sm">
+          <i class="fa-solid fa-xmark"></i> Cancel Subscription
+        </button>
       </div>
     </div>
 
     <!-- Billing Group -->
-    <div class="dashboard-group">
+    <div class="dashboard-group mb-4">
       <h4>Billing</h4>
-      <div class="mb-2">
-        <button class="btn btn-primary btn-sm" onclick="alert('Manage payment method placeholder')">Manage Payment Method</button>
-        <button class="btn btn-secondary btn-sm" onclick="alert('Billing history placeholder')">Billing History</button>
+      <div>
+        <button class="btn btn-primary btn-sm me-2">
+          <i class="fa-solid fa-credit-card"></i> Manage Payment Method
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fa-solid fa-clock-rotate-left"></i> Billing History
+        </button>
       </div>
     </div>
 
-  </div>
+  </main>
 
-  <!-- Change Password Modal -->
-  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"> <!-- vertical center -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label for="passwordInput" class="form-label">New Password</label>
+        <div class="input-group mb-3">
+          <input type="password" id="passwordInput" class="form-control" placeholder="Enter new password">
+          <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">Show</button>
         </div>
-        <div class="modal-body">
-          <label for="passwordInput" class="form-label">New Password</label>
-          <div class="input-group mb-3">
-            <input type="password" id="passwordInput" class="form-control" placeholder="Enter new password">
-            <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">Show</button>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="savePasswordBtn">Save Password</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="savePasswordBtn">Save Password</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Footer placeholder -->
+  <!-- FOOTER -->
   <div id="footer-placeholder"></div>
 
-  <!-- Bootstrap JS -->
+  <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="header.js"></script>
-  <script src="layout.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/header.js"></script>
 
   <script>
+    // Wait for header/footer to load
     window.layoutReady.then(async () => {
       const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -119,10 +140,9 @@
 
       document.getElementById('dashboardContent').style.display = 'block';
 
-      // Load profile from app_users table
       const { data: profile } = await supabaseClient
         .from('app_users')
-        .select('first_name, last_name')
+        .select('first_name,last_name')
         .eq('id', user.id)
         .single();
 
@@ -145,7 +165,6 @@
       const profileView = document.getElementById('profileView');
       const profileEdit = document.getElementById('profileEdit');
 
-      // Edit profile
       document.getElementById('editProfileBtn').onclick = () => {
         profileView.style.display = 'none';
         profileEdit.style.display = 'block';
@@ -156,58 +175,42 @@
         profileView.style.display = 'block';
       };
 
-     document.getElementById('saveProfileBtn').onclick = async () => {
-        let firstName = firstNameInput.value.trim();
-        let lastName = lastNameInput.value.trim();
-        let email = emailInput.value.trim();
-      
-        // Simple email structure validation
+      document.getElementById('saveProfileBtn').onclick = async () => {
+        const firstName = firstNameInput.value.trim();
+        const lastName = lastNameInput.value.trim();
+        const email = emailInput.value.trim();
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          return alert('Please enter a valid email address.');
-        }
-      
-        // Update app_users table
+        if (!emailRegex.test(email)) return alert('Please enter a valid email.');
+
         const { error: profileError } = await supabaseClient.from('app_users')
           .update({ first_name: firstName, last_name: lastName })
           .eq('id', user.id);
-      
+
         if (profileError) return alert('Profile update failed: ' + profileError.message);
-      
-        // Only update auth email if it is actually different
+
         if (email !== user.email) {
           const { error: emailError } = await supabaseClient.auth.updateUser({ email });
-      
-          if (emailError) {
-            return alert('Email update failed: ' + emailError.message);
-          }
-      
-          // Show pending verification message
-          alert(`We sent a confirmation email to ${email}. Your email will be updated once verified.`);
-      
-          // Keep old email displayed until verification
-          emailText.textContent = user.email;
-        } else {
-          // No email change, just update name fields
-          emailText.textContent = email;
+          if (emailError) return alert('Email update failed: ' + emailError.message);
+          alert(`We sent a confirmation email to ${email}.`);
         }
-      
-        // Update view mode
+
         firstNameText.textContent = firstName;
         lastNameText.textContent = lastName;
-      
+        emailText.textContent = email;
+
         profileEdit.style.display = 'none';
         profileView.style.display = 'block';
       };
-      // Password modal logic
+
+      // Password modal
       const passwordInput = document.getElementById('passwordInput');
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const savePasswordBtn = document.getElementById('savePasswordBtn');
 
       changePasswordBtn.onclick = () => {
-        const passwordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-        passwordModal.show();
+        new bootstrap.Modal(document.getElementById('changePasswordModal')).show();
       };
 
       togglePasswordBtn.onclick = () => {
@@ -223,15 +226,12 @@
       savePasswordBtn.onclick = async () => {
         const newPassword = passwordInput.value;
         if (!newPassword) return alert('Please enter a password.');
-
         const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-        if (error) {
-          alert('Password update failed: ' + error.message);
-        } else {
+        if (error) alert('Password update failed: ' + error.message);
+        else {
           alert('Password updated successfully!');
           passwordInput.value = '';
-          const modalInstance = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
-          modalInstance.hide();
+          bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
         }
       };
     });

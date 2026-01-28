@@ -14,21 +14,21 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
 </head>
 <body class="d-flex flex-column min-vh-100">
 
   <!-- HEADER (Minimal: just logo) -->
-  <header class="login-header">
-    <a href="index.html">
-      <img src="images/globeii_logo.jpeg" alt="Globeii Logo" class="brand-logo" />
-    </a>
+  <header class="login-header mb-4 text-center">
+    <img src="images/globeii_logo.jpeg" alt="Globeii Logo"> <!-- replace with your real logo -->
   </header>
 
   <!-- LOGIN FORM -->
-  <main class="signin-container flex-fill">
+  <main class="signin-container flex-fill d-flex justify-content-center align-items-start">
     <form class="signin-form" id="signinForm">
       <h2 class="text-center mb-4">Sign In</h2>
       <div id="errorMsg"></div>
+
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
@@ -37,19 +37,23 @@
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" placeholder="Password" required>
       </div>
-      <div class="d-grid mb-3">
+
+      <div class="d-grid mb-2">
         <button type="submit" class="btn btn-primary">Sign In</button>
       </div>
-      <div class="text-center">
-        <small>Don't have an account? <a href="create-account.html">Create one</a></small>
-      </div>
+
+      <!-- Terms notice -->
+<p class="text-center small mb-3 terms-notice">
+  By continuing, you agree to our
+  <a href="terms.html">Terms</a> and
+  <a href="privacy.html">Privacy Policy</a>.
+</p>
+
+<div class="text-center small signup-text">
+  Don't have an account? <a href="create-account.html">Sign Up</a>
+</div>
     </form>
   </main>
-
-  <!-- FOOTER -->
-  <footer class="login-footer mt-auto">
-    <small>© 2026 Globeii. <a href="#">Privacy</a> | <a href="#">Terms</a></small>
-  </footer>
 
   <!-- Login JS -->
   <script>
@@ -69,7 +73,6 @@
         if (error) {
           errorMsg.textContent = error.message;
         } else if (data?.user) {
-          // Redirect after login
           const params = new URLSearchParams(window.location.search);
           const redirectTo = params.get('redirectTo') || 'index.html';
           window.location.href = redirectTo;

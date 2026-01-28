@@ -456,11 +456,11 @@ footer a:hover {
 /* Container for login form */
 .signin-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* top-aligned but not stuck */
-  padding-top: 40px;
-  padding-bottom: 40px;
-  min-height: calc(100vh - 120px); /* account for header/footer height */
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  padding: 20px;           /* some breathing room */
+  min-height: calc(100vh - 100px); /* full screen minus header */
+  flex: 1;
 }
 
 /* Form card */
@@ -496,10 +496,27 @@ footer a:hover {
   max-height: 60px;
 }
 
+.terms-notice,
+  .signup-text {
+    color: #6c757d; /* muted text */
+  }
+
+  .terms-notice a,
+  .signup-text a {
+    color: #6c757d; /* muted */
+    text-decoration: underline; /* always underlined */
+  }
+
+  /* Optional: slightly darker on hover */
+  .terms-notice a:hover,
+  .signup-text a:hover {
+    color: #5a6268;
+  }
+
 /* Footer always at bottom */
-.login-footer {
+/* .login-footer {
   background-color: #f8f9fa;
   padding: 15px 0;
   text-align: center;
-  margin-top: auto; /* push to bottom */
-}
+  margin-top: auto; 
+} */

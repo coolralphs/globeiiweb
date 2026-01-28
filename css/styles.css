@@ -497,21 +497,23 @@ footer a:hover {
 }
 
 .terms-notice,
-  .signup-text {
-    color: #6c757d; /* muted text */
-  }
+.signup-text {
+  color: #6c757d;         /* muted text */
+  text-align: center;
+  font-size: 0.79rem;      /* slightly smaller than before */
+  margin-top: 20px;       /* extra spacing from the button above */
+}
 
-  .terms-notice a,
-  .signup-text a {
-    color: #6c757d; /* muted */
-    text-decoration: underline; /* always underlined */
-  }
+.terms-notice a,
+.signup-text a {
+  color: #6c757d;        
+  text-decoration: underline !important; /* always underlined */
+}
 
-  /* Optional: slightly darker on hover */
-  .terms-notice a:hover,
-  .signup-text a:hover {
-    color: #5a6268;
-  }
+.terms-notice a:hover,
+.signup-text a:hover {
+  color: #5a6268;         /* slightly darker on hover */
+}
 
 /* Footer always at bottom */
 /* .login-footer {

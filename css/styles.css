@@ -1,0 +1,505 @@
+/* =========================
+   GLOBAL / RESET
+   ========================= */
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7fb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Form elements */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* Prevent background scroll when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* =========================
+   HEADER / NAV
+   ========================= */
+.topbar {
+  background: #0d6efd;
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
+}
+
+.nav-links {
+  display: none;
+  gap: 22px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.9;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.hamburger i {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s;
+}
+
+.hamburger .fa-xmark {
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+
+.hamburger.open .fa-bars {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.hamburger.open .fa-xmark {
+  opacity: 1;
+}
+
+/* Profile icon */
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+/* =========================
+   MOBILE MENU
+   ========================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  z-index: 1050;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100%;
+  background: #0d6efd;
+  transition: 0.3s;
+  z-index: 1100;
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 18px;
+}
+
+.mobile-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-menu a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Remove bullets from mobile menu lists */
+.mobile-menu ul,
+.mobile-menu li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Mobile login/sign-out button */
+.mobile-login-btn.btn-dark,
+.mobile-login-btn.btn-dark:hover,
+.mobile-login-btn.btn-dark:focus,
+.mobile-login-btn.btn-dark:active {
+  background-color: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+.mobile-login-btn.btn-dark:hover {
+  background-color: #111 !important;
+}
+
+/* =========================
+   HERO SECTION (index.html)
+   ========================= */
+.hero {
+  height: 400px;
+  display: none;
+  position: relative;
+  background: url('https://images.pexels.com/photos/2364397/pexels-photo-2364397.jpeg?fit=crop&w=1350&q=80')
+    center / cover no-repeat;
+  color: #fff;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.hero .input-group {
+  max-width: 400px;
+}
+
+/* =========================
+   MAIN CONTENT (index.html / shared)
+   ========================= */
+.container-center {
+  min-height: calc(100vh - 450px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* =========================
+   ACCOUNT DASHBOARD (account-dashboard.html)
+   ========================= */
+.dashboard-container {
+  min-height: calc(100vh - 140px);
+  padding: 30px 15px;
+}
+
+.dashboard-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-group {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.dashboard-group h4 {
+  margin-bottom: 15px;
+}
+
+.dashboard-group .btn {
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+.dashboard-group .form-control {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* =========================
+   CARDS (shared)
+   ========================= */
+.card {
+  background: white;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  color: #0d6efd;
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.card-dates {
+  font-size: 13px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.card-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.card-chevron {
+  margin-left: auto;
+  color: #0d6efd;
+  font-size: 16px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e9ecef;
+}
+
+.tag.owned {
+  background: #e7f1ff;
+  color: #0d6efd;
+}
+
+.tag.shared {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* =========================
+   ADD BUTTON
+   ========================= */
+.add-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #0d6efd;
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 900;
+}
+
+/* =========================
+   ADD MODAL
+   ========================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  z-index: 1200;
+}
+
+.modal {
+  background: white;
+  max-width: 360px;
+  margin: auto;
+  margin-top: 60vh;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+footer {
+  background: #f5f7fb;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  padding: 12px;
+  font-size: 12px;
+}
+
+footer a {
+  color: #777;
+  text-decoration: none;
+  margin: 0 8px;
+}
+
+footer a:hover {
+  color: black;
+}
+
+/* =========================
+   RESPONSIVE MEDIA
+   ========================= */
+@media(min-width:768px) {
+  .hamburger {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+  }
+}
+
+/* =========================
+   ACCOUNT DROPDOWNS
+   ========================= */
+#accountDropdown .dropdown-menu {
+  left: 0 !important;   /* open to the left of the account link */
+  right: auto !important;
+}
+
+#mobileAccountMenu li button {
+  color: white;         
+  padding-left: 24px;   
+}
+
+/* =========================
+   BOOTSTRAP BUTTON OVERRIDES
+   ========================= */
+.btn-dark {
+  background-color: #000;
+  border-color: #000;
+}
+
+.btn-dark:hover,
+.btn-dark:focus,
+.btn-dark:active,
+.btn-dark.active {
+  background-color: #111;
+  border-color: #111;
+}
+
+/* =========================
+   LOGIN PAGE
+   ========================= */
+
+/* Container for login form */
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* top-aligned but not stuck */
+  padding-top: 40px;
+  padding-bottom: 40px;
+  min-height: calc(100vh - 120px); /* account for header/footer height */
+}
+
+/* Form card */
+.signin-form {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Form fields */
+.signin-form .form-control {
+  margin-bottom: 15px;
+}
+
+/* Error message */
+.signin-form #errorMsg {
+  color: red;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Minimal header for login page (just logo) */
+.login-header {
+  background-color: #f8f9fa;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.login-header img {
+  max-height: 60px;
+}
+
+/* Footer always at bottom */
+.login-footer {
+  background-color: #f8f9fa;
+  padding: 15px 0;
+  text-align: center;
+  margin-top: auto; /* push to bottom */
+}

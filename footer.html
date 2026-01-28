@@ -1,7 +1,17 @@
-<footer class="site-footer">
+<!-- <footer class="site-footer">
   <small>
     © 2026 Globeii ·
     <a href="privacy.html">Privacy</a> ·
     <a href="terms.html">Terms</a>
   </small>
+</footer> -->
+<footer>
+  <div>© <span id="year"></span> Globeii</div>
+  <div>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+  </div>
 </footer>
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>

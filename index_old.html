@@ -11,31 +11,26 @@
     rel="stylesheet"
   />
 
-  <!-- Font Awesome for icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-  />
-
   <!-- App CSS -->
-  <link rel="stylesheet" href="css/styles.css" />
-
+  <link rel="stylesheet" href="styles.css" />
+  
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
+
 <body>
 
-  <!-- HEADER -->
+  <!-- 🔁 SHARED HEADER -->
   <div id="header-placeholder"></div>
 
-  <!-- HERO (only for logged-out users) -->
+  <!-- HERO (logged out only) -->
   <div class="hero" id="heroSection">
     <div class="hero-content">
       <h1>Explore Your Next Adventure</h1>
       <p>Ready to start traveling? Enter your email to begin.</p>
       <div class="input-group" style="max-width: 400px;">
-        <input type="email" class="form-control" id="heroEmail" placeholder="Your email" />
+        <input type="email" class="form-control" id="heroEmail" placeholder="Your email">
         <button class="btn btn-primary" id="getStartedBtn">Get Started →</button>
       </div>
     </div>
@@ -50,13 +45,16 @@
   <!-- FOOTER -->
   <div id="footer-placeholder"></div>
 
-  <!-- Bootstrap JS -->
+  <!-- ✅ Bootstrap JS (MUST load BEFORE header.js) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Load layout (header + footer + header.js) -->
-  <script src="js/layout.js"></script>
+  <!-- Header logic -->
+  <script src="header.js"></script>
 
-  <!-- Home page logic (page-specific) -->
+  <!-- Load layout partial -->
+  <script src="layout.js"></script>
+
+  <!-- Home page logic -->
   <script>
     async function loadHomePage() {
       const { data: { user } } = await supabaseClient.auth.getUser();
@@ -69,24 +67,22 @@
       actionButtons.innerHTML = '';
 
       if (user) {
-        // Logged in
         hero.style.display = 'none';
 
-        // Get user profile
         const { data: profile } = await supabaseClient
           .from('app_users')
           .select('first_name')
           .eq('id', user.id)
           .single();
 
-        welcomeText.textContent = `Welcome back, ${profile?.first_name || user.email}`;
+        welcomeText.textContent =
+          `Welcome back, ${profile?.first_name || user.email}`;
 
         actionButtons.innerHTML = `
           <a href="create-trip.html" class="btn btn-primary">Create Trip</a>
           <a href="itineraries.html" class="btn btn-secondary">View My Itineraries</a>
         `;
       } else {
-        // Logged out
         hero.style.display = 'block';
 
         document.getElementById('getStartedBtn').onclick = () => {
@@ -98,7 +94,6 @@
       }
     }
 
-    // Run page-specific logic after layout (header/footer) is fully loaded
     window.layoutReady.then(loadHomePage);
   </script>
 

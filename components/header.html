@@ -1,0 +1,43 @@
+<header class="topbar">
+  <div class="brand">
+    <a href="index.html">
+      <img src="images/globeii_logo.jpeg" alt="Globeii Logo" class="brand-logo" />
+    </a>
+  </div>
+
+  <div class="nav-links" id="navLinks">
+    <a href="index.html"><i class="fa-solid fa-house"></i>Dashboard</a>
+    <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
+
+    <!-- Account dropdown -->
+    <div class="dropdown" id="accountDropdown">
+      <a href="account-dashboard.html"><i class="fa-solid fa-user"></i>Account</a>
+      <ul class="dropdown-menu" id="accountMenu">
+        <!-- JS will inject "Sign Out" if logged in -->
+      </ul>
+    </div>
+  </div>
+
+  <button class="hamburger" id="hamburger">
+    <i class="fa-solid fa-bars"></i>
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</header>
+
+<!-- Mobile menu -->
+<div class="overlay" id="overlay"></div>
+<nav class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+  <button id="closeMenu" style="background:none; border:none; color:white; font-size:24px;">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</div>
+  <a href="index.html"><i class="fa-solid fa-house"></i>Dashboard</a>
+  <a href="itineraries.html"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
+  <div id="mobileAccountDropdown">
+    <a href="account-dashboard.html"><i class="fa-solid fa-user"></i>Account</a>
+    <ul id="mobileAccountMenu">
+      <!-- JS will inject "Sign Out" if logged in -->
+    </ul>
+  </div>
+</nav>

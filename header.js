@@ -1,55 +1,46 @@
 async function loadHeader() {
   const { data: { user } } = await supabaseClient.auth.getUser();
-  const topButtons = document.getElementById('topButtons');
 
-  if (!topButtons) return;
-  topButtons.innerHTML = '';
+  // Desktop dropdown
+  const accountMenu = document.getElementById('accountMenu');
+  // Mobile dropdown
+  const mobileAccountMenu = document.getElementById('mobileAccountMenu');
 
   if (user) {
-    const { data: profile } = await supabaseClient
-      .from('app_users')
-      .select('first_name, avatar_url')
-      .eq('id', user.id)
-      .single();
+    // Inject Sign Out in desktop dropdown
+    accountMenu.innerHTML = `<li><button class="dropdown-item" id="signOutBtn">Sign Out</button></li>`;
+    mobileAccountMenu.innerHTML = `<li><a href="#" id="mobileSignOut">Sign Out</a></li>`;
 
-    const dropdownDiv = document.createElement('div');
-    dropdownDiv.className = 'dropdown';
-
-    const avatarBtn = document.createElement('button');
-    avatarBtn.className = 'btn btn-light dropdown-toggle p-0';
-    avatarBtn.type = 'button';
-    avatarBtn.setAttribute('data-bs-toggle', 'dropdown');
-
-    const avatarImg = document.createElement('img');
-    avatarImg.src =
-      profile?.avatar_url ||
-      'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-    avatarImg.className = 'profile-icon';
-
-    avatarBtn.appendChild(avatarImg);
-
-    const dropdownMenu = document.createElement('ul');
-    dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
-
-    dropdownMenu.innerHTML = `
-      <li><a class="dropdown-item" href="account-dashboard.html">Account</a></li>
-      <li><button class="dropdown-item" id="logoutBtn">Log Out</button></li>
-    `;
-
-    dropdownDiv.appendChild(avatarBtn);
-    dropdownDiv.appendChild(dropdownMenu);
-    topButtons.appendChild(dropdownDiv);
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    document.getElementById('signOutBtn').onclick = async () => {
       await supabaseClient.auth.signOut();
       window.location.href = 'index.html';
-    });
+    };
 
+    document.getElementById('mobileSignOut').onclick = async (e) => {
+      e.preventDefault();
+      await supabaseClient.auth.signOut();
+      window.location.href = 'index.html';
+    };
   } else {
-    const signInBtn = document.createElement('a');
-    signInBtn.href = 'login.html';
-    signInBtn.className = 'btn btn-primary';
-    signInBtn.textContent = 'Sign In';
-    topButtons.appendChild(signInBtn);
+    accountMenu.innerHTML = '';
+    mobileAccountMenu.innerHTML = '';
   }
+
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('overlay');
+  const closeMenu = document.getElementById('closeMenu');
+
+  hamburger.onclick = () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    overlay.style.display = 'block';
+  };
+
+  closeMenu.onclick = overlay.onclick = () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    overlay.style.display = 'none';
+  };
 }

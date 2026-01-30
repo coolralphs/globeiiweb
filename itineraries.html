@@ -1,411 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <title>Globeii – Itineraries</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Itineraries - Globeii</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <style>
-    * {
-      box-sizing: border-box
-    }
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    input,
-    select,
-    textarea {
-      font-size: 16px;
-    }
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f7fb;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    /* ===== NAV BAR ===== */
-    .topbar {
-      background: #0d6efd;
-      color: #fff;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-    }
-
-    .brand-logo {
-      height: 32px;
-      /* tweak this */
-      width: auto;
-    }
-
-    .nav-links {
-      display: none;
-      gap: 22px;
-    }
-
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      opacity: .9;
-    }
-
-    .nav-links a:hover {
-      opacity: 1
-    }
-
-    .hamburger {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 22px;
-      cursor: pointer;
-      position: relative;
-      width: 32px;
-      height: 32px;
-    }
-
-    .hamburger i {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: .25s;
-    }
-
-    .hamburger .fa-xmark {
-      opacity: 0;
-      transform: rotate(-90deg)
-    }
-
-    .hamburger.open .fa-bars {
-      opacity: 0;
-      transform: rotate(90deg)
-    }
-
-    .hamburger.open .fa-xmark {
-      opacity: 1
-    }
-
-    /* ===== MOBILE MENU ===== */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .45);
-      display: none;
-      z-index: 1050;
-    }
-
-    .mobile-menu {
-      position: fixed;
-      top: 0;
-      right: -300px;
-      width: 300px;
-      height: 100%;
-      background: #0d6efd;
-      transition: .3s;
-      z-index: 1100;
-    }
-
-    .mobile-menu.open {
-      right: 0
-    }
-
-    .mobile-menu-header {
-      display: flex;
-      justify-content: flex-end;
-      padding: 14px 18px;
-    }
-
-    .mobile-menu a {
-      color: white;
-      text-decoration: none;
-      padding: 14px 18px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .mobile-menu a:hover {
-      background: rgba(255, 255, 255, .15)
-    }
-
-    /* ===== MAIN ===== */
-    main {
-      flex: 1;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 16px;
-      width: 100%;
-    }
-
-    h1 {
-      margin: 16px 0;
-      font-size: 22px
-    }
-
-    /* ===== FILTERS ===== */
-    .controls {
-      display: flex;
-      gap: 8px;
-      padding: 0 8px;
-    }
-
-    .controls button {
-      background: #e9ecef;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .controls button.active {
-      background: #0d6efd;
-      color: white;
-    }
-
-    /* ===== SORT ===== */
-    .sort-wrapper {
-      margin-left: auto;
-      position: relative;
-    }
-
-    .sort-btn {
-      background: #212529 !important;
-      color: #fff !important;
-      border: 1px solid #212529 !important;
-      padding: 8px 18px !important;
-      border-radius: 6px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 10px !important;
-    }
-
-    .sort-btn:hover {
-      background: #2c3034 !important
-    }
-
-    .sort-menu {
-      position: absolute;
-      right: 0;
-      top: 44px;
-      background: #212529;
-      color: white;
-      display: none;
-      border-radius: 8px;
-      min-width: 260px;
-      z-index: 500;
-    }
-
-    .sort-menu button {
-      width: 100%;
-      background: none;
-      color: white;
-      padding: 12px 16px;
-      border: none;
-      text-align: left;
-    }
-
-    .sort-menu button:hover {
-      background: rgba(255, 255, 255, .15)
-    }
-
-    /* ===== CARD ===== */
-    .card {
-      background: white;
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-    }
-
-    .card-icon {
-      color: #0d6efd;
-      font-size: 20px;
-      margin-top: 4px
-    }
-
-    .card-title {
-      font-weight: 600
-    }
-
-    .card-dates {
-      font-size: 13px;
-      color: #666;
-      margin-top: 2px
-    }
-
-    .card-meta {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px
-    }
-
-    .card-chevron {
-      margin-left: auto;
-      color: #0d6efd;
-      font-size: 16px;
-    }
-
-    .tag {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #e9ecef;
-    }
-
-    .tag.owned {
-      background: #e7f1ff;
-      color: #0d6efd
-    }
-
-    .tag.shared {
-      background: #fff3cd;
-      color: #856404
-    }
-
-    /* ===== ADD BUTTON ===== */
-    .add-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      background: #0d6efd;
-      color: white;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
-      z-index: 900;
-    }
-
-    /* ===== ADD MODAL ===== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .45);
-      display: none;
-      z-index: 1200;
-    }
-
-    .modal {
-      background: white;
-      max-width: 360px;
-      margin: auto;
-      margin-top: 60vh;
-      padding: 20px;
-      border-radius: 14px;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      background: #f5f7fb;
-      border-top: 1px solid #ddd;
-      text-align: center;
-      padding: 12px;
-      font-size: 12px;
-    }
-
-    footer a {
-      color: #777;
-      text-decoration: none;
-      margin: 0 8px;
-    }
-
-    footer a:hover {
-      color: black
-    }
-
-    @media(min-width:768px) {
-      .hamburger {
-        display: none
-      }
-
-      .nav-links {
-        display: flex
-      }
-    }
-  </style>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-  <div class="topbar">
-    <div class="brand">
-      <a href="/">
-        <img src="images/globeii_logo.jpeg" alt="Globeii" class="brand-logo" />
-      </a>
-    </div>
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
 
-    <div class="nav-links">
-      <a href="/"><i class="fa-solid fa-dashboard"></i>Dashboard</a>
-      <a href="/itineraries.html"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
-      <a href="#"><i class="fa-solid fa-user"></i>Account</a>
-    </div>
+  <!-- MAIN CONTENT -->
+  <main class="flex-fill itineraries-main container my-4" id="itinerariesContent" style="display:none;">
+    <h2 class="mb-4 text-center">Itineraries</h2>
 
-    <button class="hamburger" id="hamburger">
-      <i class="fa-solid fa-bars"></i>
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-  </div>
-
-  <div class="overlay" id="overlay"></div>
-
-  <nav class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-header">
-      <button id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <a href="#"><i class="fa-solid fa-house"></i>Dashboard</a>
-    <a href="#"><i class="fa-solid fa-map-location-dot"></i>Itineraries</a>
-    <a href="#"><i class="fa-solid fa-user"></i>Account</a>
-  </nav>
-
-  <main>
-    <h1>Itineraries</h1>
-
-    <div class="controls">
-      <button class="filter active" data-filter="active">Active</button>
-      <button class="filter" data-filter="archived">Archived</button>
-      <button class="filter" data-filter="all">All</button>
+    <div class="itinerary-controls mb-3">
+      <div class="d-flex gap-2">
+        <button class="filter active" data-filter="active">Active</button>
+        <button class="filter" data-filter="archived">Archived</button>
+        <button class="filter" data-filter="all">All</button>
+      </div>
 
       <div class="sort-wrapper">
         <button class="sort-btn" id="sortBtn">
-          <i class="fa-solid fa-sort"></i>Sort
+          <i class="fa-solid fa-sort"></i> Sort
         </button>
         <div class="sort-menu" id="sortMenu">
           <button data-sort="name-asc">Name A–Z</button>
@@ -416,181 +48,202 @@
       </div>
     </div>
 
-    <div id="list"></div>
+    <div id="list" class="d-flex flex-column gap-3"></div>
   </main>
 
+  <!-- Add Button -->
   <button class="add-btn" id="addBtn">+</button>
 
+  <!-- Add Itinerary Modal -->
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
+    <div class="itinerary-modal" id="itineraryModal">
+      <button class="modal-close" id="closeModalBtn">&times;</button>
       <h3>Add Itinerary</h3>
       <input id="nameInput" placeholder="Itinerary name" />
       <div class="modal-actions">
-        <button onclick="closeModal()">Cancel</button>
-        <button onclick="addItinerary()">Add</button>
+        <button class="btn btn-primary" id="addBtnModal">Add</button>
       </div>
     </div>
   </div>
 
-  <footer>
-    <div>© <span id="year"></span> Globeii</div>
-    <div>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
-    </div>
-  </footer>
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/header.js"></script>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    window.layoutReady.then(async () => {
+      const { data: { user } } = await supabaseClient.auth.getUser();
 
-    /* ===== UUID ===== */
-    function uuidv4() { return crypto.randomUUID(); }
+      if (!user) {
+        window.location.href = 'login.html?redirectTo=itineraries.html';
+        return;
+      }
 
-    /* ===== STATE ===== */
-    let filter = "active";
-    let currentSort = null;
+      document.getElementById('itinerariesContent').style.display = 'block';
 
-    /* ===== DATA ===== */
-    const data = [
-      { id: uuidv4(), name: "Paris Trip", dates: "2026-02-10", owned: true, places: 8, archived: false },
-      { id: uuidv4(), name: "Tokyo Adventure", dates: "2026-03-05", owned: false, places: 6, archived: false },
-      { id: uuidv4(), name: "NYC Weekend", dates: "2026-01-20", owned: true, places: 4, archived: true },
-      { id: uuidv4(), name: "Rome Getaway", dates: "2026-04-03", owned: true, places: 7, archived: false },
-      { id: uuidv4(), name: "Barcelona Escape", dates: "2026-05-01", owned: false, places: 5, archived: false },
-      { id: uuidv4(), name: "London City Trip", dates: "2026-06-12", owned: true, places: 6, archived: true },
-      { id: uuidv4(), name: "Amsterdam Tour", dates: "2026-07-08", owned: false, places: 3, archived: false },
-      { id: uuidv4(), name: "Berlin Journey", dates: "2026-08-20", owned: true, places: 4, archived: false },
-    ];
+      /* ===== STATE ===== */
+      let filter = "active";
+      let currentSort = null;
 
-    const list = document.getElementById("list");
+      const data = [
+        { id: "1", name: "Paris Trip", dates: "2026-02-10", owned: true, places: 8, archived: false },
+        { id: "2", name: "Tokyo Adventure", dates: "2026-03-05", owned: false, places: 6, archived: false },
+        { id: "3", name: "NYC Weekend", dates: "2026-01-20", owned: true, places: 4, archived: true }
+      ];
 
-    /* ===== SORT ===== */
-    function applySort() {
-      if (!currentSort) return;
-      data.sort((a, b) => {
-        if (currentSort === "name-asc") return a.name.localeCompare(b.name);
-        if (currentSort === "name-desc") return b.name.localeCompare(a.name);
-        if (currentSort === "date-asc") return new Date(a.dates || "9999") - new Date(b.dates || "9999");
-        if (currentSort === "date-desc") return new Date(b.dates || "0000") - new Date(a.dates || "0000");
-      });
-    }
+      const list = document.getElementById("list");
 
-    /* ===== RENDER ===== */
-    function render() {
-      applySort();
-      list.innerHTML = "";
-      data.filter(i => {
-        if (filter === "all") return true;
-        if (filter === "active") return !i.archived;
-        return i.archived;
-      }).forEach(i => {
-        list.insertAdjacentHTML("beforeend", `
-      <div class="card" data-id="${i.id}">
-        <i class="fa-solid fa-location-dot card-icon"></i>
-        <div style="flex:1">
-          <div class="card-title">${i.name}</div>
-          ${i.dates ? `<div class="card-dates">${i.dates}</div>` : ""}
-          <div class="card-meta">
-            <span class="tag ${i.owned ? 'owned' : 'shared'}">${i.owned ? 'Owned' : 'Shared'}</span>
-            <span class="tag">${i.places} places</span>
-          </div>
-        </div>
-        <i class="fa-solid fa-chevron-right card-chevron"></i>
-      </div>
-    `);
-      });
+      /* ===== SORT ===== */
+      function applySort() {
+        if (!currentSort) return;
 
-      // Make entire card clickable
-      document.querySelectorAll(".card").forEach(card => {
-        card.onclick = (e) => {
-          const id = card.dataset.id;
-          alert(`Open itinerary with ID: ${id}`);
-          // Replace alert with modal/page navigation
+        data.sort((a, b) => {
+          if (currentSort === "name-asc") return a.name.localeCompare(b.name);
+          if (currentSort === "name-desc") return b.name.localeCompare(a.name);
+          if (currentSort === "date-asc") return new Date(a.dates) - new Date(b.dates);
+          if (currentSort === "date-desc") return new Date(b.dates) - new Date(a.dates);
+        });
+      }
+
+      /* ===== RENDER ===== */
+      function render() {
+        applySort();
+        list.innerHTML = "";
+
+        data
+          .filter(i => {
+            if (filter === "all") return true;
+            if (filter === "active") return !i.archived;
+            return i.archived;
+          })
+          .forEach(i => {
+            list.insertAdjacentHTML("beforeend", `
+              <div class="itinerary-card d-flex align-items-center gap-3"
+                   data-id="${i.id}"
+                   role="button">
+                
+                <i class="fa-solid fa-location-dot card-icon"></i>
+
+                <div class="flex-grow-1">
+                  <div class="card-title">${i.name}</div>
+                  <div class="card-dates">${i.dates}</div>
+
+                  <div class="card-meta mt-1">
+                    <span class="tag ${i.owned ? 'owned' : 'shared'}">
+                      ${i.owned ? 'Owned' : 'Shared'}
+                    </span>
+                    <span class="tag">${i.places} places</span>
+                  </div>
+                </div>
+
+                <i class="fa-solid fa-chevron-right card-chevron"></i>
+              </div>
+            `);
+          });
+
+        document.querySelectorAll(".itinerary-card").forEach(card => {
+          card.onclick = () => {
+            const id = card.dataset.id;
+            window.location.href = `itinerary.html?id=${id}`;
+          };
+        });
+      }
+
+      /* ===== FILTERS ===== */
+      document.querySelectorAll(".filter").forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll(".filter").forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+          filter = btn.dataset.filter;
+          render();
         };
       });
-    }
 
-    /* ===== FILTERS ===== */
-    document.querySelectorAll(".filter").forEach(b => {
-      b.onclick = () => {
-        document.querySelectorAll(".filter").forEach(x => x.classList.remove("active"));
-        b.classList.add("active");
-        filter = b.dataset.filter;
-        render();
-      };
-    });
+      /* ===== SORT MENU ===== */
+      const sortBtn = document.getElementById("sortBtn");
+      const sortMenu = document.getElementById("sortMenu");
 
-    /* ===== SORT MENU ===== */
-    const sortBtn = document.getElementById("sortBtn");
-    const sortMenu = document.getElementById("sortMenu");
-
-    sortBtn.onclick = (e) => {
-      e.stopPropagation();
-      sortMenu.style.display = sortMenu.style.display === "block" ? "none" : "block";
-    };
-
-    document.querySelectorAll("#sortMenu button").forEach(btn => {
-      btn.onclick = (e) => {
+      sortBtn.onclick = (e) => {
         e.stopPropagation();
-        currentSort = btn.dataset.sort;
-        sortMenu.style.display = "none";
-        render();
+        sortMenu.style.display = sortMenu.style.display === "block" ? "none" : "block";
       };
-    });
 
-    document.addEventListener("click", () => sortMenu.style.display = "none");
-
-    /* ===== ADD MODAL ===== */
-    const modal = document.getElementById("modalOverlay");
-    const nameInput = document.getElementById("nameInput");
-
-    document.getElementById("addBtn").onclick = () => {
-      modal.style.display = "block";
-      nameInput.value = "";
-      nameInput.focus();
-    };
-
-    function closeModal() { modal.style.display = "none" }
-
-    function addItinerary() {
-      const name = nameInput.value.trim();
-      if (!name) return;
-
-      data.unshift({
-        id: uuidv4(),
-        name,
-        dates: "",
-        owned: true,
-        places: 0,
-        archived: false
+      document.querySelectorAll("#sortMenu button").forEach(btn => {
+        btn.onclick = () => {
+          currentSort = btn.dataset.sort;
+          sortMenu.style.display = "none";
+          render();
+        };
       });
 
-      nameInput.value = "";
+      document.addEventListener("click", () => {
+        sortMenu.style.display = "none";
+      });
+
       render();
+    });
+
+    const addBtn = document.getElementById("addBtn");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const itineraryModal = document.getElementById("itineraryModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const addBtnModal = document.getElementById("addBtnModal");
+    const nameInput = document.getElementById("nameInput");
+
+    // Open modal
+    addBtn.onclick = () => {
+      modalOverlay.style.display = "block";
+      setTimeout(() => {
+        itineraryModal.classList.add("show");
+        nameInput.focus();
+      }, 10);
+    };
+
+    // Close modal function
+    function closeModal() {
+      itineraryModal.classList.remove("show");
+      setTimeout(() => {
+        modalOverlay.style.display = "none";
+        nameInput.value = "";
+      }, 300); // wait for slide down animation
+    }
+
+    // Close via top close button
+    closeModalBtn.onclick = closeModal;
+
+    // Close by clicking outside modal
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) closeModal();
+    };
+
+    // Validation & add logic
+    function addItinerary() {
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert("Please type an itinerary name");
+        nameInput.focus();
+        return;
+      }
+
+      // Placeholder for Supabase logic
+      alert(`Add itinerary logic goes here. Name: "${name}"`);
       closeModal();
     }
 
-    /* ===== MOBILE MENU ===== */
-    const hamburger = document.getElementById("hamburger");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const overlay = document.getElementById("overlay");
-    const closeMenu = document.getElementById("closeMenu");
+    // Add button click
+    addBtnModal.onclick = addItinerary;
 
-    hamburger.onclick = () => {
-      hamburger.classList.toggle("open");
-      mobileMenu.classList.toggle("open");
-      overlay.style.display = "block";
-    };
-    closeMenu.onclick = overlay.onclick = () => {
-      hamburger.classList.remove("open");
-      mobileMenu.classList.remove("open");
-      overlay.style.display = "none";
-    };
-
-    /* ===== INITIAL RENDER ===== */
-    render();
+    // Enter key triggers add
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        addItinerary();
+      }
+    });
+    
   </script>
-
 </body>
-
 </html>

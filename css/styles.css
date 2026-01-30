@@ -547,26 +547,25 @@ body.menu-open {
    CARDS
    ========================= */
 .card {
-  background: white;
-  margin-top: 12px;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   display: flex;
+  align-items: center; /* 👈 THIS centers everything vertically */
   gap: 14px;
-  align-items: center;
-  cursor: pointer;
-  transition: transform 0.1s;
 }
 
 .card:hover {
   transform: translateY(-2px);
 }
 
+/* Left icon */
 .card-icon {
   color: #0d6efd;
   font-size: 20px;
-  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;          /* fixed width keeps layout stable */
+  flex-shrink: 0;
+  margin: 0;            /* REMOVE margin-top */
 }
 
 .card-title {
@@ -585,10 +584,14 @@ body.menu-open {
   margin-top: 8px;
 }
 
+/* Right chevron */
 .card-chevron {
   margin-left: auto;
   color: #0d6efd;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tag {
@@ -781,4 +784,274 @@ footer a:hover {
   font-weight: 500;
   color: #212529;
   word-break: break-word;
+}
+
+/* =========================
+   ITINERARIES PAGE
+   ========================= */
+
+/* Main content wrapper */
+.itineraries-main {
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  /* padding: 16px; */
+  width: 100%;
+}
+
+.itineraries-main h2 {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-size: 1.8rem;
+}
+
+/* Filters row */
+.itinerary-controls {
+  display: flex;
+  gap: 8px;
+  padding: 0 8px;
+  align-items: center;
+}
+
+/* Filter buttons */
+.itinerary-controls .filter {
+  background: #e9ecef;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.itinerary-controls .filter.active {
+  background: #0d6efd;
+  color: white;
+}
+
+/* Sort dropdown */
+.sort-wrapper {
+  margin-left: auto;
+  position: relative;
+}
+
+.sort-btn {
+  background: #212529 !important;
+  color: #fff !important;
+  border: 1px solid #212529 !important;
+  padding: 8px 18px !important;
+  border-radius: 6px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.sort-btn:hover {
+  background: #2c3034 !important;
+}
+
+.sort-menu {
+  position: absolute;
+  right: 0;
+  top: 44px;
+  background: #212529;
+  color: white;
+  display: none;
+  border-radius: 8px;
+  min-width: 260px;
+  z-index: 500;
+  flex-direction: column;
+}
+
+.sort-menu button {
+  width: 100%;
+  background: none;
+  color: white;
+  padding: 12px 16px;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sort-menu button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================
+   ITINERARY CARDS
+   ========================= */
+.itinerary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.itinerary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.itinerary-card .card-icon {
+  font-size: 22px;
+  color: #0d6efd;
+  flex-shrink: 0;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itinerary-card .card-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.itinerary-card .card-dates {
+  font-size: 13px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.itinerary-card .card-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.itinerary-card .card-chevron {
+  margin-left: auto;
+  color: #0d6efd;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itinerary-card .tag {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e9ecef;
+}
+
+.itinerary-card .tag.owned {
+  background: #e7f1ff;
+  color: #0d6efd;
+}
+
+.itinerary-card .tag.shared {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* =========================
+   ADD BUTTON
+   ========================= */
+.add-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #0d6efd;
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 900;
+}
+
+/* =========================
+   ADD ITINERARY MODAL RESPONSIVE
+   ========================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  z-index: 1200;
+}
+
+/* Base modal style */
+.itinerary-modal {
+  position: fixed;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.3s ease;
+  max-width: 400px;
+  width: 90%;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Input inside modal */
+.itinerary-modal input {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Modal actions wrapper (just the Add button now) */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* =========================
+   MOBILE (BOTTOM SHEET) 
+   ========================= */
+@media(max-width: 767px) {
+  .itinerary-modal {
+    bottom: -300px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 14px 14px 0 0;
+    width: 100%;
+  }
+
+  .itinerary-modal.show {
+    bottom: 0;
+  }
+}
+
+/* =========================
+   DESKTOP (CENTERED MODAL)
+   ========================= */
+@media(min-width: 768px) {
+  .itinerary-modal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 14px;
+    width: 400px;
+  }
+
+  .itinerary-modal.show {
+    bottom: auto; /* not used on desktop */
+  }
 }

@@ -31,9 +31,19 @@ async function init() {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
-  if (!code) {
-    document.getElementById('status').innerText = "Invalid or expired link. Request a new password reset.";
-    return;
+  if (code) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    const { user} = await supabase.auth.getSession();
+    console.log(user.session);
+    if(error) {
+      console.error("Invalid or expired reset link:", error.message);
+      return;
+    } else
+    {
+      console.error("Temporary session created");
+    }
+    // document.getElementById('status').innerText = "Invalid or expired link. Request a new password reset.";
+    // return;
   }
 
   // Store code globally
@@ -49,7 +59,7 @@ async function updatePassword() {
   if (!password) { alert("Please enter a new password."); return; }
 
   // Use verifyOtp with type 'recovery' and the code from URL
-  const { data, error } = await supabaseClient.auth.verifyOtp({
+  const { data, error } = await supabaseClient.auth.updatePassword({
     type: 'recovery',
     token: window.recoveryCode,
     newPassword: password

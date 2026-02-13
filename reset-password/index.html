@@ -11,6 +11,7 @@
     #password { width: 100%; padding: 8px; margin-bottom: 12px; }
     button { padding: 8px 16px; }
     #status { margin-bottom: 20px; }
+    #return-btn { margin-top: 20px; display: inline-block; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -26,17 +27,16 @@
 
 <script>
 async function init() {
-  // Supabase now includes access_token in the password reset link
   const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get('access_token');
+  const token = urlParams.get('access_token'); // Supabase v2 password recovery token
   const type = urlParams.get('type'); // should be 'recovery'
 
   if (!token || type !== 'recovery') {
-    document.getElementById('status').innerText = "Invalid or expired link.";
+    document.getElementById('status').innerText = "Invalid or expired link. Request a new password reset.";
     return;
   }
 
-  // Store token globally
+  // Store token globally for password update
   window.recoveryToken = token;
 
   // Show the password form
@@ -46,10 +46,7 @@ async function init() {
 
 async function updatePassword() {
   const password = document.getElementById('password').value;
-  if (!password) {
-    alert("Please enter a new password.");
-    return;
-  }
+  if (!password) { alert("Please enter a new password."); return; }
 
   // Update user using the recovery token
   const { data, error } = await supabaseClient.auth.updateUser(
@@ -62,7 +59,7 @@ async function updatePassword() {
   } else {
     document.body.innerHTML = `
       <h3>Password updated successfully!</h3>
-      <p><a href="https://globeii.app">Return to Globeii</a></p>
+      <a id="return-btn" href="https://globeii.app">Return to Globeii</a>
     `;
   }
 }

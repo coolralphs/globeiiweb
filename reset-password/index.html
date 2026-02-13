@@ -8,6 +8,8 @@
   <style>
     body { font-family: sans-serif; padding: 40px; }
     #form { display: none; max-width: 400px; }
+    #password { width: 100%; padding: 8px; margin-bottom: 12px; }
+    button { padding: 8px 16px; }
   </style>
 </head>
 <body>
@@ -22,25 +24,48 @@
 </div>
 
 <script>
-  // Listen for the recovery session Supabase creates automatically
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('form').style.display = 'block';
+  async function init() {
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('code');
+
+    if (!token) {
+      document.getElementById('loading').innerText = "Invalid link or missing token.";
+      return;
     }
-  });
+
+    // Show form now that we have a token
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('form').style.display = 'block';
+
+    // Store token globally for password update
+    window.resetToken = token;
+  }
 
   async function updatePassword() {
     const password = document.getElementById('password').value;
 
-    const { error } = await supabaseClient.auth.updateUser({ password });
+    if (!password) {
+      alert('Please enter a new password.');
+      return;
+    }
+
+    // Use verifyOtp to complete password recovery
+    const { error } = await supabaseClient.auth.verifyOtp({
+      type: 'recovery',
+      token: window.resetToken,
+      newPassword: password
+    });
 
     if (error) {
-      alert(error.message);
+      alert('Error: ' + error.message);
     } else {
       document.body.innerHTML = "<h3>Password updated successfully. You can return to the app.</h3>";
     }
   }
+
+  // Initialize page
+  init();
 </script>
 
 </body>

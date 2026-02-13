@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Reset Password</title>
@@ -10,13 +10,14 @@
     #form { display: none; max-width: 400px; }
     #password { width: 100%; padding: 8px; margin-bottom: 12px; }
     button { padding: 8px 16px; }
+    #status { margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
 <h2>Reset your password</h2>
 
-<div id="loading">Verifying link…</div>
+<div id="status">Verifying link…</div>
 
 <div id="form">
   <input id="password" type="password" placeholder="New password" />
@@ -24,48 +25,50 @@
 </div>
 
 <script>
-  async function init() {
-    // Get token from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('code');
+async function init() {
+  // Supabase now includes access_token in the password reset link
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('access_token');
+  const type = urlParams.get('type'); // should be 'recovery'
 
-    if (!token) {
-      document.getElementById('loading').innerText = "Invalid link or missing token.";
-      return;
-    }
-
-    // Show form now that we have a token
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('form').style.display = 'block';
-
-    // Store token globally for password update
-    window.resetToken = token;
+  if (!token || type !== 'recovery') {
+    document.getElementById('status').innerText = "Invalid or expired link.";
+    return;
   }
 
-  async function updatePassword() {
-    const password = document.getElementById('password').value;
+  // Store token globally
+  window.recoveryToken = token;
 
-    if (!password) {
-      alert('Please enter a new password.');
-      return;
-    }
+  // Show the password form
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('form').style.display = 'block';
+}
 
-    // Use verifyOtp to complete password recovery
-    const { error } = await supabaseClient.auth.verifyOtp({
-      type: 'recovery',
-      token: window.resetToken,
-      newPassword: password
-    });
-
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      document.body.innerHTML = "<h3>Password updated successfully. You can return to the app.</h3>";
-    }
+async function updatePassword() {
+  const password = document.getElementById('password').value;
+  if (!password) {
+    alert("Please enter a new password.");
+    return;
   }
 
-  // Initialize page
-  init();
+  // Update user using the recovery token
+  const { data, error } = await supabaseClient.auth.updateUser(
+    { password },
+    { headers: { Authorization: `Bearer ${window.recoveryToken}` } }
+  );
+
+  if (error) {
+    alert("Error: " + error.message);
+  } else {
+    document.body.innerHTML = `
+      <h3>Password updated successfully!</h3>
+      <p><a href="https://globeii.app">Return to Globeii</a></p>
+    `;
+  }
+}
+
+// Initialize page
+init();
 </script>
 
 </body>

@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reset Password</title>
+  <title>Reset / Set Password</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
   <style>
     body { font-family: sans-serif; padding: 40px; }
-    #form { display: none; max-width: 400px; }
-    #password { width: 100%; padding: 8px; margin-bottom: 12px; }
+    #form, #new-password-form { display: none; max-width: 400px; }
+    input { width: 100%; padding: 8px; margin-bottom: 12px; }
     button { padding: 8px 16px; }
     #status { margin-bottom: 20px; }
     #return-btn { margin-top: 20px; display: inline-block; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; }
@@ -16,44 +16,62 @@
 </head>
 <body>
 
-<h2>Reset your password</h2>
+<h2>Reset / Set your password</h2>
 
-<div id="status">Verifying link…</div>
+<div id="status">Enter your email to receive a login link:</div>
 
 <div id="form">
-  <input id="password" type="password" placeholder="New password" />
+  <input id="email" type="email" placeholder="Your email" />
+  <button onclick="sendMagicLink()">Send Magic Link</button>
+</div>
+
+<div id="new-password-form">
+  <input id="password" type="password" placeholder="Enter new password" />
   <button onclick="updatePassword()">Update Password</button>
 </div>
 
 <script>
-async function init() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+document.getElementById('form').style.display = 'block';
 
-  if (code) {
-    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(code);
+// Send magic link to email
+async function sendMagicLink() {
+  const email = document.getElementById('email').value;
+  if (!email) { alert("Enter your email."); return; }
 
-    if (error) {
-      document.getElementById('status').innerText = "Invalid or expired reset link.";
-      console.error(error);
-      return;
+  const { data, error } = await supabaseClient.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.href // send back to same page
     }
+  });
 
-    console.log("Temporary session created:", data.session);
+  if (error) {
+    alert("Error sending magic link: " + error.message);
+  } else {
+    document.getElementById('status').innerText = "Check your email for the login link!";
+    document.getElementById('form').style.display = 'none';
   }
+}
 
-  document.getElementById('status').style.display = 'none';
-  document.getElementById('form').style.display = 'block';
+// Detect session from magic link on page load
+async function init() {
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (data.session && data.session.user) {
+    // User logged in via magic link
+    document.getElementById('status').innerText = "Logged in! Please set a new password:";
+    document.getElementById('new-password-form').style.display = 'block';
+  }
 }
 
 async function updatePassword() {
   const password = document.getElementById('password').value;
-  if (!password) { alert("Enter a new password"); return; }
+  if (!password) { alert("Enter a new password."); return; }
 
   const { data, error } = await supabaseClient.auth.updateUser({ password });
 
   if (error) {
-    alert("Error: " + error.message);
+    alert("Error updating password: " + error.message);
   } else {
     document.body.innerHTML = `
       <h3>Password updated successfully!</h3>
@@ -62,8 +80,9 @@ async function updatePassword() {
   }
 }
 
+// Initialize page
 init();
-</script
+</script>
 
 </body>
 </html>

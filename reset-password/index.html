@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset Password</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    #form { display: none; max-width: 400px; }
+  </style>
+</head>
+<body>
+
+<h2>Reset your password</h2>
+
+<div id="loading">Verifying link…</div>
+
+<div id="form">
+  <input id="password" type="password" placeholder="New password" />
+  <button onclick="updatePassword()">Update Password</button>
+</div>
+
+<script>
+  // Listen for the recovery session Supabase creates automatically
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('form').style.display = 'block';
+    }
+  });
+
+  async function updatePassword() {
+    const password = document.getElementById('password').value;
+
+    const { error } = await supabaseClient.auth.updateUser({ password });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      document.body.innerHTML = "<h3>Password updated successfully. You can return to the app.</h3>";
+    }
+  }
+</script>
+
+</body>
+</html>

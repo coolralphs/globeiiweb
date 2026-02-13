@@ -1055,3 +1055,62 @@ footer a:hover {
     bottom: auto; /* not used on desktop */
   }
 }
+
+/* =========================
+   PRICING SECTION
+   ========================= */
+/* Base pricing card */
+.pricing-section .card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+/* Header full width */
+.pricing-section .card-header {
+  background-color: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 1rem 0;
+  border-radius: 0;
+  width: 100%;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 767px) {
+  .pricing-section .card {
+    margin-left: 6rem;   /* space on left */
+    margin-right: 6rem;  /* space on right */
+  }
+}
+
+.plans-grid td, .plans-grid th {
+  padding: 1rem;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.plans-grid td:empty {
+  background-color: #f8f9fa;
+}
+
+.plans-grid td {
+  font-weight: 500;
+}
+
+.plans-grid td:contains("✅") {
+  color: green;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .plans-grid td, .plans-grid th {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+}

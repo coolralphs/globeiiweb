@@ -221,7 +221,8 @@
     };
 
     // Validation & add logic
-    function addItinerary() {
+
+    async function addItinerary() {
       const name = nameInput.value.trim();
       if (!name) {
         alert("Please type an itinerary name");
@@ -229,9 +230,54 @@
         return;
       }
 
-      // Placeholder for Supabase logic
-      alert(`Add itinerary logic goes here. Name: "${name}"`);
-      closeModal();
+      try {
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !session) {
+          alert("You must be logged in to add an itinerary");
+          console.error("Session error:", sessionError);
+          return;
+        }
+
+        const accessToken = session.access_token;
+        console.log("Session Token:", accessToken);
+
+        // Call the Edge Function, explicitly passing the user's JWT
+        const { data, error } = await supabaseClient.functions.invoke(
+          'create-itinerary',
+          {
+            body: { title: name },
+            headers: { Authorization: `Bearer ${accessToken}` } // <-- THIS is critical
+          }
+        );
+
+        if (error) {
+          console.error("Failed to create itinerary:", error);
+          alert("Failed to create itinerary: " + error.message);
+          return;
+        }
+
+        console.log("Itinerary created:", data);
+
+        // Add it locally
+        const newItinerary = {
+          id: data.itinerary.id,
+          name: data.itinerary.title,
+          dates: "",
+          owned: true,
+          places: 0,
+          archived: false
+        };
+        data.push(newItinerary); // or your local list
+        render();
+
+        closeModal();
+        nameInput.value = "";
+
+      } catch (err) {
+        console.error("Unexpected error adding itinerary:", err);
+        alert("An unexpected error occurred. Check console for details.");
+      }
     }
 
     // Add button click

@@ -27,43 +27,30 @@
 
 <script>
 async function init() {
-  // Get the code from URL
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
   if (code) {
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    const { user} = await supabase.auth.getSession();
-    console.log(user.session);
-    if(error) {
-      console.error("Invalid or expired reset link:", error.message);
+    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      document.getElementById('status').innerText = "Invalid or expired reset link.";
+      console.error(error);
       return;
-    } else
-    {
-      console.error("Temporary session created");
     }
-    // document.getElementById('status').innerText = "Invalid or expired link. Request a new password reset.";
-    // return;
+
+    console.log("Temporary session created:", data.session);
   }
 
-  // Store code globally
-  window.recoveryCode = code;
-
-  // Show password form
   document.getElementById('status').style.display = 'none';
   document.getElementById('form').style.display = 'block';
 }
 
 async function updatePassword() {
   const password = document.getElementById('password').value;
-  if (!password) { alert("Please enter a new password."); return; }
+  if (!password) { alert("Enter a new password"); return; }
 
-  // Use verifyOtp with type 'recovery' and the code from URL
-  const { data, error } = await supabaseClient.auth.updatePassword({
-    type: 'recovery',
-    token: window.recoveryCode,
-    newPassword: password
-  });
+  const { data, error } = await supabaseClient.auth.updateUser({ password });
 
   if (error) {
     alert("Error: " + error.message);
@@ -75,9 +62,8 @@ async function updatePassword() {
   }
 }
 
-// Initialize page
 init();
-</script>
+</script
 
 </body>
 </html>

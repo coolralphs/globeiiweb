@@ -2,68 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reset Password</title>
+  <title>Globeii Login Callback</title>
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Your Supabase config -->
   <script src="/supabase-config.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 40px; }
-    #form { display: none; max-width: 400px; }
-    #password { width: 100%; padding: 8px; margin-bottom: 12px; }
-    button { padding: 8px 16px; }
-    #status { margin-bottom: 20px; }
-    #return-btn { margin-top: 20px; display: inline-block; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; }
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+    #status {
+      font-size: 18px;
+      margin-top: 50px;
+      color: #333;
+    }
+    #continue-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
 
-<h2>Reset your password</h2>
-
-<div id="status">Verifying link…</div>
-
-<div id="form">
-  <input id="password" type="password" placeholder="New password" />
-  <button onclick="updatePassword()">Update Password</button>
-</div>
+<h2>Logging you in…</h2>
+<div id="status">Verifying magic link…</div>
 
 <script>
-async function init() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+  async function handleMagicLink() {
+    const statusEl = document.getElementById('status');
+    statusEl.innerText = "Verifying magic link…";
 
-  if (code) {
-    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(code);
+    try {
+      const currentUrl = window.location.href;
 
-    if (error) {
-      document.getElementById('status').innerText = "Invalid or expired reset link.";
-      console.error(error);
-      return;
+      // Parse URL and complete login
+      const { data, error } = await supabaseClient.auth.getSessionFromUrl({ url: currentUrl });
+
+      if (error) {
+        console.error(error);
+        statusEl.innerText = "Invalid or expired magic link.";
+        return;
+      }
+
+      if (data?.session) {
+        console.log("User logged in:", data.session.user.email);
+        statusEl.innerText = `Logged in as ${data.session.user.email}`;
+
+        // Redirect after short delay
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
+
+      } else {
+        statusEl.innerText = "Magic link verified, but no session found.";
+      }
+
+    } catch (err) {
+      console.error(err);
+      statusEl.innerText = "Error verifying magic link.";
     }
-
-    console.log("Temporary session created:", data.session);
   }
 
-  document.getElementById('status').style.display = 'none';
-  document.getElementById('form').style.display = 'block';
-}
-
-async function updatePassword() {
-  const password = document.getElementById('password').value;
-  if (!password) { alert("Enter a new password"); return; }
-
-  const { data, error } = await supabaseClient.auth.updateUser({ password });
-
-  if (error) {
-    alert("Error: " + error.message);
-  } else {
-    document.body.innerHTML = `
-      <h3>Password updated successfully!</h3>
-      <a id="return-btn" href="https://globeii.app">Return to Globeii</a>
-    `;
-  }
-}
-
-init();
-</script
+  window.addEventListener('DOMContentLoaded', handleMagicLink);
+</script>
 
 </body>
-</html> 
+</html>

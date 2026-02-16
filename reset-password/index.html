@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login / Set Password</title>
 
-  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
 
@@ -23,82 +22,41 @@
     * { box-sizing: border-box; }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
       background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
       color: var(--text);
     }
 
     .card {
-      width: 100%;
-      max-width: 420px;
+      width:100%;
+      max-width:420px;
       background: var(--card);
       border-radius: var(--radius);
-      padding: 28px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding:28px;
+      border:1px solid var(--border);
+      box-shadow:0 10px 30px rgba(0,0,0,0.06);
     }
 
-    h2 {
-      margin-top: 0;
-      font-size: 22px;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-
-    #status {
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 24px;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: none;
-      background: var(--primary);
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover { opacity: 0.9; }
-
-    #return-btn {
-      display: block;
-      margin-top: 18px;
-      text-align: center;
-      padding: 14px;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 10px;
-      text-decoration: none;
-    }
-
-    .hidden { display: none; }
+    h2 { margin-top:0; text-align:center; font-size:22px; margin-bottom:8px; }
+    #status { text-align:center; color: var(--muted); margin-bottom:24px; font-size:14px; }
+    input { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); font-size:16px; }
+    button { width:100%; padding:14px; border-radius:10px; border:none; background: var(--primary); color:#fff; font-size:16px; cursor:pointer; }
+    button:hover { opacity:.9; }
+    #return-btn { display:block; margin-top:18px; text-align:center; padding:14px; background: var(--primary); color:#fff; border-radius:10px; text-decoration:none; }
+    .hidden { display:none; }
   </style>
 </head>
 <body>
 
 <div class="card">
   <h2>Welcome</h2>
-  <div id="status">Verifying your login link…</div>
+  <div id="status">Checking your login link…</div>
 
   <div id="password-form" class="hidden">
     <input id="password" type="password" placeholder="Set a password (optional)" />
@@ -109,31 +67,18 @@
 
 <script>
 async function initMagicLogin() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-  if (!code) {
+  if (error || !session) {
     document.getElementById("status").innerText =
-      "Invalid login link. Please request a new email link.";
+      "This login link has expired or is invalid. Request a new magic link.";
     return;
   }
 
-  // Exchange code for session (new PKCE flow)
-  const { error } = await supabaseClient.auth.exchangeCodeForSession(code);
-
-  if (error) {
-    document.getElementById("status").innerText =
-      "This login link has expired or already been used.";
-    return;
-  }
-
-  // User is now logged in
+  // User is logged in
   document.getElementById("status").innerText =
-    "You are logged in! Optionally, set a password to use for future logins.";
+    "You're logged in! Optionally, set a password for future logins.";
   document.getElementById("password-form").classList.remove("hidden");
-
-  // Remove the code from URL so refresh doesn't reuse it
-  window.history.replaceState({}, document.title, "/reset-password");
 }
 
 async function updatePassword() {
@@ -141,38 +86,25 @@ async function updatePassword() {
   const confirm = document.getElementById("confirm").value.trim();
 
   if (password) {
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
-      return;
-    }
-    if (password !== confirm) {
-      alert("Passwords do not match.");
-      return;
-    }
+    if (password.length < 6) { alert("Password must be at least 6 characters."); return; }
+    if (password !== confirm) { alert("Passwords do not match."); return; }
 
     const { error } = await supabaseClient.auth.updateUser({ password });
-
-    if (error) {
-      alert("Error updating password: " + error.message);
-      return;
-    }
+    if (error) { alert("Error updating password: " + error.message); return; }
   }
 
-  // Show success & return button
   document.body.innerHTML = `
     <div class="card">
       <h2>Success</h2>
       <p style="text-align:center;color:#666;">
         ${password ? 'Password set successfully!' : 'You are logged in!'}
       </p>
-      <a id="return-btn" href="https://globeii.app">
-        Return to Globeii
-      </a>
+      <a id="return-btn" href="https://globeii.app">Return to Globeii</a>
     </div>
   `;
 }
 
-// Initialize page
+// Initialize login page
 initMagicLogin();
 </script>
 

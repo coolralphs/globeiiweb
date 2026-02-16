@@ -2,86 +2,176 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reset / Set Password</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set New Password</title>
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
+
   <style>
-    body { font-family: sans-serif; padding: 40px; }
-    #form, #new-password-form { display: none; max-width: 400px; }
-    input { width: 100%; padding: 8px; margin-bottom: 12px; }
-    button { padding: 8px 16px; }
-    #status { margin-bottom: 20px; }
-    #return-btn { margin-top: 20px; display: inline-block; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; }
+    :root {
+      --primary: #000;
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --border: #e6e6e6;
+      --text: #111;
+      --muted: #666;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    #status {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover { opacity: 0.9; }
+
+    #return-btn {
+      display: block;
+      margin-top: 18px;
+      text-align: center;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-<h2>Reset / Set your password</h2>
+<div class="card">
+  <h2>Set a New Password</h2>
+  <div id="status">Verifying your reset link…</div>
 
-<div id="status">Enter your email to receive a login link:</div>
-
-<div id="form">
-  <input id="email" type="email" placeholder="Your email" />
-  <button onclick="sendMagicLink()">Send Magic Link</button>
-</div>
-
-<div id="new-password-form">
-  <input id="password" type="password" placeholder="Enter new password" />
-  <button onclick="updatePassword()">Update Password</button>
+  <div id="password-form" class="hidden">
+    <input id="password" type="password" placeholder="New password" />
+    <input id="confirm" type="password" placeholder="Confirm password" />
+    <button onclick="updatePassword()">Update Password</button>
+  </div>
 </div>
 
 <script>
-document.getElementById('form').style.display = 'block';
+  /**
+   * When Supabase sends a recovery email, it appends tokens to the URL.
+   * We MUST exchange them for a session before calling updateUser().
+   */
 
-// Send magic link to email
-async function sendMagicLink() {
-  const email = document.getElementById('email').value;
-  if (!email) { alert("Enter your email."); return; }
+  async function initRecovery() {
+    const hash = window.location.hash;
 
-  const { data, error } = await supabaseClient.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.href // send back to same page
+    if (!hash.includes("access_token")) {
+      document.getElementById("status").innerText =
+        "Invalid or expired reset link.";
+      return;
     }
-  });
 
-  if (error) {
-    alert("Error sending magic link: " + error.message);
-  } else {
-    document.getElementById('status').innerText = "Check your email for the login link!";
-    document.getElementById('form').style.display = 'none';
+    // Supabase automatically parses tokens from URL hash
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+      document.getElementById("status").innerText =
+        "This reset link has expired. Please request another.";
+      return;
+    }
+
+    // ✅ User is now authenticated via recovery link
+    document.getElementById("status").innerText =
+      "Enter your new password.";
+    document.getElementById("password-form").classList.remove("hidden");
   }
-}
 
-// Detect session from magic link on page load
-async function init() {
-  const { data, error } = await supabaseClient.auth.getSession();
+  async function updatePassword() {
+    const password = document.getElementById("password").value.trim();
+    const confirm = document.getElementById("confirm").value.trim();
 
-  if (data.session && data.session.user) {
-    // User logged in via magic link
-    document.getElementById('status').innerText = "Logged in! Please set a new password:";
-    document.getElementById('new-password-form').style.display = 'block';
-  }
-}
+    if (!password || password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
 
-async function updatePassword() {
-  const password = document.getElementById('password').value;
-  if (!password) { alert("Enter a new password."); return; }
+    if (password !== confirm) {
+      alert("Passwords do not match.");
+      return;
+    }
 
-  const { data, error } = await supabaseClient.auth.updateUser({ password });
+    const { error } = await supabaseClient.auth.updateUser({ password });
 
-  if (error) {
-    alert("Error updating password: " + error.message);
-  } else {
+    if (error) {
+      alert("Error updating password: " + error.message);
+      return;
+    }
+
     document.body.innerHTML = `
-      <h3>Password updated successfully!</h3>
-      <a id="return-btn" href="https://globeii.app">Return to Globeii</a>
+      <div class="card">
+        <h2>Password Updated</h2>
+        <p style="text-align:center;color:#666;">
+          Your password has been successfully changed.
+        </p>
+        <a id="return-btn" href="https://globeii.app">
+          Return to Globeii
+        </a>
+      </div>
     `;
   }
-}
 
-// Initialize page
-init();
+  initRecovery();
 </script>
 
 </body>

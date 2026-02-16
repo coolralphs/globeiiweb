@@ -2,111 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Set Password</title>
-
+  <title>Reset Password</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
-
   <style>
-    :root {
-      --primary: #000;
-      --bg: #f6f7f9;
-      --card: #fff;
-      --border: #e6e6e6;
-      --text: #111;
-      --muted: #666;
-      --radius: 14px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-      background: var(--bg);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:20px;
-      color: var(--text);
-    }
-
-    .card {
-      width:100%;
-      max-width:420px;
-      background: var(--card);
-      border-radius: var(--radius);
-      padding:28px;
-      border:1px solid var(--border);
-      box-shadow:0 10px 30px rgba(0,0,0,0.06);
-    }
-
-    h2 { margin-top:0; text-align:center; font-size:22px; margin-bottom:8px; }
-    #status { text-align:center; color: var(--muted); margin-bottom:24px; font-size:14px; }
-    input { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); font-size:16px; }
-    button { width:100%; padding:14px; border-radius:10px; border:none; background: var(--primary); color:#fff; font-size:16px; cursor:pointer; }
-    button:hover { opacity:.9; }
-    #return-btn { display:block; margin-top:18px; text-align:center; padding:14px; background: var(--primary); color:#fff; border-radius:10px; text-decoration:none; }
-    .hidden { display:none; }
+    body { font-family: sans-serif; padding: 40px; }
+    #form { display: none; max-width: 400px; }
+    #password { width: 100%; padding: 8px; margin-bottom: 12px; }
+    button { padding: 8px 16px; }
+    #status { margin-bottom: 20px; }
+    #return-btn { margin-top: 20px; display: inline-block; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>Welcome</h2>
-  <div id="status">Checking your login link…</div>
+<h2>Reset your password</h2>
 
-  <div id="password-form" class="hidden">
-    <input id="password" type="password" placeholder="Set a password (optional)" />
-    <input id="confirm" type="password" placeholder="Confirm password" />
-    <button onclick="updatePassword()">Save Password</button>
-  </div>
+<div id="status">Verifying link…</div>
+
+<div id="form">
+  <input id="password" type="password" placeholder="New password" />
+  <button onclick="updatePassword()">Update Password</button>
 </div>
 
 <script>
-async function initMagicLogin() {
-  const { data: { session }, error } = await supabaseClient.auth.getSession();
+async function init() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
 
-  if (error || !session) {
-    document.getElementById("status").innerText =
-      "This login link has expired or is invalid. Request a new magic link.";
-    return;
+  if (code) {
+    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      document.getElementById('status').innerText = "Invalid or expired reset link.";
+      console.error(error);
+      return;
+    }
+
+    console.log("Temporary session created:", data.session);
   }
 
-  // User is logged in
-  document.getElementById("status").innerText =
-    "You're logged in! Optionally, set a password for future logins.";
-  document.getElementById("password-form").classList.remove("hidden");
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('form').style.display = 'block';
 }
 
 async function updatePassword() {
-  const password = document.getElementById("password").value.trim();
-  const confirm = document.getElementById("confirm").value.trim();
+  const password = document.getElementById('password').value;
+  if (!password) { alert("Enter a new password"); return; }
 
-  if (password) {
-    if (password.length < 6) { alert("Password must be at least 6 characters."); return; }
-    if (password !== confirm) { alert("Passwords do not match."); return; }
+  const { data, error } = await supabaseClient.auth.updateUser({ password });
 
-    const { error } = await supabaseClient.auth.updateUser({ password });
-    if (error) { alert("Error updating password: " + error.message); return; }
-  }
-
-  document.body.innerHTML = `
-    <div class="card">
-      <h2>Success</h2>
-      <p style="text-align:center;color:#666;">
-        ${password ? 'Password set successfully!' : 'You are logged in!'}
-      </p>
+  if (error) {
+    alert("Error: " + error.message);
+  } else {
+    document.body.innerHTML = `
+      <h3>Password updated successfully!</h3>
       <a id="return-btn" href="https://globeii.app">Return to Globeii</a>
-    </div>
-  `;
+    `;
+  }
 }
 
-// Initialize login page
-initMagicLogin();
-</script>
+init();
+</script
 
 </body>
-</html>
+</html> 

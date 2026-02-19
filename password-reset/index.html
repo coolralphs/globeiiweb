@@ -13,95 +13,151 @@
 
 <script>
 (async () => {
-  const statusEl = document.getElementById('status') || (function(){
-    const el = document.createElement('div');
-    el.id = 'status';
-    el.style.padding = '1rem';
-    el.style.fontFamily = 'system-ui, Arial';
-    document.body.prepend(el);
-    return el;
-  })();
-
-  function setStatus(msg, isError = false) {
-    statusEl.textContent = msg;
-    statusEl.style.color = isError ? 'crimson' : 'green';
-    console.log(msg);
+  // Change this if your client is available under a different global
+  const supabase = supabaseClient;
+  if (!supabase) {
+    console.error('Supabase client not found on window.supabase or window.supabaseClient');
+    return;
   }
 
+  // 1) Read code from URL (query param or fragment)
+  const url = new URL(window.location.href);
+  let code = null;
+
+  // Prefer query param ?code=...
+  const q = url.searchParams.get('code');
+  if (q) code = q;
+
+  // If not in query, check fragment (#)
+  if (!code && window.location.hash) {
+    const hash = window.location.hash.replace(/^#/, '');
+    const hashParams = new URLSearchParams(hash);
+    // Some flows may put code in fragment as 'code' or include access_token
+    code = hashParams.get('code') || hashParams.get('access_token') || null;
+  }
+
+  if (!code) {
+    console.error('No authorization code or access_token found in URL (query or fragment).');
+    return;
+  }
+
+  // 2) Ensure code is a plain string (defensive conversions)
+  // If code somehow arrived as an object (rare in browser), convert to string
+  if (typeof code !== 'string') {
+    try {
+      code = String(code);
+    } catch (e) {
+      console.error('Failed to convert code to string:', e);
+      return;
+    }
+  }
+
+  // Optional: Trim whitespace
+  code = code.trim();
+
+  // 3) Try exchangeCodeForSession (supabase-js v2) with code as a string
   try {
-    if (!supabaseClient) {
-      setStatus('Supabase client not initialized (missing supabase-config).', true);
+    console.log('Calling exchangeCodeForSession with code (string).');
+    const result = await supabase.auth.exchangeCodeForSession(code);
+
+    // Normalise the possible shapes
+    const error = result?.error ?? result?.data?.error ?? null;
+    const session = result?.data?.session ?? result?.session ?? result?.data ?? null;
+
+    if (error) {
+      console.warn('exchangeCodeForSession returned error:', error);
+      // If error indicates missing code_verifier or invalid_grant, we'll try REST fallback below
+    } else {
+      console.log('Session result:', session);
+      // Successfully exchanged — redirect or handle session
+      window.location.href = '/';
+      return;
+    }
+  } catch (ex) {
+    console.warn('exchangeCodeForSession threw:', ex);
+    // proceed to fallback
+  }
+
+  // 4) Fallback: try REST token endpoint if you have a stored PKCE code_verifier
+  // You must have saved the code_verifier when you started the PKCE flow (e.g., sessionStorage)
+  // Replace the storage key if your app uses a different one.
+  const pkceKey = 'supabase.pkce.code_verifier';
+  const codeVerifier = (() => {
+    try {
+      return sessionStorage.getItem(pkceKey) || localStorage.getItem(pkceKey) || null;
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  if (!codeVerifier) {
+    console.error('No PKCE code_verifier found in sessionStorage/localStorage under key:', pkceKey);
+    console.error('PKCE exchange cannot proceed without the original code_verifier. If you did not store it, you must restart the sign-in flow.');
+    return;
+  }
+
+  // Build REST call body
+  const projectUrl = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : (supabase?.url || null);
+  const anonKey = (typeof SUPABASE_ANON_KEY !== 'undefined') ? SUPABASE_ANON_KEY : (supabase?.anonKey || null);
+
+  if (!projectUrl) {
+    console.error('Cannot determine Supabase project URL. Ensure SUPABASE_URL or supabase client is available.');
+    return;
+  }
+
+  // Remove trailing slash for safety
+  const baseUrl = projectUrl.replace(/\/+$/, '');
+  const tokenUrl = `${baseUrl}/auth/v1/token?grant_type=pkce`;
+
+  // POST JSON to the /auth/v1/token endpoint
+  try {
+    const body = {
+      code,
+      client_id: anonKey,      // pass anon client id; if not available, server may still accept but best to provide it
+      code_verifier: codeVerifier
+    };
+
+    console.log('Performing REST token exchange (PKCE) to /auth/v1/token');
+    const resp = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.error('Token endpoint returned error:', data);
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
+    // data expected to contain access_token / refresh_token / expires_in etc.
+    console.log('Token exchange successful:', data);
 
-    if (!code) {
-      setStatus('No code param found in URL.', true);
-      return;
-    }
-
-    setStatus('Exchanging code for session...');
-
-    // Some SDK versions expect a plain string argument for exchangeCodeForSession
-    if (typeof supabaseClient.auth.exchangeCodeForSession === 'function') {
+    // Optionally set the session in the client if you want:
+    // supabase.auth.setSession is available in v2 to set session from server response
+    if (typeof supabase.auth.setSession === 'function') {
+      // Build the session object expected by setSession
+      // setSession accepts { access_token, refresh_token } shape
       try {
-        // Try calling with a plain string first
-        const maybePromise = supabaseClient.auth.exchangeCodeForSession(code);
-        // The method returns an object like { data, error } or may throw — await it
-        const result = await maybePromise;
-        // result may be { data, error } or { session, error } depending on SDK; normalize:
-        const data = result?.data ?? result?.session ?? result;
-        const error = result?.error ?? result?.error;
-        if (error) {
-          setStatus(`Exchange failed: ${error.message || JSON.stringify(error)}`, true);
-          console.error('exchangeCodeForSession error', error);
-          // fall through to fallback below
-        } else {
-          console.log('exchangeCodeForSession result', result);
-          setStatus('Login successful — redirecting...');
-          return setTimeout(() => window.location.href = '/', 700);
-        }
-      } catch (ex) {
-        // If calling with plain string threw, try object form as fallback
-        console.warn('exchangeCodeForSession(string) threw, trying object form', ex);
-        try {
-          const result2 = await supabaseClient.auth.exchangeCodeForSession({ code });
-          if (result2?.error) {
-            setStatus(`Exchange failed: ${result2.error.message || JSON.stringify(result2.error)}`, true);
-            console.error('exchangeCodeForSession error', result2.error);
-          } else {
-            console.log('exchangeCodeForSession result2', result2);
-            setStatus('Login successful — redirecting...');
-            return setTimeout(() => window.location.href = '/', 700);
-          }
-        } catch (ex2) {
-          console.error('exchangeCodeForSession fallback threw', ex2);
-        }
+        await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token
+        });
+        console.log('Session set in supabase client.');
+        window.location.href = '/';
+        return;
+      } catch (e) {
+        console.warn('Failed to set session on client, you may need to reload and handle tokens manually:', e);
       }
+    } else {
+      console.warn('supabase.auth.setSession not available on client; you may need to store tokens manually or perform server-side exchange.');
     }
-
-    // Fallback: try verifyOtp (some projects use this)
-    setStatus('Falling back to verifyOtp...');
-    let result = await supabaseClient.auth.verifyOtp({ token_hash: code, type: 'magiclink' });
-    if (result?.error) {
-      result = await supabaseClient.auth.verifyOtp({ token: code, type: 'magiclink' });
-    }
-
-    if (result?.error) {
-      setStatus(`Failed to verify code: ${result.error?.message || JSON.stringify(result.error)}`, true);
-      console.error('verifyOtp error', result.error);
-      return;
-    }
-
-    console.log('verifyOtp result', result);
-    setStatus('Login successful — redirecting...');
-    setTimeout(() => window.location.href = '/', 700);
 
   } catch (err) {
-    console.error(err);
-    setStatus('Unexpected error during verification. See console.', true);
+    console.error('REST token exchange failed:', err);
+    return;
   }
 })();
 </script>

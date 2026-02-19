@@ -11,71 +11,75 @@
 <body style="font-family:sans-serif;text-align:center;padding-top:40px;">
   <h2 id="msg">Signing you in securely...</h2>
 
-  <script>
-  (async () => {
-    // Minimal UI feedback (adjust DOM selectors as needed)
-    const statusEl = document.getElementById('status') || (function(){
-      const el = document.createElement('div');
-      el.id = 'status';
-      el.style.padding = '1rem';
-      el.style.fontFamily = 'system-ui, Arial';
-      document.body.prepend(el);
-      return el;
-    })();
-
-    function setStatus(msg, isError = false) {
-      statusEl.textContent = msg;
-      statusEl.style.color = isError ? 'crimson' : 'green';
-    }
-
-    try {
-      if (!supabaseClient) {
-        setStatus('Supabase client not initialized (missing supabase-config).', true);
-        return;
-      }
-
-      // Read token from the query string
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token') || params.get('token_hash') || params.get('confirmation_url');
-
-      if (!token) {
-        setStatus('No token found in URL. Nothing to verify.', true);
-        return;
-      }
-
-      setStatus('Exchanging magic link for session...');
-
-      // Use verifyOtp to exchange the PKCE token for a session
-      const { data, error } = await supabaseClient.auth.verifyOtp({
-        token_hash: token,
-        type: 'magiclink'
-      });
-
-      if (error) {
-        // If the SDK expects 'token' instead of 'token_hash' you can retry below (uncomment if needed)
-        // const retry = await window.supabaseClient.auth.verifyOtp({ token, type: 'magiclink' });
-
-        setStatus(`Failed to verify magic link: ${error.message || JSON.stringify(error)}`, true);
-        console.error('verifyOtp error', error);
-        return;
-      }
-
-      // Success: session is returned in data.session for some SDK versions,
-      // or data may contain the session structure depending on SDK implementation.
-      console.log('verifyOtp result', data);
-      setStatus('Login successful — redirecting...');
-
-      // Optionally wait a short moment so any onAuthStateChange handlers run
-      setTimeout(() => {
-        // Redirect to home or any protected route
-        window.location.href = '/';
-      }, 700);
-
-    } catch (err) {
-      console.error(err);
-      setStatus('Unexpected error during verification. See console for details.', true);
-    }
+<script>
+(async () => {
+  const statusEl = document.getElementById('status') || (function(){
+    const el = document.createElement('div');
+    el.id = 'status';
+    el.style.padding = '1rem';
+    el.style.fontFamily = 'system-ui, Arial';
+    document.body.prepend(el);
+    return el;
   })();
-  </script>
+
+  function setStatus(msg, isError = false) {
+    statusEl.textContent = msg;
+    statusEl.style.color = isError ? 'crimson' : 'green';
+    console.log(msg);
+  }
+
+  try {
+    if (!window.supabaseClient) {
+      setStatus('Supabase client not initialized (missing supabase-config).', true);
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+
+    if (!code) {
+      setStatus('No code param found in URL.', true);
+      return;
+    }
+
+    setStatus('Exchanging code for session...');
+
+    // Preferred: use exchangeCodeForSession if available (PKCE flow)
+    if (typeof supabaseClient.auth.exchangeCodeForSession === 'function') {
+      const { data, error } = await supabaseClient.auth.exchangeCodeForSession({ code });
+      if (error) {
+        setStatus(`Exchange failed: ${error.message}`, true);
+        console.error('exchangeCodeForSession error', error);
+        return;
+      }
+      console.log('exchangeCodeForSession result', data);
+      setStatus('Login successful — redirecting...');
+      return setTimeout(() => window.location.href = '/', 700);
+    }
+
+    // Fallback: some setups use verifyOtp with token_hash / token
+    // Try verifyOtp with token_hash first, then with token
+    let result = await supabaseClient.auth.verifyOtp({ token_hash: code, type: 'magiclink' });
+    if (result.error) {
+      // try using 'token' param if token_hash failed
+      result = await supabaseClient.auth.verifyOtp({ token: code, type: 'magiclink' });
+    }
+
+    if (result.error) {
+      setStatus(`Failed to verify code: ${result.error.message || JSON.stringify(result.error)}`, true);
+      console.error('verifyOtp error', result.error);
+      return;
+    }
+
+    console.log('verifyOtp result', result);
+    setStatus('Login successful — redirecting...');
+    setTimeout(() => window.location.href = '/', 700);
+
+  } catch (err) {
+    console.error(err);
+    setStatus('Unexpected error during verification. See console.', true);
+  }
+})();
+</script>
 </body>
 </html>

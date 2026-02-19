@@ -44,29 +44,53 @@
 
     setStatus('Exchanging code for session...');
 
-    // Preferred: use exchangeCodeForSession if available (PKCE flow)
+    // Some SDK versions expect a plain string argument for exchangeCodeForSession
     if (typeof supabaseClient.auth.exchangeCodeForSession === 'function') {
-      const { data, error } = await supabaseClient.auth.exchangeCodeForSession({ code });
-      if (error) {
-        setStatus(`Exchange failed: ${error.message}`, true);
-        console.error('exchangeCodeForSession error', error);
-        return;
+      try {
+        // Try calling with a plain string first
+        const maybePromise = supabaseClient.auth.exchangeCodeForSession(code);
+        // The method returns an object like { data, error } or may throw — await it
+        const result = await maybePromise;
+        // result may be { data, error } or { session, error } depending on SDK; normalize:
+        const data = result?.data ?? result?.session ?? result;
+        const error = result?.error ?? result?.error;
+        if (error) {
+          setStatus(`Exchange failed: ${error.message || JSON.stringify(error)}`, true);
+          console.error('exchangeCodeForSession error', error);
+          // fall through to fallback below
+        } else {
+          console.log('exchangeCodeForSession result', result);
+          setStatus('Login successful — redirecting...');
+          return setTimeout(() => window.location.href = '/', 700);
+        }
+      } catch (ex) {
+        // If calling with plain string threw, try object form as fallback
+        console.warn('exchangeCodeForSession(string) threw, trying object form', ex);
+        try {
+          const result2 = await supabaseClient.auth.exchangeCodeForSession({ code });
+          if (result2?.error) {
+            setStatus(`Exchange failed: ${result2.error.message || JSON.stringify(result2.error)}`, true);
+            console.error('exchangeCodeForSession error', result2.error);
+          } else {
+            console.log('exchangeCodeForSession result2', result2);
+            setStatus('Login successful — redirecting...');
+            return setTimeout(() => window.location.href = '/', 700);
+          }
+        } catch (ex2) {
+          console.error('exchangeCodeForSession fallback threw', ex2);
+        }
       }
-      console.log('exchangeCodeForSession result', data);
-      setStatus('Login successful — redirecting...');
-      return setTimeout(() => window.location.href = '/', 700);
     }
 
-    // Fallback: some setups use verifyOtp with token_hash / token
-    // Try verifyOtp with token_hash first, then with token
+    // Fallback: try verifyOtp (some projects use this)
+    setStatus('Falling back to verifyOtp...');
     let result = await supabaseClient.auth.verifyOtp({ token_hash: code, type: 'magiclink' });
-    if (result.error) {
-      // try using 'token' param if token_hash failed
+    if (result?.error) {
       result = await supabaseClient.auth.verifyOtp({ token: code, type: 'magiclink' });
     }
 
-    if (result.error) {
-      setStatus(`Failed to verify code: ${result.error.message || JSON.stringify(result.error)}`, true);
+    if (result?.error) {
+      setStatus(`Failed to verify code: ${result.error?.message || JSON.stringify(result.error)}`, true);
       console.error('verifyOtp error', result.error);
       return;
     }

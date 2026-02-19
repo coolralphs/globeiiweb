@@ -56,63 +56,73 @@
     <button id="backButton" style="display:none;" onclick="goBack()">Back to App</button>
   </div>
 
-  <script>
-    async function handleEmailConfirmation() {
-      const statusEl = document.getElementById("status");
-      
-      // --- First, check for Supabase "access_token" in query params ---
-      const params = new URLSearchParams(window.location.search);
-      const accessToken = params.get("access_token");
-      const type = params.get("type");
+ <script>
+  async function handleEmailConfirmation() {
+    const statusEl = document.getElementById("status");
 
-      try {
-        if (accessToken) {
-          // Use your supabaseClient from supabase-config.js
-          await supabaseClient.auth.setSession({ access_token: accessToken });
-          await supabaseClient.auth.refreshSession();
-          const user = supabaseClient.auth.user();
+    // --- Read query params ---
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get("access_token");
+    const type = params.get("type");
+    const messageParam = params.get("message"); // <-- new
 
-          if (type === "email_change") {
-            statusEl.innerText = `Email confirmed successfully! Your new email is: ${user.email}`;
-          } else {
-            statusEl.innerText = `Account confirmed! Welcome, ${user.email}`;
-          }
-          document.getElementById("backButton").style.display = "inline-block";
-          return;
+    try {
+      if (accessToken) {
+        // Set session for email change
+        await supabaseClient.auth.setSession({ access_token: accessToken });
+        await supabaseClient.auth.refreshSession();
+        const user = supabaseClient.auth.user();
+
+        if (type === "email_change") {
+          statusEl.innerText = `Email confirmed successfully! Your new email is: ${user.email}`;
+        } else {
+          statusEl.innerText = `Account confirmed! Welcome, ${user.email}`;
         }
 
-        // --- Second, check if Supabase sent a message in URL hash (e.g., #message=...) ---
-        const hash = window.location.hash.substring(1); // remove #
-        const hashParams = new URLSearchParams(hash);
-        const message = hashParams.get("message");
-        const error = hashParams.get("error");
-
-        if (message) {
-          statusEl.innerText = message.replace(/\+/g, ' ');
-          document.getElementById("backButton").style.display = "inline-block";
-          return;
-        } else if (error) {
-          const description = hashParams.get("error_description");
-          statusEl.innerText = `Error: ${description ? description.replace(/\+/g,' ') : error}`;
-          document.getElementById("backButton").style.display = "inline-block";
-          return;
-        }
-
-        // --- fallback ---
-        statusEl.innerText = "No confirmation info found.";
-      } catch (err) {
-        console.error(err);
-        statusEl.innerText = "Error confirming email.";
         document.getElementById("backButton").style.display = "inline-block";
+        return;
       }
-    }
 
-    function goBack() {
-      // Redirect back to your main web app page
-      window.location.href = "/"; 
-    }
+      // --- If message is in query string ---
+      if (messageParam) {
+        statusEl.innerText = decodeURIComponent(messageParam);
+        document.getElementById("backButton").style.display = "inline-block";
+        return;
+      }
 
-    window.onload = handleEmailConfirmation;
-  </script>
+      // --- If message/error is in URL hash (fallback) ---
+      const hash = window.location.hash.substring(1);
+      const hashParams = new URLSearchParams(hash);
+      const hashMessage = hashParams.get("message");
+      const hashError = hashParams.get("error");
+
+      if (hashMessage) {
+        statusEl.innerText = decodeURIComponent(hashMessage);
+        document.getElementById("backButton").style.display = "inline-block";
+        return;
+      } else if (hashError) {
+        const description = hashParams.get("error_description");
+        statusEl.innerText = `Error: ${description ? decodeURIComponent(description) : hashError}`;
+        document.getElementById("backButton").style.display = "inline-block";
+        return;
+      }
+
+      // --- fallback ---
+      statusEl.innerText = "No confirmation info found.";
+      document.getElementById("backButton").style.display = "inline-block";
+
+    } catch (err) {
+      console.error(err);
+      statusEl.innerText = "Error confirming email.";
+      document.getElementById("backButton").style.display = "inline-block";
+    }
+  }
+
+  function goBack() {
+    window.location.href = "/";
+  }
+
+  window.onload = handleEmailConfirmation;
+</script>
 </body>
 </html>

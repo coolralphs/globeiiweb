@@ -29,7 +29,7 @@
   }
 
   try {
-    if (!window.supabaseClient) {
+    if (!supabaseClient) {
       setStatus('Supabase client not initialized (missing supabase-config).', true);
       return;
     }

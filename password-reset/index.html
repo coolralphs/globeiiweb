@@ -15,12 +15,12 @@
     (async () => {
       const msg = (s) => document.getElementById('msg').textContent = s;
 
-      if (!window.supabaseClient) {
+      if (!supabaseClient) {
         msg('Configuration error: supabaseClient not found.');
         return;
       }
 
-      const client = window.supabaseClient;
+      const client = supabaseClient;
 
       // Listen for auth state changes (SIGNED_IN will fire after detectSessionInUrl parses the URL)
       const { data: listener } = client.auth.onAuthStateChange((event, session) => {

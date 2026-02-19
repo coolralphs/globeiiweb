@@ -12,56 +12,70 @@
   <h2 id="msg">Signing you in securely...</h2>
 
   <script>
-    (async () => {
-      const msg = (s) => document.getElementById('msg').textContent = s;
+  (async () => {
+    // Minimal UI feedback (adjust DOM selectors as needed)
+    const statusEl = document.getElementById('status') || (function(){
+      const el = document.createElement('div');
+      el.id = 'status';
+      el.style.padding = '1rem';
+      el.style.fontFamily = 'system-ui, Arial';
+      document.body.prepend(el);
+      return el;
+    })();
 
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.style.color = isError ? 'crimson' : 'green';
+    }
+
+    try {
       if (!supabaseClient) {
-        msg('Configuration error: supabaseClient not found.');
+        setStatus('Supabase client not initialized (missing supabase-config).', true);
         return;
       }
 
-      const client = supabaseClient;
+      // Read token from the query string
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token') || params.get('token_hash') || params.get('confirmation_url');
 
-      // Listen for auth state changes (SIGNED_IN will fire after detectSessionInUrl parses the URL)
-      const { data: listener } = client.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN') {
-          msg('Signed in — redirecting…');
-          // Optional: clean the URL so tokens are not visible
-          history.replaceState({}, '', '/'); // change to whichever clean path you want
-          // Redirect to app home or dashboard
-          window.location.replace('/');
-        } else if (event === 'SIGNED_OUT') {
-          msg('Signed out.');
-        } else {
-          msg('Auth event: ' + event);
-        }
-      });
-
-      // In case detectSessionInUrl failed or you want an immediate check, call getSession
-      try {
-        const { data: { session }, error } = await client.auth.getSession();
-        if (error) {
-          console.warn('getSession error', error);
-        }
-        if (session) {
-          msg('Signed in — redirecting…');
-          history.replaceState({}, '', '/');
-          // give a tiny delay so user sees message, then redirect
-          setTimeout(() => window.location.replace('/'), 300);
-        } else {
-          msg('No active session yet — check your email or try again.');
-          // optionally show a link back to home or sign-in page
-        }
-      } catch (err) {
-        console.error(err);
-        msg('Unexpected error during sign-in.');
+      if (!token) {
+        setStatus('No token found in URL. Nothing to verify.', true);
+        return;
       }
 
-      // Optional: unsubscribe listener after 30s to avoid leaks
+      setStatus('Exchanging magic link for session...');
+
+      // Use verifyOtp to exchange the PKCE token for a session
+      const { data, error } = await supabaseClient.auth.verifyOtp({
+        token_hash: token,
+        type: 'magiclink'
+      });
+
+      if (error) {
+        // If the SDK expects 'token' instead of 'token_hash' you can retry below (uncomment if needed)
+        // const retry = await window.supabaseClient.auth.verifyOtp({ token, type: 'magiclink' });
+
+        setStatus(`Failed to verify magic link: ${error.message || JSON.stringify(error)}`, true);
+        console.error('verifyOtp error', error);
+        return;
+      }
+
+      // Success: session is returned in data.session for some SDK versions,
+      // or data may contain the session structure depending on SDK implementation.
+      console.log('verifyOtp result', data);
+      setStatus('Login successful — redirecting...');
+
+      // Optionally wait a short moment so any onAuthStateChange handlers run
       setTimeout(() => {
-        if (listener?.subscription) listener.subscription.unsubscribe?.();
-      }, 30000);
-    })();
+        // Redirect to home or any protected route
+        window.location.href = '/';
+      }, 700);
+
+    } catch (err) {
+      console.error(err);
+      setStatus('Unexpected error during verification. See console for details.', true);
+    }
+  })();
   </script>
 </body>
 </html>

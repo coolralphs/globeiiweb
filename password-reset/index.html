@@ -17,35 +17,52 @@
 
   <script>
     async function loginFromMagicLink() {
-      // Supabase puts tokens in the URL hash
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
 
-      const access_token = params.get("access_token");
-      const refresh_token = params.get("refresh_token");
+try
+ {
+    
+final
+ got = 
+await
+ supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      // session is available
+      // redirect to app home (clean URL)
+      window.location.replace('/');
+    } else if (event === 'SIGNED_OUT') {
+      // handle sign out
+    }
+  });
+    
+// getSessionFromUrl returns a SessionResponse with session if successful
 
-      if (!access_token) {
-        document.body.innerHTML = "<h3>Invalid or expired login link.</h3>";
-        return;
-      }
+    
+if
+ (got.session != 
+null
+) {
+      
+// user is signed in, update UI
 
-      // Convert tokens → real Supabase session
-      const { data, error } = await supabaseClient.auth.setSession({
-        access_token,
-        refresh_token
-      });
+    } 
+else
+ 
+if
+ (got.error != 
+null
+) {
+      
+// handle verification error
 
-      if (error) {
-        console.error(error);
-        document.body.innerHTML = "<h3>Login failed.</h3>";
-        return;
-      }
+    }
+  } 
+catch
+ (e) {
+    
+// fallback: call verifyOtp if you have token/hash values
 
-      console.log("User logged in:", data.session.user.email);
-
-      // Now the browser is authenticated.
-      // Redirect to your actual app page:
-      // window.location.href = "/dashboard.html";
+  }
+     
     }
 
     loginFromMagicLink();

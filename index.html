@@ -151,6 +151,21 @@
 
   <!-- Home page logic (page-specific) -->
   <script>
+    
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+
+    const message = params.get('message');
+    const type = params.get('type'); // may be null
+    const sb = params.get('sb');
+
+    if (message && message.includes('Confirmation link accepted')) {
+      // Optional: redirect to your dedicated page
+      window.location.href = '/email-confirmed/?message=' + encodeURIComponent(message);
+    }
+  });
+
     async function loadHomePage() {
       const { data: { user } } = await supabaseClient.auth.getUser();
 

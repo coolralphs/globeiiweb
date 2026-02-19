@@ -18,19 +18,21 @@
       align-items: center;
       height: 100vh;
       background: #f0f0f0;
+      padding: 20px;
+      text-align: center;
     }
     .container {
       background: white;
       padding: 32px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 400px;
-      text-align: center;
+      max-width: 500px;
     }
     #status {
       margin-top: 16px;
       font-weight: bold;
       color: #333;
+      word-wrap: break-word;
     }
     button {
       margin-top: 24px;
@@ -56,44 +58,58 @@
 
   <script>
     async function handleEmailConfirmation() {
+      const statusEl = document.getElementById("status");
+      
+      // --- First, check for Supabase "access_token" in query params ---
       const params = new URLSearchParams(window.location.search);
       const accessToken = params.get("access_token");
       const type = params.get("type");
 
-      if (!accessToken) {
-        document.getElementById("status").innerText = "No token found in URL.";
-        return;
-      }
-
       try {
-        // Use your supabaseClient from supabase-config.js
-        await supabaseClient.auth.setSession({ access_token: accessToken });
+        if (accessToken) {
+          // Use your supabaseClient from supabase-config.js
+          await supabaseClient.auth.setSession({ access_token: accessToken });
+          await supabaseClient.auth.refreshSession();
+          const user = supabaseClient.auth.user();
 
-        // Refresh session to fetch user info
-        await supabaseClient.auth.refreshSession();
-
-        const user = supabaseClient.auth.user();
-
-        if (type === "email_change") {
-          document.getElementById("status").innerText =
-            `Email confirmed successfully! Your new email is: ${user.email}`;
-        } else {
-          document.getElementById("status").innerText =
-            `Account confirmed! Welcome, ${user.email}`;
+          if (type === "email_change") {
+            statusEl.innerText = `Email confirmed successfully! Your new email is: ${user.email}`;
+          } else {
+            statusEl.innerText = `Account confirmed! Welcome, ${user.email}`;
+          }
+          document.getElementById("backButton").style.display = "inline-block";
+          return;
         }
 
-        // Show back button
-        document.getElementById("backButton").style.display = "inline-block";
+        // --- Second, check if Supabase sent a message in URL hash (e.g., #message=...) ---
+        const hash = window.location.hash.substring(1); // remove #
+        const hashParams = new URLSearchParams(hash);
+        const message = hashParams.get("message");
+        const error = hashParams.get("error");
 
-      } catch (error) {
-        console.error(error);
-        document.getElementById("status").innerText = "Error confirming email.";
+        if (message) {
+          statusEl.innerText = message.replace(/\+/g, ' ');
+          document.getElementById("backButton").style.display = "inline-block";
+          return;
+        } else if (error) {
+          const description = hashParams.get("error_description");
+          statusEl.innerText = `Error: ${description ? description.replace(/\+/g,' ') : error}`;
+          document.getElementById("backButton").style.display = "inline-block";
+          return;
+        }
+
+        // --- fallback ---
+        statusEl.innerText = "No confirmation info found.";
+      } catch (err) {
+        console.error(err);
+        statusEl.innerText = "Error confirming email.";
+        document.getElementById("backButton").style.display = "inline-block";
       }
     }
 
     function goBack() {
       // Redirect back to your main web app page
-      window.location.href = "/"; // or wherever your app entry is
+      window.location.href = "/"; 
     }
 
     window.onload = handleEmailConfirmation;

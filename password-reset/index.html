@@ -1,71 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Signing you in...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-   <!-- Supabase JS -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Your Supabase config -->
+  <!-- /supabase-config.js should set window.supabaseClient = supabase.createClient(...) -->
   <script src="/supabase-config.js"></script>
-
 </head>
-
 <body style="font-family:sans-serif;text-align:center;padding-top:40px;">
-  <h2>Signing you in securely...</h2>
+  <h2 id="msg">Signing you in securely...</h2>
 
   <script>
-    async function loginFromMagicLink() {
+    (async () => {
+      const msg = (s) => document.getElementById('msg').textContent = s;
 
-try
- {
-    
-final
- got = 
-await
- supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      // session is available
-      // redirect to app home (clean URL)
-      window.location.replace('/');
-    } else if (event === 'SIGNED_OUT') {
-      // handle sign out
-    }
-  });
-    
-// getSessionFromUrl returns a SessionResponse with session if successful
+      if (!window.supabaseClient) {
+        msg('Configuration error: supabaseClient not found.');
+        return;
+      }
 
-    
-if
- (got.session != 
-null
-) {
-      
-// user is signed in, update UI
+      const client = window.supabaseClient;
 
-    } 
-else
- 
-if
- (got.error != 
-null
-) {
-      
-// handle verification error
+      // Listen for auth state changes (SIGNED_IN will fire after detectSessionInUrl parses the URL)
+      const { data: listener } = client.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+          msg('Signed in — redirecting…');
+          // Optional: clean the URL so tokens are not visible
+          history.replaceState({}, '', '/'); // change to whichever clean path you want
+          // Redirect to app home or dashboard
+          window.location.replace('/');
+        } else if (event === 'SIGNED_OUT') {
+          msg('Signed out.');
+        } else {
+          msg('Auth event: ' + event);
+        }
+      });
 
-    }
-  } 
-catch
- (e) {
-    
-// fallback: call verifyOtp if you have token/hash values
+      // In case detectSessionInUrl failed or you want an immediate check, call getSession
+      try {
+        const { data: { session }, error } = await client.auth.getSession();
+        if (error) {
+          console.warn('getSession error', error);
+        }
+        if (session) {
+          msg('Signed in — redirecting…');
+          history.replaceState({}, '', '/');
+          // give a tiny delay so user sees message, then redirect
+          setTimeout(() => window.location.replace('/'), 300);
+        } else {
+          msg('No active session yet — check your email or try again.');
+          // optionally show a link back to home or sign-in page
+        }
+      } catch (err) {
+        console.error(err);
+        msg('Unexpected error during sign-in.');
+      }
 
-  }
-     
-    }
-
-    loginFromMagicLink();
+      // Optional: unsubscribe listener after 30s to avoid leaks
+      setTimeout(() => {
+        if (listener?.subscription) listener.subscription.unsubscribe?.();
+      }, 30000);
+    })();
   </script>
 </body>
 </html>

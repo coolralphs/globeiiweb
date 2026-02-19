@@ -2,91 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Home - Globeii</title>
+  <title>Signing you in...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="css/styles.css">
-
-  <!-- Supabase JS -->
+   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  <!-- Your Supabase config -->
+  <script src="/supabase-config.js"></script>
+
 </head>
-<body>
 
-  <!-- HEADER -->
-  <div id="header-placeholder"></div>
+<body style="font-family:sans-serif;text-align:center;padding-top:40px;">
+  <h2>Signing you in securely...</h2>
 
-  <!-- MAIN CONTENT -->
-  <div class="container-center text-center">
-    <h2 id="welcomeText"></h2>
-    <div id="actionButtons" class="d-flex flex-column gap-2"></div>
-  </div>
-
-  <!-- FOOTER -->
-  <div id="footer-placeholder"></div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Load layout (header + footer + header.js) -->
-  <script src="js/layout.js"></script>
-
-  <!-- Home page logic (page-specific) -->
   <script>
-    
-window.addEventListener('DOMContentLoaded', () => {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
+    async function loginFromMagicLink() {
+      // Supabase puts tokens in the URL hash
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
 
-    const message = params.get('message');
-    const type = params.get('type'); // may be null
-    const sb = params.get('sb');
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
 
-    if (message && message.includes('Confirmation link accepted')) {
-      // Optional: redirect to your dedicated page
-      window.location.href = '/email-confirmed/?message=' + encodeURIComponent(message);
-    }
-  });
-
-    async function loadPage() {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-
-      const welcomeText = document.getElementById('welcomeText');
-      const actionButtons = document.getElementById('actionButtons');
-
-      welcomeText.textContent = '';
-      actionButtons.innerHTML = '';
-
-      if (user) {
-
-        // Get user profile
-        const { data: profile } = await supabaseClient
-          .from('app_users')
-          .select('first_name')
-          .eq('id', user.id)
-          .single();
-
-        welcomeText.textContent = `Welcome back, ${profile?.first_name || user.email}`;
-
-        actionButtons.innerHTML = `
-          <a href="reset-password.html" class="btn btn-primary">Reset Password</a>
-        `;
-      } else {
-
-       
+      if (!access_token) {
+        document.body.innerHTML = "<h3>Invalid or expired login link.</h3>";
+        return;
       }
+
+      // Convert tokens → real Supabase session
+      const { data, error } = await supabaseClient.auth.setSession({
+        access_token,
+        refresh_token
+      });
+
+      if (error) {
+        console.error(error);
+        document.body.innerHTML = "<h3>Login failed.</h3>";
+        return;
+      }
+
+      console.log("User logged in:", data.session.user.email);
+
+      // Now the browser is authenticated.
+      // Redirect to your actual app page:
+      // window.location.href = "/dashboard.html";
     }
 
-    // Run page-specific logic after layout (header/footer) is fully loaded
-    window.layoutReady.then(loadPage);
+    loginFromMagicLink();
   </script>
-
 </body>
 </html>

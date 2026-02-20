@@ -137,6 +137,7 @@
   <!-- MAIN CONTENT -->
   <div class="container-center text-center">
     <h2 id="welcomeText"></h2>
+    <div id="statusMessage" class="text-center text-success my-3"></div>
     <div id="actionButtons" class="d-flex flex-column gap-2"></div>
   </div>
 
@@ -152,19 +153,26 @@
   <!-- Home page logic (page-specific) -->
   <script>
     
-window.addEventListener('DOMContentLoaded', () => {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.substring(1); // get everything after #
+      const params = new URLSearchParams(hash);
 
-    const message = params.get('message');
-    const type = params.get('type'); // may be null
-    const sb = params.get('sb');
+      const message = params.get('message');
+      const type = params.get('type'); // e.g., "signup", "recovery", "email_change"
+      const sb = params.get('sb');
 
-    if (message && message.includes('Confirmation link accepted')) {
-      // Optional: redirect to your dedicated page
-      window.location.href = '/email-confirmed/?message=' + encodeURIComponent(message);
-    }
-  });
+      // Show message if type=email_change
+      if (type === 'email_change') {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = 'Email Change Successful!';
+      }
+
+      // Existing check for generic confirmation message
+      if (message && message.includes('Confirmation link accepted')) {
+        // Optional: redirect to your dedicated page
+        window.location.href = '/email-confirmed/?message=' + encodeURIComponent(message);
+      }
+    });
 
     async function loadHomePage() {
       const { data: { user } } = await supabaseClient.auth.getUser();

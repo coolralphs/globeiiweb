@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome - Globeii</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+   <!-- MAIN CONTENT -->
+  <div class="container-center text-center">
+    <h2 id="welcomeText"></h2>
+    <div id="actionButtons" class="d-flex flex-column gap-2"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Load layout (header + footer + header.js) -->
+  <script src="js/layout.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await handleEmailRedirect();
+    await loadHomePage();
+  } catch (e) {
+    console.error('PAGE ERROR:', e);
+    document.getElementById('welcomeText').textContent =
+      'Something went wrong loading this page.';
+  }
+});
+
+
+// ✅ STEP 1 — Handle Supabase email links (email change, magic link, etc.)
+async function handleEmailRedirect() {
+  const query = new URLSearchParams(window.location.search);
+  const hash  = new URLSearchParams(window.location.hash.substring(1));
+
+  const code =
+    query.get('code');
+
+  const type =
+    query.get('type') ||
+    hash.get('type');
+
+  if (code) {
+    console.log('Exchanging code for session...');
+    await supabaseClient.auth.exchangeCodeForSession();
+  }
+
+  if (type === 'email_change') {
+    showMessage('Email Change Successful!', 'success');
+  }
+}
+
+
+// ✅ STEP 2 — Load user (if logged in)
+async function loadHomePage() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  const welcomeText   = document.getElementById('welcomeText');
+  const actionButtons = document.getElementById('actionButtons');
+
+  if (!welcomeText || !actionButtons) {
+    console.error('Missing required DOM elements');
+    return;
+  }
+
+  actionButtons.innerHTML = '';
+
+  if (user) {
+    const { data: profile } = await supabaseClient
+      .from('app_users')
+      .select('first_name')
+      .eq('id', user.id)
+      .single();
+
+    welcomeText.textContent =
+      `Welcome back, ${profile?.first_name || user.email}`;
+
+    actionButtons.innerHTML = `
+      <a href="create-trip.html" class="btn btn-primary">Create Trip</a>
+      <a href="itineraries.html" class="btn btn-secondary">View My Itineraries</a>
+    `;
+  } else {
+    welcomeText.textContent = 'You are not signed in.';
+
+    actionButtons.innerHTML = `
+      <a href="../login.html" class="btn btn-primary">Sign In</a>
+    `;
+  }
+}
+
+
+// ✅ Helper to show alert message
+function showMessage(text, type) {
+  const welcomeText = document.getElementById('welcomeText');
+
+  welcomeText.innerHTML = `
+    <div class="alert alert-${type}">
+      ${text}
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>

@@ -224,15 +224,21 @@
       };
 
       savePasswordBtn.onclick = async () => {
-        const newPassword = passwordInput.value;
+        const newPassword = passwordInput.value.trim();
         if (!newPassword) return alert('Please enter a password.');
-        const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-        if (error) alert('Password update failed: ' + error.message);
-        else {
-          alert('Password updated successfully!');
-          passwordInput.value = '';
-          bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+
+        // Simple regex to match Supabase policy
+        const policyRegex = /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/;
+        if (!policyRegex.test(newPassword)) {
+          return alert('Password must contain at least one lowercase letter, one number, and one special symbol.');
         }
+
+        const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+        if (error) return alert('Password update failed: ' + error.message);
+
+        alert('Password updated successfully!');
+        passwordInput.value = '';
+        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
       };
     });
   </script>

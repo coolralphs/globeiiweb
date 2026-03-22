@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account - Globeii</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <!-- DASHBOARD CONTENT -->
+  <main class="flex-fill container my-4" id="dashboardContent" style="display:none;">
+    <h2 class="mb-4 text-center">Complete Signup</h2>
+
+<p class="text-center mb-4 fw-semibold">You're almost there!</p>
+
+    <!-- Profile Group -->
+    <div class="dashboard-group mb-4">
+      <h4>Profile</h4>
+
+      <!-- Edit Mode -->
+      <div id="profileEdit">
+        <div class="mb-3">
+          <label for="firstNameInput" class="form-label fw-bold">First Name</label>
+          <input type="text" id="firstNameInput" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="lastNameInput" class="form-label fw-bold">Last Name</label>
+          <input type="text" id="lastNameInput" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="emailInput" class="form-label fw-bold">Email</label>
+          <input type="email" id="emailInput" class="form-control" disabled required>
+        </div>
+        <div class="mb-3">
+          <label for="passwordInput" class="form-label fw-bold">Password</label>
+          <input type="password" id="passwordInput" class="form-control" required placeholder="Enter password">
+        </div>
+        <button class="btn btn-primary btn-sm me-2" id="saveProfileBtn">
+          <i class="fa-solid fa-check"></i> Complete Signup
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/layout-no-navlinks.js"></script>
+  <!-- <script src="js/header.js"></script> -->
+
+<script>
+window.layoutReady.then(async () => {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    window.location.href = 'login.html?redirectTo=welcome.html';
+    return;
+  }
+
+  // Check if user already exists in app_users
+  const { data: existingUser, error: fetchError } = await supabaseClient
+    .from('app_users')
+    .select('id')
+    .eq('id', user.id)
+    .single();
+
+  if (existingUser) {
+    // User already completed signup, redirect
+    window.location.href = 'account-dashboard.html';
+    return;
+  }
+
+  // Otherwise, show the form
+  document.getElementById('dashboardContent').style.display = 'block';
+
+  const firstNameInput = document.getElementById('firstNameInput');
+  const lastNameInput = document.getElementById('lastNameInput');
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+
+  // Fill email
+  emailInput.value = user.email;
+
+  document.getElementById('saveProfileBtn').onclick = async () => {
+    if (!firstNameInput.checkValidity() || !lastNameInput.checkValidity() || !passwordInput.checkValidity()) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    const newPassword = passwordInput.value;
+
+    // Insert into app_users
+    const { error: upsertError } = await supabaseClient
+      .from('app_users')
+      .upsert({ id: user.id, first_name: firstName, last_name: lastName, email: user.email }, { onConflict: 'id' });
+
+    if (upsertError) {
+      alert('Error saving user info: ' + upsertError.message);
+      return;
+    }
+
+    // Update Auth password
+    const { error: passwordError } = await supabaseClient.auth.updateUser({ password: newPassword });
+    if (passwordError) {
+      alert('Error updating password: ' + passwordError.message);
+      return;
+    }
+
+    // Success – redirect
+    window.location.href = 'account-dashboard.html';
+  };
+});
+</script>
+</body>
+</html>

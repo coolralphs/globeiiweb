@@ -197,7 +197,7 @@
           .eq('id', user.id)
           .single();
 
-        welcomeText.textContent = `Welcome back, ${profile?.first_name || user.email}`;
+        welcomeText.textContent = `Welcome, ${profile?.first_name || user.email}`;
 
         actionButtons.innerHTML = `
           <a href="create-trip.html" class="btn btn-primary">Create Trip</a>
